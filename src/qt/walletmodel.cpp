@@ -299,7 +299,9 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsEnigma(const QList<SendCoinsR
         foreach(const SendCoinsRecipient &rcp, recipients)
         {
             std::string strAddress = rcp.address.toStdString();
-            CTxDestination dest = CBitcoinAddress(strAddress).Get();
+            CStealthAddress sa;
+            sa.SetEncoded(strAddress);
+            CTxDestination dest = sa;
             std::string strLabel = rcp.label.toStdString();
             {
                 LOCK(wallet->cs_wallet);
@@ -309,7 +311,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsEnigma(const QList<SendCoinsR
                 // Check if we have a new address or an updated label
                 if (mi == wallet->mapAddressBook.end() || mi->second != strLabel)
                 {
-                    wallet->SetAddressBookName(dest, strLabel);
+                    wallet->SetAddressBookName(sa, strLabel);
                 }
             }
         }
