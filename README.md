@@ -1,3 +1,5 @@
+* Master branch currently contains 2.1.0.0 [beta 1 - testnet only] *
+
 CloakCoin (CLOAK) Release
 
 CloakCoin is a cool new crypto currency that will feature a uniquely implemented anonymization feature that uses exchanges on the back end and a decoupled transaction flow architecture.
