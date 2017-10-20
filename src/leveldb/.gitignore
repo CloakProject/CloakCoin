@@ -1,0 +1,12 @@
+build_config.mk
+*.o
+*.dylib*
+*.so
+*.so.*
+*_test
+db_bench
+leveldbutil
+Release
+Debug
+Benchmark
+vs2010.*

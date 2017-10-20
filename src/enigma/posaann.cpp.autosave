@@ -1,0 +1,391 @@
+// Copyright (c) 2014 The CloakCoin Developers
+//
+// Announcement system
+//
+
+#include <algorithm>
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/replace.hpp>
+#include <boost/foreach.hpp>
+#include <map>
+
+#include "posaann.h"
+#include "key.h"
+#include "net.h"
+#include "ui_interface.h"
+
+#include "cloakshield.h"
+
+using namespace std;
+
+extern CCloakShield ActiveCloakShield;
+
+string nMyPosaAddress;
+
+map<uint256, CPosaAnnouncement> mapPosaAnns;
+CCriticalSection cs_mapPosaAnns;
+string nCurrentAnonymizer;
+map<uint256, CNode*> mapPosaAnnNodes;
+CCriticalSection cs_PosaAcks;
+set<uint256> sPosaCheckUpAcks;
+
+void CPosaCheckUp::SetNull()
+{
+    nSentTime = 0;
+    nHashCheck = 0;
+}
+
+void CPosaCheckUp::RelayTo(CNode* pnode) const
+{
+    // returns true if wasn't already contained in the set
+    if(GetBoolArg("-printposa", false))
+        printf("POSA: CPosaCheckUp::RelayTo node\n");
+
+    // before relaying, remove the hash from the acks list if it is already there
+    LOCK(cs_PosaAcks);
+    if(sPosaCheckUpAcks.find(nHashCheck) != sPosaCheckUpAcks.end())
+        sPosaCheckUpAcks.erase(nHashCheck);
+
+    pnode->PushMessage("posacheckup", *this);
+}
+
+void CPosaCheckUpAck::SetNull()
+{
+    nSentTime = 0;
+    nInReplyToHash = 0;
+}
+
+void CPosaCheckUpAck::RelayTo(CNode* pnode) const
+{
+    // returns true if wasn't already contained in the set
+    if(GetBoolArg("-printposa", false))
+        printf("POSA: CPosaCheckUpAck::RelayTo node\n");
+    pnode->PushMessage("posacheckupack", *this);
+}
+
+// ========== POSA Announcement ==============
+void CPosaAnnouncement::SetNull()
+{
+    nVersion = POSA_REQUEST_CURRENTVERSION;
+    nExpiration = 0;
+    nID = 0;
+    setRevoke.clear();
+
+    nMinVer = 0;
+    nMaxVer = 0;
+    setSubVer.clear();
+
+    pReceiveAddressPubKey.clear();
+    pSendAddressPubKey.clear();
+    pPosaSessionKeyHex.clear();
+
+    vchMsg.clear();
+    vchSig.clear();
+
+    nBalance = 0;
+}
+
+std::string CPosaAnnouncement::ToString() const
+{
+    std::string strSetRevoke;
+    BOOST_FOREACH(int n, setRevoke)
+        strSetRevoke += strprintf("%d ", n);
+    std::string strSetSubVer;
+    BOOST_FOREACH(std::string str, setSubVer)
+        strSetSubVer += "\"" + str + "\" ";
+
+    string recv = HexStr(pReceiveAddressPubKey.begin(), pReceiveAddressPubKey.end());
+    string send = HexStr(pSendAddressPubKey.begin(), pSendAddressPubKey.end());
+    string posa = pPosaSessionKeyHex;
+    return strprintf(
+        "CPosaAnnouncement(\n"
+        "    nVersion                = %d\n"
+        "    nExpiration             = %"PRI64d"\n"
+        "    nID                     = %d\n"
+        "    setRevoke               = %s\n"
+        "    nMinVer                 = %d\n"
+        "    nMaxVer                 = %d\n"
+        "    setSubVer               = %s\n"
+        "    pReceiveAddressPubKey   = \"%s\"\n"
+        "    pSendAddressPubKey      = \"%s\"\n"
+        "    pPosaSessionKeyHex      = \"%s\"\n"
+	"    nBal		     = %"PRI64d"\n"
+	"    nUptime		     = %"PRI64d"\n"
+        ")\n",
+        nVersion,
+        nExpiration,
+        nID,
+        strSetRevoke.c_str(),
+        nMinVer,
+        nMaxVer,
+        strSetSubVer.c_str(),
+        recv.c_str(),
+        send.c_str(),
+        posa.c_str(),
+	nBalance,
+	nUptime);
+}
+
+void CPosaAnnouncement::print() const
+{
+    printf("%s", ToString().c_str());
+}
+
+bool CPosaAnnouncement::IsNull() const
+{
+    return (nID == 0);
+}
+
+uint256 CPosaAnnouncement::GetHash() const
+{
+    return Hash(this->vchMsg.begin(), this->vchMsg.end());
+}
+bool CPosaAnnouncement::IsInEffect() const
+{
+    std::string strSetSubVer;
+    BOOST_FOREACH(std::string str, setSubVer)
+        strSetSubVer += "\"" + str + "\" ";
+
+    std::string strCurVer = (CLIENT_NAME + "");
+
+    // TODO: this is just removed for testnet 3 testing
+    std::string subVer = FormatSubVersion(CLIENT_NAME, CLIENT_VERSION, std::vector<std::string>(), true);
+    if(strSetSubVer.find(subVer) == string::npos)
+    //if(strSetSubVer.find("SidneyReilly:1.9.7.38") == string::npos)
+        return false; // only accept if applies to this version
+
+    return (GetAdjustedTime() < nExpiration);
+}
+bool CPosaAnnouncement::Cancels(const CPosaAnnouncement& ann) const
+{
+    if (!IsInEffect())
+        return false; // this was a no-op before 31403
+    return ( nID > ann.nID && setRevoke.count(ann.nID));
+}
+
+bool CPosaAnnouncement::AppliesTo(int nVersion, std::string strSubVerIn) const
+{
+    // TODO: rework for client-version-embedded-in-strSubVer ?
+    //return (IsInEffect() && nMinVer <= nVersion && nVersion <= nMaxVer &&
+    //        (setSubVer.empty() || setSubVer.count(strSubVerIn)));
+    return IsInEffect();
+}
+
+bool CPosaAnnouncement::AppliesToMe() const
+{
+    return AppliesTo(PROTOCOL_VERSION, FormatSubVersion(CLIENT_NAME, CLIENT_VERSION, std::vector<std::string>()));
+}
+
+bool CPosaAnnouncement::IsMine() const
+{
+	// make sure the announcement isn't us
+	vector<unsigned char> myAddr(nMyPosaAddress.begin(),nMyPosaAddress.end());
+	return pReceiveAddressPubKey == myAddr;
+}
+
+bool CPosaAnnouncement::RelayTo(CNode* pnode, bool onionRoute) const
+{
+    if (!IsInEffect())
+        return false;
+    // returns true if wasn't already contained in the set
+    if (pnode->setKnownAnns.insert(GetHash()).second)
+    {
+        if (AppliesTo(pnode->nVersion, pnode->strSubVer))
+        {
+            if(GetBoolArg("-printposa"))
+                printf("POSA: CPosaAnnouncement::RelayTo node\n");
+            pnode->PushMessage("announcement", *this);
+            return true;
+        }
+    }
+    return false;
+}
+
+bool CPosaAnnouncement::IsAnnouncement() const
+{
+    return !(pReceiveAddressPubKey.size() <= 1 || pSendAddressPubKey.size() <= 1 || pPosaSessionKeyHex.size() <= 1);
+}
+
+CPosaAnnouncement CPosaAnnouncement::getAnnouncementByHash(const uint256 &hash)
+{
+    CPosaAnnouncement retval;
+    {
+        LOCK(cs_mapPosaAnns);
+        map<uint256, CPosaAnnouncement>::iterator mi = mapPosaAnns.find(hash);
+        if (mi != mapPosaAnns.end())
+            retval = mi->second;
+    }
+    return retval;
+}
+
+// elect [count] anonymizers (Enigma peers) with at least [nBalReq] available balance.
+// use count=0 to return all active nodes
+std::vector<CPosaAnnouncement> CPosaAnnouncement::electAnonymizers(const int count, const int64 nBalReq)
+{
+    std::vector<CPosaAnnouncement> posaAnnsAvail;
+
+    LOCK(cs_mapPosaAnns);
+    BOOST_FOREACH(PAIRTYPE(const uint256, CPosaAnnouncement)& item, mapPosaAnns)
+    {
+        const CPosaAnnouncement& ann = item.second;
+        if (ann.IsAnnouncement() && !ann.IsMine() && ann.nBalance >= nBalReq)
+            posaAnnsAvail.push_back(ann);
+    }
+
+    if (posaAnnsAvail.size() > 0)
+    {
+        // shuffle
+        std::random_shuffle(posaAnnsAvail.begin(), posaAnnsAvail.end());
+
+        // crop to size
+        if ((int)posaAnnsAvail.size()>count && count > 0)
+            posaAnnsAvail.resize(count);
+    }
+    return posaAnnsAvail;
+}
+
+// elect an anonymizer (Enigma peer) with at least [nBalReq] available balance.
+CPosaAnnouncement CPosaAnnouncement::electAnonymizer(const int64 nBalReq)
+{
+    if(GetBoolArg("-printposa"))
+	printf("CPosaAnnouncement::electAnonymizer(%"PRI64u")\n", nBalReq);
+
+    CPosaAnnouncement retval;
+    {
+        // Choose a random anonymizer
+        int count = 0;
+        map<uint256, CPosaAnnouncement> posaAnnsAvail;
+
+        LOCK(cs_mapPosaAnns);
+        BOOST_FOREACH(PAIRTYPE(const uint256, CPosaAnnouncement)& item, mapPosaAnns)
+        {
+            const CPosaAnnouncement& ann = item.second;
+            if (ann.IsAnnouncement() && ann.nBalance >= nBalReq)
+            {
+                count++;
+                posaAnnsAvail.insert(make_pair(ann.GetHash(), ann));
+            }
+        }
+
+        if (count > 0)
+        {
+            srand(time(NULL));
+            int randu = (rand() % count);
+            int done = 0;
+            BOOST_FOREACH(PAIRTYPE(const uint256, CPosaAnnouncement)& item, posaAnnsAvail)
+            {
+                const CPosaAnnouncement& ann = item.second;
+                if (!ann.IsAnnouncement() || ann.IsMine())
+                    continue;
+                if (done == randu)
+                {
+                    retval = ann;
+                    break;
+                }
+                done++;
+            }
+        }
+        else
+        {
+            if(GetBoolArg("-printposa"))
+                printf("POSA: electAnonymizer for amt %"PRI64u" no anonymizer elected.\n", nBalReq);
+            //nCurrentAnonymizer = "";
+        }
+    }
+    return retval;
+}
+
+bool CPosaAnnouncement::ProcessAnnouncement(bool fThread)
+{
+    if (nVersion != POSA_REQUEST_CURRENTVERSION) // refuse to process if this is an old-version announcement!
+        return false;
+
+    //if (!CheckSignature())
+    //    return false;
+    if (!IsInEffect())
+        return false;
+
+    {
+        LOCK(cs_mapPosaAnns);
+        bool alreadyHaveThisPubKey = false;
+
+        // Cancel previous Enigma Service Availability Announcements
+        for (map<uint256, CPosaAnnouncement>::iterator mi = mapPosaAnns.begin(); mi != mapPosaAnns.end();)
+        {
+            alreadyHaveThisPubKey = false;
+            const CPosaAnnouncement& ann = (*mi).second;
+            if(ann.pReceiveAddressPubKey == this->pReceiveAddressPubKey)
+                alreadyHaveThisPubKey = true;
+
+            if(alreadyHaveThisPubKey)
+            {
+                if(GetBoolArg("-printposa"))
+                    printf("POSA: ProcessAnnouncement(): Already have this pub key, removing existing\n");
+                mapPosaAnns.erase(mi++);
+            }
+            else if (Cancels(ann))
+            {
+                if(GetBoolArg("-printposa"))
+                    printf("cancelling announcement %d\n", ann.nID);
+                mapPosaAnns.erase(mi++);
+            }
+            else if (!ann.IsInEffect())
+            {
+                if(GetBoolArg("-printposa"))
+                    printf("expiring announcement %d\n", ann.nID);
+                mapPosaAnns.erase(mi++);
+            }
+            else
+                mi++;
+        }
+
+        // Check if this announcement has been cancelled
+        BOOST_FOREACH(PAIRTYPE(const uint256, CPosaAnnouncement)& item, mapPosaAnns)
+        {
+            const CPosaAnnouncement& ann = item.second;
+            if (ann.Cancels(*this))
+            {
+                if(GetBoolArg("-printposa"))
+                    printf("announcement already cancelled by %d\n", ann.nID);
+                return false;
+            }
+        }
+
+        // Add to mapAnns
+        mapPosaAnns.insert(make_pair(GetHash(), *this));
+
+        // Choose a random anonymizer
+        int count = 0;
+        BOOST_FOREACH(PAIRTYPE(const uint256, CPosaAnnouncement)& item, mapPosaAnns)
+        {
+            const CPosaAnnouncement& ann = item.second;
+            if (ann.IsAnnouncement())
+                count++;
+        }
+        if (count > 0)
+        {
+            srand(time(NULL));
+            int randu = (rand() % count);
+            int done = 0;
+            BOOST_FOREACH(PAIRTYPE(const uint256, CPosaAnnouncement)& item, mapPosaAnns)
+            {
+                const CPosaAnnouncement& ann = item.second;
+                if (!ann.IsAnnouncement() || ann.IsMine())
+                    continue;
+                if (done == randu)
+                {
+                    nCurrentAnonymizer = item.first.GetHex();
+                    break;
+                }
+                done++;
+            }
+        }
+        else
+            nCurrentAnonymizer = "";
+    }
+
+    if(GetBoolArg("-printposa"))
+        printf("Accepted Enigma Service Availability Announcement %d, AppliesToMe()=%d, Current Anonymizer=%s\n", nID, AppliesToMe(), nCurrentAnonymizer.c_str());
+    return true;
+}
+

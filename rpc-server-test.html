@@ -1,0 +1,42 @@
+<html>
+	<head>
+	<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+	<META HTTP-EQUIV="Expires" CONTENT="-1">
+
+	<script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+	<script>
+	$(document).ready(function(){
+		
+		function make_base_auth(user,password){
+			var tok = user + ':' + password;
+			var hash = btoa(tok);
+			return 'Basic '+hash;
+		}
+		
+		$.ajaxSetup({
+			beforeSend: function(xhr){
+				xhr.setRequestHeader('Authorization', make_base_auth('test','test'));
+			}
+		});
+		
+		$.ajax({
+			url: 'http://test:test@127.0.0.1:29661',
+			type: 'POST',
+			contenType: 'application/json',
+			cache:false,
+			dataType:"json",
+			data: '{"jsonrpc": "1.0", "id":"curltest", "method": "getinfo", "params": [] }',
+			timeout: 15000,
+		})
+		.done(function(msg){
+			$('#content').html(JSON.stringify(msg));
+		});
+		
+		
+	});
+	</script>
+	</head>
+	<body>
+		<div id='content'>content</div>
+	</body>
+</html>
