@@ -845,7 +845,6 @@ public:
     // detect if a transaction is enigma
     bool IsEnigma() const
     {
-        bool posaresult = false;
         bool fundsFromMe = false;
         bool fundsFromOthers = false;
         bool fundsToMe = false;
@@ -873,8 +872,6 @@ public:
         if (!txout.scriptPubKey.GetOp(itTxA, opCode, vchEphemPK) || opCode != OP_RETURN){
             return false;
         }
-
-
         return fundsFromMe && fundsFromOthers && fundsToMe && fundsToOthers;
     }
 
