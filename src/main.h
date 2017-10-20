@@ -79,7 +79,7 @@ static const unsigned int nNonceTestNet4 = 1363324;
 static const uint256 hashGenesisBlockTestNet3 ("0xe0b104aef9b6c0dd6e2e05a10fa2c7b34406c8be8b3e09e9135ef91e0c576c10");
 static const uint256 hashMerkelRootTestNet3("0x1831d9f590f8b705ed996fcaa37ece517cfa6eb619af6738b2606383eab5a619");
 static const unsigned int blockTimeTestNet3 = 1436293363;
-static const unsigned int nNonceTestNet3 = 1363323;
+static const unsigned int nNonceTestNet3 = 1363333;
 
 static const int64 nClockDriftSwitchHeight = 59860;
 static const int64 nMaxClockDriftOrig = 2 * 60 * 60;

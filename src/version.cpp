@@ -11,7 +11,7 @@
 const std::string CLIENT_NAME("SidneyReilly");
 
 // Client version number
-#define CLIENT_VERSION_SUFFIX   " 'DEFENDER'"
+#define CLIENT_VERSION_SUFFIX   " 'EVOLUTION' [beta.01]"
 
 // The following part of the code determines the CLIENT_BUILD variable.
 // Several mechanisms are used for this:
