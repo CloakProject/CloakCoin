@@ -2720,7 +2720,7 @@ int64 CWallet::FindEnigmaTransactions(const CTransaction& tx, const CTxOut& txou
         vector<ec_secret> secrets;
         GetEnigmaChangeAddresses(stealthAddress, vchEphemPK, ourHash, tx.vout.size(), scripts, secrets, 0);
 
-        map<CTxDestination, pair<ec_secret, int>> stealthSecrets;
+        map<CTxDestination, pair<ec_secret, int> > stealthSecrets;
         for (uint i=0; i<scripts.size(); i++){
             CTxDestination add;
             if (!ExtractDestination(scripts[i], add))
@@ -3336,7 +3336,7 @@ DBErrors CWallet::LoadWallet(bool& fFirstRunRet)
     if (!fFileBacked)
         return DB_LOAD_OK;
     fFirstRunRet = false;
-    vector<pair<string, uint256>> vWalletErase;
+    vector<pair<string, uint256> > vWalletErase;
     DBErrors nLoadWalletRet = CWalletDB(strWalletFile,"cr+").LoadWallet(this);
     if (nLoadWalletRet == DB_NEED_REWRITE)
     {

@@ -190,7 +190,7 @@ DBErrors CWalletDB::ReorderTransactions(CWallet* pwallet)
 
 bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue,
              int& nFileVersion, vector<uint256>& vWalletUpgrade,
-             bool& fIsEncrypted,  bool& fAnyUnordered, string& strType, string& strErr, vector<pair<string, uint256>>& vWalletErase)
+             bool& fIsEncrypted,  bool& fAnyUnordered, string& strType, string& strErr, vector<pair<string, uint256> >& vWalletErase)
 {
     try {
         // Unserialize
@@ -499,7 +499,7 @@ DBErrors CWalletDB::LoadWallet(CWallet* pwallet)
     pwallet->vchDefaultKey = CPubKey();
     int nFileVersion = 0;
     vector<uint256> vWalletUpgrade;
-    vector<pair<string, uint256>> vWalletErase;
+    vector<pair<string, uint256> > vWalletErase;
     bool fIsEncrypted = false;
     bool fAnyUnordered = false;
     bool fNoncriticalErrors = false;
@@ -850,7 +850,7 @@ bool CWalletDB::Recover(CDBEnv& dbenv, std::string filename, bool fOnlyKeys)
     CWallet dummyWallet;
     int nFileVersion = 0;
     vector<uint256> vWalletUpgrade;
-    vector<pair<string, uint256>> vWalletErase;
+    vector<pair<string, uint256> > vWalletErase;
     bool fIsEncrypted = false;
     bool fAnyUnordered = false;
 

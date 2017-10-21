@@ -446,7 +446,7 @@ bool CCloakingRequest::GetCloakingInputsMine(CCloakingParticipant& part)
         LOCK2(pwalletMain->cs_CloakingRequest, pwalletMain->cs_mapCloakingInputsOutputs);
         {
             // Choose coins to use
-            set<pair<const CWalletTx*,uint>> setCoins;
+            set<pair<const CWalletTx*,uint> > setCoins;
             int64 nChange = 0;
 
             vector<COutput> vCoins;
