@@ -40,19 +40,7 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, bool isTestNet) : QWidget(0, f), c
     QString testnetAddText  = QString(tr("[testnet]")); // define text to place as single text object
     QString devnetAddText  = QString(tr("[devnet]")); // define text to place as single text object
 
-    QString splashName;
-
-    if (!FORCE_TESTNET && !mapArgs.count("-testnet"))
-    {
-        splashName = ":/images/splash";
-    }else{
-        if (FORCE_TESTNET == 4 || (!FORCE_TESTNET && testnetNumber == 4))
-        {
-            splashName = ":/images/splash";
-        }else{
-            splashName = ":/images/splash";
-        }
-    }
+    QString splashName = ":/images/splash";
 
     pixmap = QPixmap(splashName);
 
@@ -121,23 +109,6 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, bool isTestNet) : QWidget(0, f), c
 
     // draw testnet string if testnet is on
     if(isTestNet) {
-
-        /*
-        QString txt = testnetNumber == 3 ? "TestNet" : "DevNet";
-
-        int textLeft = 0;
-        int textTop = 0;
-
-        pixPaint.setFont(QFont(cloakFontFamily, 24*fontFactor));
-        fm = pixPaint.fontMetrics();
-        titleTextWidth  = fm.width(titleText);
-
-        pixPaint.setPen(colorShadow);
-        pixPaint.drawText(textLeft+shadowOffset,textTop+shadowOffset,txt);
-
-        pixPaint.setPen(colorPen);
-        pixPaint.drawText(textLeft,textTop,txt);
-*/
         if (testnetNumber == 3)
         {
             // test net

@@ -76,7 +76,7 @@ static const uint256 hashMerkelRootTestNet4("0x1831d9f590f8b705ed996fcaa37ece517
 static const unsigned int blockTimeTestNet4 = 1414697233;
 static const unsigned int nNonceTestNet4 = 1363324;
 
-static const uint256 hashGenesisBlockTestNet3 ("0xe0b104aef9b6c0dd6e2e05a10fa2c7b34406c8be8b3e09e9135ef91e0c576c10");
+static const uint256 hashGenesisBlockTestNet3 ("d5c43cbc3f7ada64f950b045c3a25d3ba6a656198cb1f7a1b8aa0b6ec882a968");
 static const uint256 hashMerkelRootTestNet3("0x1831d9f590f8b705ed996fcaa37ece517cfa6eb619af6738b2606383eab5a619");
 static const unsigned int blockTimeTestNet3 = 1436293363;
 static const unsigned int nNonceTestNet3 = 1363333;

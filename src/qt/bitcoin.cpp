@@ -579,7 +579,7 @@ int main(int argc, char *argv[])
     }
 
 
-    bool isaTestNet = fTestNet = GetBoolArg("-testnet");
+    bool isaTestNet = fTestNet = GetBoolArg("-testnet") || FORCE_TESTNET;
 
     // Application identification (must be set before OptionsModel is initialized,
     // as it is used to locate QSettings)
