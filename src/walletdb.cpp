@@ -201,7 +201,13 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue,
         {
             string strAddress;
             ssKey >> strAddress;
-            ssValue >> pwallet->mapAddressBook[CBitcoinAddress(strAddress).Get()];
+            if (IsStealthAddress(strAddress)){
+                CStealthAddress sa;
+                sa.SetEncoded(strAddress);
+                ssValue >> pwallet->mapAddressBook[sa];
+            }else{
+                ssValue >> pwallet->mapAddressBook[CBitcoinAddress(strAddress).Get()];
+            }
         }
         else if (strType == "tx")
         {

@@ -80,25 +80,20 @@ void CCloakShield::ClearBan(const std::string nodePubKey)
 
 bool CCloakShield::OnionRoutingAvailable(bool showMessage)
 {
-    try
-    {
+    try{
         int minNodesNeeded = this->NumNodesRequired();
-
         // do we have [required nodes+CLOAK_SHIELD_MIN_NODE_BUFFER] available?
         int countEnigmaNodes =  CEnigmaAnnouncement::electAnonymizers(0).size();
 
-        if (countEnigmaNodes < minNodesNeeded)
-        {
-            if (showMessage && (ONION_ROUTING_ENABLED && fEnableOnionRouting))
-            {
+        if (countEnigmaNodes < minNodesNeeded){
+            if ((showMessage || GetBoolArg("-printenigma", false)) && (ONION_ROUTING_ENABLED && fEnableOnionRouting) ){
                 string strMessage = strprintf(_("Not enough Enigma nodes to Onion Route with CloakShield. Need %d, have %d."), minNodesNeeded, countEnigmaNodes);
                 uiInterface.ThreadSafeMessageBox(strMessage, "CloakCoin", CClientUIInterface::OK | CClientUIInterface::ICON_STOP | CClientUIInterface::MODAL);
             }
             return false;
         }
         return true;
-    }catch(std::exception &e)
-    {
+    }catch(std::exception &e){
         printf("ENIGMA: CCloakShield::OnionRoutingAvailable failed: %s\n", e.what());
         return false;
     }
@@ -108,8 +103,7 @@ bool CCloakShield::OnionRoutingAvailable(bool showMessage)
 // onion route a transaction (enigma or standard) using cloak shield
 bool CCloakShield::SendEnigmaRequest(CCloakingRequest* req)
 {
-    try
-    {
+    try{
         // encode request in cloakdata
         CCloakingData cd;
 
@@ -117,8 +111,7 @@ bool CCloakShield::SendEnigmaRequest(CCloakingRequest* req)
             return false;
 
         return cd.Transmit(true, (ONION_ROUTING_ENABLED && fEnableOnionRouting));
-    }catch(std::exception &e)
-    {
+    }catch(std::exception &e){
         printf("ENIGMA: CCloakShield::OnionRouteEnigmaRequest failed: %s\n", e.what());
         return false;
     }
@@ -136,18 +129,18 @@ CCloakingEncryptionKey* CCloakShield::GetRoutingKey()
 
 int CCloakShield::NumNodesRequired()
 {
-    int res =  GetBoolArg("-testnet", false) ? CLOAKSHIELD_NUM_NODES_TEST : nCloakShieldNumNodes + CLOAK_SHIELD_MIN_NODE_BUFFER;
+    int res =  GetBoolArg("-testnet", false) || FORCE_TESTNET ? CLOAKSHIELD_NUM_NODES_TEST : nCloakShieldNumNodes + CLOAK_SHIELD_MIN_NODE_BUFFER;
     return res;
 }
 
 int CCloakShield::NumRoutesRequired()
 {
-    return GetBoolArg("-testnet", false) ? CLOAKSHIELD_NUM_ROUTES_TEST : nCloakShieldNumRoutes;
+    return GetBoolArg("-testnet", false) || FORCE_TESTNET  ? CLOAKSHIELD_NUM_ROUTES_TEST : nCloakShieldNumRoutes;
 }
 
 int CCloakShield::NumHopsRequired()
 {
-    return GetBoolArg("-testnet", false) ? CLOAKSHIELD_NUM_HOPS_TEST : nCloakShieldNumHops;
+    return GetBoolArg("-testnet", false) || FORCE_TESTNET  ? CLOAKSHIELD_NUM_HOPS_TEST : nCloakShieldNumHops;
 }
 
 void CCloakShield::SendMessageToNode(const std::string nodePubKey, const std::string message)

@@ -82,7 +82,7 @@ public:
                 {
                     cachedAddressTable.append(AddressTableEntry(fMine ? AddressTableEntry::Receiving : AddressTableEntry::Sending,
                                                                 QString::fromStdString(strName),
-                                                                QString::fromStdString(addStr)));
+                                                                QString::fromStdString(addStr), IsStealthAddress(addStr)));
                 }
             }
 
@@ -296,7 +296,7 @@ bool AddressTableModel::setData(const QModelIndex & index, const QVariant & valu
             if (IsStealthAddress(strTemp))
             {
                 strValue = value.toString().toStdString();
-                wallet->UpdateStealthAddress(strTemp, strValue, false);
+                wallet->UpdateStealthAddress(strTemp, strValue, true);
             } else
             {
                 wallet->SetAddressBookName(CBitcoinAddress(strTemp).Get(), value.toString().toStdString());
@@ -516,7 +516,13 @@ bool AddressTableModel::removeRows(int row, int count, const QModelIndex & paren
     }
     {
         LOCK(wallet->cs_wallet);
-        wallet->DelAddressBookName(CBitcoinAddress(rec->address.toStdString()).Get());
+        if (IsStealthAddress(rec->address.toStdString())){
+            CStealthAddress sa;
+            sa.SetEncoded(rec->address.toStdString());
+            wallet->DelAddressBookName(sa);
+        }else{
+            wallet->DelAddressBookName(CBitcoinAddress(rec->address.toStdString()).Get());
+        }
     }
     return true;
 }

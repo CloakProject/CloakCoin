@@ -2182,13 +2182,13 @@ bool CWallet::UpdateStealthAddress(std::string &addr, std::string &label, bool a
         };
     } else
     {
-        //sxFound = const_cast<CStealthAddress&>(*it);
-
+        /*
         if (sxFound.label == label)
         {
             // no change
             return true;
         };
+        */
 
         sxFound.label = label; //it->label = label; // update in .stealthAddresses
 

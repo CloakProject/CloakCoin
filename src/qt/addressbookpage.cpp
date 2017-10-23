@@ -276,7 +276,7 @@ void AddressBookPage::on_deleteButton_clicked()
     QModelIndexList indexes = table->selectionModel()->selectedRows();
     if(!indexes.isEmpty())
     {
-        table->model()->removeRow(indexes.at(0).row());
+        table->model()->removeRows(indexes.at(0).row(), 1, indexes.at(0));
     }
 }
 
