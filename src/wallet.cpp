@@ -1840,7 +1840,9 @@ bool CWallet::GetEnigmaAddress(CStealthAddress &address)
 bool CWallet::GetEnigmaChangeAddresses(const CStealthAddress &sxAddress, const ec_point &stealthRootKey, const uint256 &cloakerHash, uint64 numChangeAddresses, vector<CScript> &scriptsOut, vector<ec_secret> &secretsOut, uint64 offset)
 {
     std::string sa = sxAddress.Encoded();
-    //printf("%s generating %d change addresses with hash %s\n", sa.c_str(), numChangeAddresses, cloakerHash.GetHex().c_str());
+
+    if(GetBoolArg("-printenigma", false))
+        printf("%s generating %d change addresses with hash %s\n", sa.c_str(), numChangeAddresses, cloakerHash.GetHex().c_str());
 
     for(int i=0; i<numChangeAddresses; i++){
         ec_secret secret;
@@ -1883,7 +1885,8 @@ bool CWallet::GetEnigmaChangeAddresses(const CStealthAddress &sxAddress, const e
         cs.SetDestination(addrTo.Get());
         scriptsOut.push_back(cs);
 
-        printf("CA: %s\n", addrTo.ToString().c_str());
+        if(GetBoolArg("-printenigma", false))
+            printf("CA: %s\n", addrTo.ToString().c_str());
 
     }
     return true;

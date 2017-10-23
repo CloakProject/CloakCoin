@@ -279,17 +279,21 @@ bool CCloakingRequest::CreateCloakerTxOutputs(vector<CTxOut>& outputs)
             string s = address.ToString();
 
             total+=amounts.at(i);
-            printf("OUTPUT %s = %ld\n", s.c_str(), amounts.at(i));
+            if(GetBoolArg("-printenigma", false))
+                printf("OUTPUT %s = %ld\n", s.c_str(), amounts.at(i));
         }
-        printf("TOTAL INPUT  %d\n", cloaker.inOuts.nInputAmount);
-        printf("TOTAL OUTPUT %d\n", total);
+        if(GetBoolArg("-printenigma", false)){
+            printf("TOTAL INPUT  %d\n", cloaker.inOuts.nInputAmount);
+            printf("TOTAL OUTPUT %d\n", total);
+        }
     }
     return true;
 }
 
 bool CCloakingRequest::CreateEnigmaOutputs(CCloakingInputsOutputs &inOutsCloakers, CCloakingInputsOutputs &inOutsOurs, CCloakingInputsOutputs &inOutsFinal)
 {
-    printf("* create cloaker outputs *\n");
+    if(GetBoolArg("-printenigma", false))
+        printf("* create cloaker outputs *\n");
 
     // add cloaker outputs to cloaker inouts (change and reward)
     if (!CreateCloakerTxOutputs(inOutsCloakers.vout)){
@@ -303,8 +307,10 @@ bool CCloakingRequest::CreateEnigmaOutputs(CCloakingInputsOutputs &inOutsCloaker
 
     uint64 amountOut = inOutsOurs.OutputAmount() + inOutsCloakers.OutputAmount();
 
-    printf("SENDER INPUT  %ld\n", inOutsOurs.nInputAmount);
-    printf("SENDER OUTPUT %ld\n", inOutsOurs.OutputAmount());
+    if(GetBoolArg("-printenigma", false)){
+        printf("SENDER INPUT  %ld\n", inOutsOurs.nInputAmount);
+        printf("SENDER OUTPUT %ld\n", inOutsOurs.OutputAmount());
+    }
 
     // calc our change due (we still need to remove the tx fee from this)
     int64 amountRemain = amountIn - amountOut;
@@ -328,8 +334,10 @@ bool CCloakingRequest::CreateEnigmaOutputs(CCloakingInputsOutputs &inOutsCloaker
         inOutsOurs.vout.push_back(CTxOut(amounts.at(i), scriptChange.at(i)));
     }
 
-    printf("TX TOTAL INPUT  %ld\n", amountIn);
-    printf("TX TOTAL OUTPUT %ld\n", amountOut);
+    if(GetBoolArg("-printenigma", false)){
+        printf("TX TOTAL INPUT  %ld\n", amountIn);
+        printf("TX TOTAL OUTPUT %ld\n", amountOut);
+    }
 
     // remove network fee from our change
     if (!AddCorrectFee(&inOutsCloakers, &inOutsOurs)){
