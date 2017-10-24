@@ -14,9 +14,9 @@ When onion routing is enabled, the client will attempt to construct a valid onio
 
 Nodes periodically send out an Enigma Announcement (src/enigma/enigmaann.h) to peers to advertise their services for onion routing. Other nodes on the network store the announcements (until they expire or are replaced with an update) and use them to construct the onion routes. 
 
-NOTE: The annoucement code could be improved to reduce traffic on the network. At present, re-announcements are sent periodically. It would be prudent to extend this and only send small signed "I'm still alive!" messages (at least as long as the underlying associated encryption key data remains the same). 
+**NOTE:** The annoucement code could be improved to reduce traffic on the network. At present, re-announcements are sent periodically. It would be prudent to extend this and only send small signed "I'm still alive!" messages (at least as long as the underlying associated encryption key data remains the same). 
 
-IMPROVEMENT: The annoucement system is a potential DoS target as there is currently very little computational cost to generating an Enigma Announcement. To mitigate this, a proof-of-work should be generated for the annoucement and transmitted with it. Peers can then quickly and cheaply verify the proof and dicard any bad data.
+**IMPROVEMENT:** The annoucement system is a potential DoS target as there is currently very little computational cost to generating an Enigma Announcement. To mitigate this, a proof-of-work should be generated for the annoucement and transmitted with it. Peers can then quickly and cheaply verify the proof and dicard any bad data.
 
 
 _**Enigma - Transaction Process**_
