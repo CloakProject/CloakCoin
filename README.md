@@ -51,7 +51,9 @@ A similar scanning method is employed by Cloakers prior to signing an Enigma TX 
 
 _**New Codebase**_
 
-The Cloak3 project contains a fork of the recent Litecoin codebase. This comes with segwit, soft-forks are all the latest Bitcoin goodies. Work was started on porting Cloak to this codebase, but stopped due to lack of resources. The wallet does indeed boot now, but header syncing needs more additional work. Older Cloak clients do not differentiate between PoS and PoW blocks 
+The Cloak3 project contains a fork of the recent Litecoin codebase. This comes with segwit, soft-forks are all the latest Bitcoin goodies. Work was started on porting Cloak to this codebase, but stopped due to lack of resources. The wallet does indeed boot now, but header syncing needs more additional work. Older Cloak clients do not differentiate between PoS and PoW blocks when issuing headers, so this will need to be addressed before work can continue. A potential solution would be to avoid header-sync when connected to an older Cloak node as the problem will lessen as clients update over time.
+
+Compiling the new codebase is an absolute dream in comparison to the old/existing codebase. For this reason alone it may be worth switching to the new codebase prior to the public sourcecode release. 
 
 ---------------------------------------------------------------------------------------------------------------------------------------
 
