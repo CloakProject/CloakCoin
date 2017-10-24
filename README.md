@@ -55,6 +55,17 @@ The Cloak3 project contains a fork of the recent Litecoin codebase. This comes w
 
 Compiling the new codebase is an absolute dream in comparison to the old/existing codebase. For this reason alone it may be worth switching to the new codebase prior to the public sourcecode release. 
 
+_**Potential Improvements**_
+
+* Include an encrypted payment ID in the OP_RETURN stealth output for Enigma transactions. This allows the receiver to use the payment ID as the address name for the newly generated/detected one-time address. This would also help stores and exchanges track Enigma payments more easily.
+* Include a proof-of-work for Enigma Announcements and Cloak Requests. These are 2 potential DoS targets and adding a PoW function would migigate this.
+
+_**Security, Peer Review and Audit**_
+
+The Enigma code has had little to no peer review to date. This makes it critical that the code is reviewed carefully before public release. DoS attacks may hamper users, but stolen funds are the most important area to cover when checking the code. 
+* Is it possible to trick a Cloaker into signing a transaction that does not pay them correctly? 
+* Is it possible for a Cloaker to hijack the transaction during sending to trick the sender prior to the Sender finalizing the transaction?
+
 ---------------------------------------------------------------------------------------------------------------------------------------
 
 
