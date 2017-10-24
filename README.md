@@ -4,9 +4,9 @@
 
 Cloak uses the Enigma system in order to faclilate private/secure transactionns. 
 
-How does this work?
+_How does this work?_
 
-CloakShield - Node to node communications
+_**CloakShield - Node to node communications**_
 
 On startup, each Cloak wallet generates a [NID_secp256k1] keypair (Cloaking Encryption Key / CEK) to enable them to derive ad-hoc secrets using ECDH with their private key and the recipient's public key. This communication forms the basis on all node-to-node communications relating to Enigma. See 'src/enigma/cloakshield.h/.cpp' for more information on this. This ECDH based encrypted communication is also utilized for onion-routed data, which is handled by CloakShield. CloakShield is a nice name for this collective functionality relating to encrypted node communications. 
 
@@ -19,7 +19,7 @@ NOTE: The annoucement code could be improved to reduce traffic on the network. A
 IMPROVEMENT: The annoucement system is a potential DoS target as there is currently very little computational cost to generating an Enigma Announcement. To mitigate this, a proof-of-work should be generated for the annoucement and transmitted with it. Peers can then quickly and cheaply verify the proof and dicard any bad data.
 
 
-Enigma - Transaction Process
+_**Enigma - Transaction Process**_
 
 When a node sends funds via Enigma to an stealth address, the following happens:
 
