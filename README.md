@@ -39,7 +39,7 @@ When a node sends funds via Enigma to an stealth address, the following happens:
 14. Cloakers check the TX to ensure their inputs are present and correct and that there are one-time payment addresses linked to one of thier stealth addresses with payment that exceeds the input amount.
 15. Cloakers sign or reject the TX and send signatures to Sender.
 16. Sender collates the signatures and transmits the finalized, signed TX to the network.
-17. Nodes scan incoming transactions for stealth payments and Enigma payments and detect any payments or change.
+17. Nodes scan incoming transactions for stealth payments and Enigma payments and detect any payments or change. Keypairs and addresses are generated for any matching payments and generated keys/addresses are saved to the local wallet.
 
 ---------------------------------------------------------------------------------------------------------------------------------------
 
