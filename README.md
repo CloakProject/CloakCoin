@@ -41,6 +41,18 @@ When a node sends funds via Enigma to an stealth address, the following happens:
 16. Sender collates the signatures and transmits the finalized, signed TX to the network.
 17. Nodes scan incoming transactions for stealth payments and Enigma payments and detect any payments or change. Keypairs and addresses are generated for any matching payments and generated keys/addresses are saved to the local wallet.
 
+_**How are stealth and Enigma transactions detected/received?**_
+
+All incoming transactions are scanned. Stealth transactions are scanned for first (using the default ephemeral pubkey contained in a random OP_RETURN TX output). After this, Enigma transactions are then scanned for. Enigma transactions also use the standard ephemeral pubkey, but payments use an additional step involving a further derived key. Enigma outputs are generated using a hash of the ephemeral pubkey, a private stealth address hash and the output index. 
+
+When scanning for Enigma transactions, the zero-index payment addresses are generated for each owned stealth address [HASH(ephemeral_pubkey, hash_stealth_secret, 0)]. If a match is found for the zero-index of a stealth address, additional addresses are generated for the remaining indexes [num_tx_outputs] and these are scanned against to detect payments. See FindEnigmaTransactions in wallet.cpp for more info.
+
+A similar scanning method is employed by Cloakers prior to signing an Enigma TX to ensure they are getting reimbursed correctly. See GetEnigmaOutputsAmounts in wallet.cpp for more info.
+
+_**New Codebase**_
+
+The Cloak3 project contains a fork of the recent Litecoin codebase. This comes with segwit, soft-forks are all the latest Bitcoin goodies. Work was started on porting Cloak to this codebase, but stopped due to lack of resources. The wallet does indeed boot now, but header syncing needs more additional work. Older Cloak clients do not differentiate between PoS and PoW blocks 
+
 ---------------------------------------------------------------------------------------------------------------------------------------
 
 
