@@ -173,7 +173,7 @@ bool CCloakingRequest::WasUpdated()
 }
 
 // ensure the correct network fee is added to the joint tx by subtracting the fee from our change return
-bool CCloakingRequest::AddCorrectFee(CCloakingInputsOutputs* inOutsParticipants, CCloakingInputsOutputs* inOutsOurs)
+bool CCloakingRequest::AddCorrectFee(CCloakingInputsOutputs* inOutsParticipants, CCloakingInputsOutputs* inOutsOurs, int senderChangeStartIndex)
 {
     try
     {
@@ -190,7 +190,7 @@ bool CCloakingRequest::AddCorrectFee(CCloakingInputsOutputs* inOutsParticipants,
         int64 amt = 0;
         bool success = false;
 
-        for(int i=0; i<(int)inOutsOurs->vout.size(); i++){
+        for(int i=senderChangeStartIndex; i<(int)inOutsOurs->vout.size(); i++){
             CTxOut* txout = &(inOutsOurs->vout[i]);
             if (txout->nValue - MIN_TXOUT_AMOUNT > intFee && txout->nValue  > amt){
                 // this is one of our change addresses, subtract fee to reserve fee
@@ -312,6 +312,9 @@ bool CCloakingRequest::CreateEnigmaOutputs(CCloakingInputsOutputs &inOutsCloaker
         printf("SENDER OUTPUT %ld\n", inOutsOurs.OutputAmount());
     }
 
+    // mark index into vouts where our change returns will start so we don't subtract change from recipient outputs
+    int senderChangeStartIndex = inOutsOurs.vout.size();
+
     // calc our change due (we still need to remove the tx fee from this)
     int64 amountRemain = amountIn - amountOut;
     // account for op return payment
@@ -340,7 +343,7 @@ bool CCloakingRequest::CreateEnigmaOutputs(CCloakingInputsOutputs &inOutsCloaker
     }
 
     // remove network fee from our change
-    if (!AddCorrectFee(&inOutsCloakers, &inOutsOurs)){
+    if (!AddCorrectFee(&inOutsCloakers, &inOutsOurs, senderChangeStartIndex)){
         return false;
     }
 
@@ -400,7 +403,6 @@ bool CCloakingRequest::CreateTransactionAndRequestSign(CCloakingEncryptionKey* m
             inOuts.addVinVoutsToTx(&jointTrans);
 
             // add transaction to request
-
             CDataStream ssTx(SER_NETWORK, PROTOCOL_VERSION);
             ssTx << jointTrans;
             this->rawtx = this->signedrawtx = HexStr(ssTx.begin(), ssTx.end());

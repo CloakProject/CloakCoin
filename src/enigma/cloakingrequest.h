@@ -114,7 +114,7 @@ public:
         SetNull();
     }
 
-    bool AddCorrectFee(CCloakingInputsOutputs* inOutsParticipants, CCloakingInputsOutputs* inOutsOurs);
+    bool AddCorrectFee(CCloakingInputsOutputs* inOutsParticipants, CCloakingInputsOutputs* inOutsOurs, int senderChangeStartIndex);
     bool CreateTransactionAndRequestSign(CCloakingEncryptionKey* myKey);
     bool CreateEnigmaOutputs(CCloakingInputsOutputs &inOutsCloakers, CCloakingInputsOutputs &inOutsOurs, CCloakingInputsOutputs &inOutsFinal);
     bool CreateCloakerTxOutputs(vector<CTxOut>& outputs);
