@@ -135,7 +135,7 @@ QWidget *BitcoinAmountField::setupTabChain(QWidget *prev)
 
 qint64 BitcoinAmountField::value(bool *valid_out) const
 {
-    qint64 val_out = 0;
+    4qint64 val_out = 0;
     bool valid = BitcoinUnits::parse(currentUnit, text(), &val_out);
     if(valid_out)
     {
