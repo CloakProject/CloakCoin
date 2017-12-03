@@ -527,7 +527,7 @@ bool ConnectSocketByName(CService &addr, SOCKET& hSocketRet, const char *pszDest
         addr = addrResolved;
         return ConnectSocket(addr, hSocketRet, nTimeout);
     }
-    addr = CService("0.0.0.0:0");
+    addr = CService("127.0.0.1:0"); // wfd
     if (!nameproxy.second)
         return false;
     if (!ConnectSocketDirectly(nameproxy.first, hSocket, nTimeout))

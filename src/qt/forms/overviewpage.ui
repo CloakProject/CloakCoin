@@ -261,7 +261,7 @@
           <item row="5" column="0">
            <widget class="QLabel" name="labCloakAssistEarningsText">
             <property name="styleSheet">
-             <string notr="true">color: #464747;  QToolTip { color: #cecece; background-color: #333333;  border:0px;}</string>
+             <string notr="true">color: #0000FF;  QToolTip { color: #cecece; background-color: #333333;  border:0px;}</string>
             </property>
             <property name="text">
              <string>Cloak Assist Earnings:</string>
@@ -279,8 +279,11 @@
             <property name="toolTip">
              <string>Total earnt from cloaking assists</string>
             </property>
+            <property name="toolTipDuration">
+             <number>-1</number>
+            </property>
             <property name="styleSheet">
-             <string notr="true">color: #464747;  QToolTip { color: #cecece; background-color: #333333;  border:0px;}</string>
+             <string notr="true">color: #0000FF;  QToolTip { color: #cecece; background-color: #999999;  border:0px;}</string>
             </property>
             <property name="text">
              <string notr="true">0 CLOAK</string>

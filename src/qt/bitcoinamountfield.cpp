@@ -45,12 +45,30 @@ BitcoinAmountField::BitcoinAmountField(QWidget *parent):
     unitChanged(unit->currentIndex());
 }
 
+
 void BitcoinAmountField::setText(const QString &text)
 {
     if (text.isEmpty())
         amount->clear();
     else
         amount->setValue(text.toDouble());
+}
+
+// SIGNAL 0
+void BitcoinAmountField::textChanged()
+{
+    qint64 sendAmount = this->value();
+
+    // if the total amount sent is greater than the number of people willing
+    // to assist in enigma, then we get a failure/halt in the code.  Prevent
+    // anyone from sending over 100,000 cloak at this time.  Will look into
+    // this later.  wfd
+    if (sendAmount > 100000000000)
+    {
+        this->setValue(100000000000);
+    }
+
+    QMetaObject::activate(this, &staticMetaObject, 0, Q_NULLPTR);
 }
 
 void BitcoinAmountField::clear()

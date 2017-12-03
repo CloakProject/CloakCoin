@@ -1854,6 +1854,9 @@ bool BindListenPort(const CService &addrBind, string& strError)
 {
     strError = "";
     int nOne = 1;
+    // const CNetAddr localIP = new CNetAddr("127.0.0.1");
+
+    // addrBind.SetIP(*localIP);
 
 #ifdef WIN32
     // Initialize Windows Sockets

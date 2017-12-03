@@ -23,7 +23,7 @@
       </font>
      </property>
      <property name="styleSheet">
-      <string notr="true">color: #464747;  QToolTip { color: #cecece; background-color: #333333;  border:0px;}</string>
+      <string notr="true">color: #0000FF;  QToolTip { color: #cecece; background-color: #333333;  border:0px;}</string>
      </property>
      <property name="text">
       <string>Enigma Cloaking and Receive activity this session</string>

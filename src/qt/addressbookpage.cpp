@@ -77,13 +77,13 @@ AddressBookPage::AddressBookPage(Mode mode, Tabs tab, QWidget *parent) :
     QAction *signMessageAction = new QAction(ui->signMessage->text(), this);
     QAction *verifyMessageAction = new QAction(ui->verifyMessage->text(), this);
     deleteAction = new QAction(ui->deleteButton->text(), this);
-    useForEnigmaEnableAction = new QAction(tr("&Use for Enigma Cloaking"), this);
-    useForEnigmaDisableAction = new QAction(tr("&Do Not Use for Enigma Cloaking"), this);
+    //wfd useForEnigmaEnableAction = new QAction(tr("&Use for Enigma Cloaking"), this);
+    //wfd useForEnigmaDisableAction = new QAction(tr("&Do Not Use for Enigma Cloaking"), this);
 
     // Build context menu
     contextMenu = new QMenu();
-    contextMenu->addAction(useForEnigmaEnableAction);
-    contextMenu->addAction(useForEnigmaDisableAction);
+    //wfd contextMenu->addAction(useForEnigmaEnableAction);
+    //wfd contextMenu->addAction(useForEnigmaDisableAction);
     contextMenu->addAction(copyAddressAction);
     contextMenu->addAction(copyLabelAction);
     contextMenu->addAction(editAction);
@@ -97,8 +97,8 @@ AddressBookPage::AddressBookPage(Mode mode, Tabs tab, QWidget *parent) :
         contextMenu->addAction(verifyMessageAction);
 
     // Connect signals for context menu actions
-    connect(useForEnigmaEnableAction, SIGNAL(triggered()), this, SLOT(on_useForEnigmaEnableAction_clicked()));
-    connect(useForEnigmaDisableAction, SIGNAL(triggered()), this, SLOT(on_useForEnigmaDisableAction_clicked()));
+    //connect(useForEnigmaEnableAction, SIGNAL(triggered()), this, SLOT(on_useForEnigmaEnableAction_clicked()));
+    //connect(useForEnigmaDisableAction, SIGNAL(triggered()), this, SLOT(on_useForEnigmaDisableAction_clicked()));
     connect(copyAddressAction, SIGNAL(triggered()), this, SLOT(on_copyToClipboard_clicked()));
     connect(copyLabelAction, SIGNAL(triggered()), this, SLOT(onCopyLabelAction()));
     connect(editAction, SIGNAL(triggered()), this, SLOT(onEditAction()));
@@ -194,6 +194,7 @@ void AddressBookPage::onEditAction()
     dlg.exec();
 }
 
+/* wfd
 void AddressBookPage::on_useForEnigmaEnableAction_clicked()
 {
     QString address = GUIUtil::getEntryData(ui->tableView, AddressTableModel::Address);
@@ -207,6 +208,7 @@ void AddressBookPage::on_useForEnigmaDisableAction_clicked()
     QString label = GUIUtil::getEntryData(ui->tableView, AddressTableModel::Label);
     model->updateEntry(address, label, true, CT_ENIGMA_DISABLED);
 }
+*/
 
 void AddressBookPage::on_signMessage_clicked()
 {
@@ -310,8 +312,8 @@ void AddressBookPage::selectionChanged()
             ui->signMessage->setVisible(true);
             ui->verifyMessage->setEnabled(false);
             ui->verifyMessage->setVisible(false);            
-            useForEnigmaEnableAction->setEnabled(true);
-            useForEnigmaDisableAction->setEnabled(true);
+            //wfd useForEnigmaEnableAction->setEnabled(true);
+            //wfd useForEnigmaDisableAction->setEnabled(true);
             break;
         }
         ui->copyToClipboard->setEnabled(true);
@@ -413,10 +415,10 @@ void AddressBookPage::contextualMenu(const QPoint &point)
     bool showEnigmaDisable = false;
     bool isEnigmaAddress = false;
     model->showEnigmaEnableForAddresses(selectedAddresses, showEnigmaEnable, showEnigmaDisable, isEnigmaAddress);
-    useForEnigmaEnableAction->setEnabled(showEnigmaEnable);
-    useForEnigmaDisableAction->setEnabled(showEnigmaDisable);
-    useForEnigmaEnableAction->setVisible(isEnigmaAddress);
-    useForEnigmaDisableAction->setVisible(isEnigmaAddress);
+    //wfd useForEnigmaEnableAction->setEnabled(showEnigmaEnable);
+    //wfd useForEnigmaDisableAction->setEnabled(showEnigmaDisable);
+    //wfd useForEnigmaEnableAction->setVisible(isEnigmaAddress);
+    //wfd useForEnigmaDisableAction->setVisible(isEnigmaAddress);
     contextMenu->exec(QCursor::pos());
 }
 

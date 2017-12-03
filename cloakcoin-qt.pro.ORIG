@@ -8,8 +8,6 @@ DEFINES += QT_GUI BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE BOOST_THREAD_PROV
 CONFIG += no_include_pwd
 CONFIG += thread
 CONFIG += static
-CONFIG += debug
-CONFIG -= app_bundle
 
 message($$QMAKESPEC)
 

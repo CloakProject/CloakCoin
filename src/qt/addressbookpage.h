@@ -55,13 +55,13 @@ private:
     QSortFilterProxyModel *proxyModel;
     QMenu *contextMenu;
     QAction *deleteAction;
-    QAction *useForEnigmaEnableAction;
-    QAction *useForEnigmaDisableAction;
+    //wfd QAction *useForEnigmaEnableAction;
+    //wfd QAction *useForEnigmaDisableAction;
     QString newAddressToSelect;
 
 private slots:
-    void on_useForEnigmaEnableAction_clicked();
-    void on_useForEnigmaDisableAction_clicked();
+    //wfd void on_useForEnigmaEnableAction_clicked();
+    //wfd void on_useForEnigmaDisableAction_clicked();
     void on_deleteButton_clicked();
     void on_newAddressButton_clicked();
     void on_newCloakAddressButton_clicked();

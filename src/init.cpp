@@ -221,6 +221,8 @@ bool static Bind(const CService &addr, bool fError = true) {
     if (!BindListenPort(addr, strError)) {
         if (fError)
             return InitError(strError);
+        else
+            printf("Bind to %s successful\n", addr.ToString().c_str());
         return false;
     }
     return true;
