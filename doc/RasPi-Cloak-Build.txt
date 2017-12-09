@@ -1,0 +1,83 @@
+RasPi3 64-bit aarch64
+++++++++++++++++++
+
+Get arm64 OS image and burn to 8Gb uSD
+https://github.com/bamarni/pi64/releases/tag/2017-05-23
+_______________________
+RasPi2: Set Swap Size to 300 (Mb)
+
+RasPi3: Set up a 1Gb Swap file on a USB drive
+http://raspberrypimaker.com/adding-swap-to-the-raspberrypi/
+Note: Compiler will stop/crash when it reaches init.cpp without extra swap space
+Make will use 888Mb (max) of RAM plus up to 428Mb of swap to compile main.cpp
+
+Install required apps (may already be installed):
+
+sudo apt-get update
+sudo apt-get install g++
+sudo apt-get install zlib1g-dev
+sudo apt-get install wget
+sudo apt-get install unzip
+sudo apt-get install make
+sudo apt-get install libboost-all-dev
+_____________________________________
+
+RasPi2B 32-bit or RasPi3B 64-bit
+++++++++++++++++++++++++++
+
+Install/build packages required for cloakcoind build:
+
+https://github.com/raizor/cpa3/tree/2.0.2.0 (Private - requires auth by r3r)
+
+These modified/new files are now part of 2.0.2 repo:
+
+makefile.unix
+net.cpp
+scrypt.cpp
+scrypt-core.h
+scrypt-arm.S
+scrypt_mine.cpp
+/leveldb/Makefile
+
+___________________
+Get libevent
+https://github.com/downloads/libevent/libevent/libevent-2.0.21-stable.tar.gz
+./configure
+make
+sudo make install
+
+___________________
+Get libssl source 1.0.2k (apt-get install libssl-dev version didn't work) 
+https://www.openssl.org/source/openssl-1.0.2k.tar.gz
+./config
+make
+sudo make install_sw (no docs/manpages)
+(echo libssl-dev hold | sudo dpkg --set-selections)  keeps from updating
+
+____________________
+Get Berkeley db 4.8
+http://ftpmirror.your.org/pub/misc/Berkeley-DB/db-4.8.30.zip
+go to build_unix
+run ../dist/configure --build=aarch64-unknown-linux-gnu --enable-cxx
+make
+sudo make install
+
+____________________
+in leveldb folder:
+make clean
+make (ignore compile error, the *.a files have already been created)
+cp out-static/*.a .
+
+____________________
+Get miniupnpc 1.9
+http://miniupnp.tuxfamily.org/files/download.php?file=miniupnpc-1.9.20160209.tar.gz
+make
+copy libminiupnpc.a to (cloaksource)/src/miniupnpc
+
+____________________
+in (cloaksource)/src:
+make -f makefile.unix
+
+You should end up with cloakcoind in (cloaksource)/src (in about an hour)
+
+g++ -dM -E - < /dev/null to view precompile macros

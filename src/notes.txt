@@ -1,0 +1,1 @@
+We should never send a message back to sender when relaying.

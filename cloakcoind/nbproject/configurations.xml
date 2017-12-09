@@ -1,0 +1,696 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="95">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <df root="../src" name="0">
+      <df name="posa">
+        <in>cloakshield.cpp</in>
+        <in>posaann.cpp</in>
+        <in>posathree.cpp</in>
+      </df>
+      <df name="tor">
+        <in>address.c</in>
+        <in>addressmap.c</in>
+        <in>aes.c</in>
+        <in>backtrace.c</in>
+        <in>buffers.c</in>
+        <in>channel.c</in>
+        <in>channeltls.c</in>
+        <in>circpathbias.c</in>
+        <in>circuitbuild.c</in>
+        <in>circuitlist.c</in>
+        <in>circuitmux.c</in>
+        <in>circuitmux_ewma.c</in>
+        <in>circuitstats.c</in>
+        <in>circuituse.c</in>
+        <in>cloak.cpp</in>
+        <in>command.c</in>
+        <in>compat.c</in>
+        <in>compat_libevent.c</in>
+        <in>config.c</in>
+        <in>config_codedigest.c</in>
+        <in>confparse.c</in>
+        <in>connection.c</in>
+        <in>connection_edge.c</in>
+        <in>connection_or.c</in>
+        <in>container.c</in>
+        <in>control.c</in>
+        <in>cpuworker.c</in>
+        <in>crypto.c</in>
+        <in>crypto_curve25519.c</in>
+        <in>crypto_format.c</in>
+        <in>curve25519-donna.c</in>
+        <in>di_ops.c</in>
+        <in>directory.c</in>
+        <in>dirserv.c</in>
+        <in>dirvote.c</in>
+        <in>dns.c</in>
+        <in>dnsserv.c</in>
+        <in>entrynodes.c</in>
+        <in>ext_orport.c</in>
+        <in>fp_pair.c</in>
+        <in>geoip.c</in>
+        <in>hibernate.c</in>
+        <in>log.c</in>
+        <in>memarea.c</in>
+        <in>mempool.c</in>
+        <in>microdesc.c</in>
+        <in>networkstatus.c</in>
+        <in>nodelist.c</in>
+        <in>onion.c</in>
+        <in>onion_fast.c</in>
+        <in>onion_main.c</in>
+        <in>onion_ntor.c</in>
+        <in>onion_tap.c</in>
+        <in>policies.c</in>
+        <in>procmon.c</in>
+        <in>reasons.c</in>
+        <in>relay.c</in>
+        <in>rendclient.c</in>
+        <in>rendcommon.c</in>
+        <in>rendmid.c</in>
+        <in>rendservice.c</in>
+        <in>rephist.c</in>
+        <in>replaycache.c</in>
+        <in>router.c</in>
+        <in>routerlist.c</in>
+        <in>routerparse.c</in>
+        <in>routerset.c</in>
+        <in>sandbox.c</in>
+        <in>statefile.c</in>
+        <in>status.c</in>
+        <in>tor_util.c</in>
+        <in>torgzip.c</in>
+        <in>tortls.c</in>
+        <in>transports.c</in>
+        <in>util_codedigest.c</in>
+      </df>
+      <in>addrman.cpp</in>
+      <in>alert.cpp</in>
+      <in>bitcoinrpc.cpp</in>
+      <in>blake.c</in>
+      <in>bmw.c</in>
+      <in>checkpoints.cpp</in>
+      <in>conemarketcreatelisting.cpp</in>
+      <in>crypter.cpp</in>
+      <in>cubehash.c</in>
+      <in>db.cpp</in>
+      <in>echo.c</in>
+      <in>fugue.c</in>
+      <in>groestl.c</in>
+      <in>hamsi.c</in>
+      <in>init.cpp</in>
+      <in>irc.cpp</in>
+      <in>jh.c</in>
+      <in>keccak.c</in>
+      <in>kernel.cpp</in>
+      <in>key.cpp</in>
+      <in>keystore.cpp</in>
+      <in>luffa.c</in>
+      <in>main.cpp</in>
+      <in>net.cpp</in>
+      <in>netbase.cpp</in>
+      <in>noui.cpp</in>
+      <in>onemarket.cpp</in>
+      <in>pbkdf2.cpp</in>
+      <in>protocol.cpp</in>
+      <in>rpcblockchain.cpp</in>
+      <in>rpcdump.cpp</in>
+      <in>rpcmining.cpp</in>
+      <in>rpcnet.cpp</in>
+      <in>rpcrawtransaction.cpp</in>
+      <in>rpcwallet.cpp</in>
+      <in>script.cpp</in>
+      <in>scrypt.cpp</in>
+      <in>scrypt_mine.cpp</in>
+      <in>shavite.c</in>
+      <in>simd.c</in>
+      <in>skein.c</in>
+      <in>stealth.cpp</in>
+      <in>sync.cpp</in>
+      <in>util.cpp</in>
+      <in>version.cpp</in>
+      <in>wallet.cpp</in>
+      <in>walletdb.cpp</in>
+    </df>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>../src/makefile.unix</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <sourceFolderFilter>^(nbproject)$</sourceFolderFilter>
+  <sourceRootList>
+    <Elem>../src</Elem>
+  </sourceRootList>
+  <projectmakefile>../src/makefile.unix</projectmakefile>
+  <confs>
+    <conf name="Default" type="0">
+      <toolsSet>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>false</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <flagsDictionary>
+        <element flagsID="0" commonFlags="-O2 -fstack-protector-all"/>
+        <element flagsID="1" commonFlags="-O2 -g -fstack-protector-all"/>
+      </flagsDictionary>
+      <codeAssistance>
+      </codeAssistance>
+      <makefileType>
+        <makeTool>
+          <buildCommandWorkingDir>../src</buildCommandWorkingDir>
+          <buildCommand>${MAKE} -f makefile.unix -j3</buildCommand>
+          <cleanCommand>${MAKE} -f makefile.unix clean -j3</cleanCommand>
+          <executablePath>../src/cloakcoind</executablePath>
+          <cTool>
+            <incDir>
+              <pElem>../src</pElem>
+              <pElem>../src/obj</pElem>
+            </incDir>
+            <preprocessorList>
+              <Elem>BOOST_SPIRIT_THREADSAFE</Elem>
+              <Elem>HAVE_BUILD_INFO</Elem>
+              <Elem>USE_IPV6=1</Elem>
+              <Elem>USE_UPNP=0</Elem>
+              <Elem>_FORTIFY_SOURCE=2</Elem>
+            </preprocessorList>
+          </cTool>
+          <ccTool>
+            <incDir>
+              <pElem>../src</pElem>
+              <pElem>../src/obj</pElem>
+            </incDir>
+            <preprocessorList>
+              <Elem>BOOST_SPIRIT_THREADSAFE</Elem>
+              <Elem>HAVE_BUILD_INFO</Elem>
+              <Elem>USE_IPV6=1</Elem>
+              <Elem>USE_UPNP=0</Elem>
+              <Elem>_FORTIFY_SOURCE=2</Elem>
+            </preprocessorList>
+          </ccTool>
+        </makeTool>
+      </makefileType>
+      <item path="../src/addrman.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/alert.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/bitcoinrpc.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/blake.c" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/bmw.c" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/checkpoints.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/conemarketcreatelisting.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/crypter.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/cubehash.c" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/db.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/echo.c" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/fugue.c" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/groestl.c" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/hamsi.c" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/init.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/irc.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/jh.c" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/keccak.c" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/kernel.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/key.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/keystore.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/luffa.c" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/main.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/net.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/netbase.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/noui.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/onemarket.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/pbkdf2.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/posa/cloakshield.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/posa/posaann.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/posa/posathree.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/protocol.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/rpcblockchain.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/rpcdump.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/rpcmining.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/rpcnet.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/rpcrawtransaction.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/rpcwallet.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/script.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/scrypt.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/scrypt_mine.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/shavite.c" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/simd.c" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/skein.c" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/stealth.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/sync.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/tor/address.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/addressmap.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/aes.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/backtrace.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/buffers.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/channel.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/channeltls.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/circpathbias.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/circuitbuild.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/circuitlist.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/circuitmux.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/circuitmux_ewma.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/circuitstats.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/circuituse.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/cloak.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/tor/command.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/compat.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/compat_libevent.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/config.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/config_codedigest.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/confparse.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/connection.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/connection_edge.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/connection_or.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/container.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/control.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/cpuworker.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/crypto.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/crypto_curve25519.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/crypto_format.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/curve25519-donna.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/di_ops.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/directory.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/dirserv.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/dirvote.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/dns.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/dnsserv.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/entrynodes.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/ext_orport.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/fp_pair.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/geoip.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/hibernate.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/log.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/memarea.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/mempool.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/microdesc.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/networkstatus.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/nodelist.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/onion.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/onion_fast.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/onion_main.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/onion_ntor.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/onion_tap.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/policies.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/procmon.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/reasons.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/relay.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/rendclient.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/rendcommon.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/rendmid.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/rendservice.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/rephist.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/replaycache.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/router.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/routerlist.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/routerparse.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/routerset.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/sandbox.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/statefile.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/status.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/tor_util.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/torgzip.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/tortls.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/transports.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/tor/util_codedigest.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../src/util.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/version.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/wallet.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../src/walletdb.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>

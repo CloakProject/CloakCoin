@@ -1,0 +1,7 @@
+BUILD BOOST 1.57
+
+./bootstrap.sh toolset=clang
+
+./b2 --build-type=complete --with-chrono --with-filesystem --with-program_options --with-system --with-thread variant=release link=static threading=multi runtime-link=static -a stage --layout=versioned -j4 toolset=clang cxxflags="-stdlib=libc++" linkflags="-stdlib=libc++"
+
+

@@ -1,0 +1,140 @@
+// Copyright (c) 2014 The CloakCoin Developers
+// Copyright (c) 2013-2014 The FedoraCoin Developers
+// Distributed under the MIT/X11 software license, see the accompanying
+// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+
+#ifndef _MIXERANN_H_
+#define _MIXERANN_H_ 1
+
+#include <set>
+#include <string>
+
+#include "uint256.h"
+#include "util.h"
+#include "sync.h"
+
+class CNode;
+
+//===========POSA CheckUp ==============
+class CPosaCheckUp
+{
+public:
+	int64 nSentTime;
+	uint256 nHashCheck;
+
+    CPosaCheckUp()
+    {
+        SetNull();
+    }
+
+    IMPLEMENT_SERIALIZE
+    (        
+        READWRITE(this->nSentTime);
+        READWRITE(this->nHashCheck);
+    )
+
+    void SetNull();
+    void RelayTo(CNode* pnode) const;
+};
+
+//===========POSA CheckUpACK ===========
+class CPosaCheckUpAck
+{
+public:
+	int64 nSentTime;
+        uint256 nInReplyToHash;
+
+    CPosaCheckUpAck()
+    {
+        SetNull();
+    }
+
+    IMPLEMENT_SERIALIZE
+    (        
+        READWRITE(this->nSentTime);
+        READWRITE(this->nInReplyToHash);
+    )
+
+    void SetNull();
+    void RelayTo(CNode* pnode) const;
+};
+
+//===========POSA Announcement===============
+class CPosaAnnouncement
+{
+public:
+    int nVersion;
+    int64 nExpiration;      // when the Enigma Service Availability Announcement is no longer in effect
+    int nID;                  // unique id for the announcement
+    std::set<int> setRevoke;  // empty = no revokement
+
+    int nMinVer;            // lowest version inclusive
+    int nMaxVer;            // highest version inclusive
+    std::set<std::string> setSubVer;  // empty matches all
+
+    std::vector<unsigned char> pReceiveAddressPubKey;
+    std::vector<unsigned char> pSendAddressPubKey;
+    std::string pPosaSessionKeyHex;
+
+    std::vector<unsigned char> vchMsg;
+    std::vector<unsigned char> vchSig;
+
+    int64 nBalance;  // the nodes current available balance
+    int64 nUptime;   // the nodes uptime
+
+    CPosaAnnouncement()
+    {
+        SetNull();
+    }
+
+    IMPLEMENT_SERIALIZE
+    (        
+        READWRITE(this->nVersion);
+        nVersion = this->nVersion;
+        READWRITE(nExpiration);
+        READWRITE(nID);
+        READWRITE(setRevoke);
+
+        READWRITE(nMinVer);
+        READWRITE(nMaxVer);
+        READWRITE(setSubVer);
+
+        READWRITE(pReceiveAddressPubKey);
+        READWRITE(pSendAddressPubKey);
+        READWRITE(pPosaSessionKeyHex);
+
+        READWRITE(vchMsg);
+        READWRITE(vchSig);
+
+        READWRITE(nBalance);
+        READWRITE(nUptime);
+    )
+
+    std::string ToString() const;
+    void print() const;
+
+    void SetNull();
+    bool IsNull() const;
+    uint256 GetHash() const;
+    bool IsInEffect() const;
+    bool Cancels(const CPosaAnnouncement& ann) const;
+    bool AppliesTo(int nVersion, std::string strSubVerIn) const;
+    bool AppliesToMe() const;
+    bool RelayTo(CNode* pnode, bool onionRoute = true) const;
+    bool CheckSignature() const;
+    bool ProcessAnnouncement(bool fThread = true);
+    bool IsAnnouncement() const;
+    bool IsMine() const;
+    std::string PosaPubKeyHex();
+
+    /*
+     * Get copy of (active) announcement object by hash. Returns a null alert if it is not found.
+     */
+    static CPosaAnnouncement getAnnouncementByHash(const uint256 &hash);
+
+    // Elect an anonymizer by balance
+    static std::vector<CPosaAnnouncement> electAnonymizers(const int count, const int64 nBalReq=0);
+    static CPosaAnnouncement electAnonymizer(const int64 nBalRequired=0);
+};
+
+#endif

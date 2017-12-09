@@ -1,0 +1,54 @@
+##########################################################################
+# ~~~~ Linux builds, using gitian builder ~~~~
+##########################################################################
+
+# NOTE: You need recent 64-bit Ubuntu, with hardware virt turned on in BIOS.
+
+# Install prereqs:
+apt-get install apache2 git apt-cacher-ng python-vm-builder qemu-kvm ruby qemu-utils
+
+# Make sure apt-cacher is up
+service apt-cacher-ng status
+
+# Get gitian builder:
+cd ~
+git clone https://github.com/devrandom/gitian-builder.git
+
+# Grab project inputs:
+mkdir gitian-builder/inputs && cd gitian-builder/inputs
+wget https://sourceforge.net/projects/levent/files/libevent/libevent-2.0/libevent-2.0.22-stable.tar.gz
+wget http://download.oracle.com/berkeley-db/db-4.8.30.NC.tar.gz
+wget http://miniupnp.free.fr/files/download.php?file=miniupnpc-1.9.20140401.tar.gz
+wget https://fukuchi.org/works/qrencode/qrencode-3.4.3.tar.bz2
+wget https://www.openssl.org/source/old/1.0.1/openssl-1.0.1i.tar.gz
+wget http://fossies.org/linux/misc/zlib-1.2.8.tar.gz
+wget http://sourceforge.net/projects/libpng/files/libpng16/older-releases/1.6.8/libpng-1.6.8.tar.gz/download
+wget http://downloads.sourceforge.net/project/boost/boost/1.55.0/boost_1_55_0.tar.bz2?r=http%3A%2F%2Fwww.boost.org%2Fusers%2Fhistory%2Fversion_1_55_0.html&amp;ts=1449098451&amp;use_mirror=internode
+wget http://wtogami.fedorapeople.org/boost-mingw-gas-cross-compile-2013-03-03.patch
+wget http://download.qt.io/archive/qt/5.2/5.2.1/single/qt-everywhere-opensource-src-5.2.1.tar.gz
+
+# NB: Check and rename the ones with borked filenames!!
+
+# Now we need to build the base VMs; these are just default Ubuntu images.
+# We're using lucid for the headless builds, for greater compatibility, and trusty for the qt builds as it
+# plays nicer with qt5...
+cd ..
+bin/make-base-vm --suite trusty --arch amd64
+bin/make-base-vm --suite trusty --arch i386
+bin/make-base-vm --suite lucid --arch amd64
+bin/make-base-vm --suite lucid --arch i386
+
+# Now zip up your cloak source as ~/gitian-builder/inputs/cloakcoin.zip
+
+cd ~
+mkdir cloak-release
+cd gitian-builder
+
+# Linux headless build (32 bit + 64 bit):
+bin/gbuild ../cloakcoin/contrib/gitian-descriptors/gitian-linux-headless.yml
+rm -rf ../cloak-release/cloakcoin-linux-headless/* && mv build/out/bin/* ../cloak-release/cloakcoin-linux-headless
+
+# Linux qt build (32 bit + 64 bit):
+bin/gbuild ../cloakcoin/contrib/gitian-descriptors/gitian-linux-qt.yml
+rm -rf ../cloak-release/cloakcoin-linux-qt/* && mv build/out/bin/* ../cloak-release/cloakcoin-linux-qt
+

@@ -1,0 +1,241 @@
+# Copyright (c) 2009-2010 Satoshi Nakamoto
+# Distributed under the MIT/X11 software license, see the accompanying
+# file COPYING or http://www.opensource.org/licenses/mit-license.php.
+
+DEPSDIR:=/usr/i586-mingw32msvc
+
+USE_UPNP:=0
+USE_IPV6:=1
+
+INCLUDEPATHS= \
+ -I"$(CURDIR)" \
+ -I"$(CURDIR)"/obj \
+ -I"$(DEPSDIR)/boost_1_50_0" \
+ -I"$(DEPSDIR)/db-4.8.30.NC/build_unix" \
+ -I"$(DEPSDIR)/openssl-1.0.2g/include" \
+ -I"$(DEPSDIR)"
+
+LIBPATHS= \
+ -L"$(DEPSDIR)/boost_1_50_0/stage/lib" \
+ -L"$(DEPSDIR)/db-4.8.30.NC/build_unix" \
+ -L"$(DEPSDIR)/openssl-1.0.2g"
+
+LIBS= \
+ -l boost_system-mt-s \
+ -l boost_filesystem-mt-s \
+ -l boost_program_options-mt-s \
+ -l boost_thread_win32-mt-s \
+ -l boost_chrono-mt-s \
+ -l db_cxx \
+ -l ssl \
+ -l crypto
+
+DEFS=-D_MT -DWIN32 -D_WINDOWS -DBOOST_THREAD_USE_LIB -DBOOST_SPIRIT_THREADSAFE
+DEBUGFLAGS=-g
+CFLAGS=-O2 -msse2 -w -Wall -Wextra -Wformat -Wformat-security -Wno-unused-parameter $(DEBUGFLAGS) $(DEFS) $(INCLUDEPATHS)
+LDFLAGS=-Wl,--dynamicbase -Wl,--nxcompat
+
+TESTDEFS = -DTEST_DATA_DIR=$(abspath test/data)
+
+ifndef USE_UPNP
+	override USE_UPNP = -
+endif
+ifneq (${USE_UPNP}, -)
+	LIBPATHS += -L"$(DEPSDIR)/miniupnpc"
+	LIBS += -l miniupnpc -l iphlpapi
+	DEFS += -DSTATICLIB -DUSE_UPNP=$(USE_UPNP)
+endif
+
+ifneq (${USE_IPV6}, -)
+	DEFS += -DUSE_IPV6=$(USE_IPV6)
+endif
+
+LIBS += -l mingwthrd -l kernel32 -l user32 -l gdi32 -l comdlg32 -l winspool -l winmm -l shell32 -l comctl32 -l ole32 -l oleaut32 -l uuid -l rpcrt4 -l advapi32 -l ws2_32 -l mswsock -l shlwapi
+
+# TODO: make the mingw builds smarter about dependencies, like the linux/osx builds are
+HEADERS = $(wildcard *.h)
+
+OBJS= \
+    obj/tor/address.o \
+    obj/tor/addressmap.o \
+    obj/tor/aes.o \
+    obj/tor/backtrace.o \
+    obj/tor/buffers.o \
+    obj/tor/channel.o \
+    obj/tor/channeltls.o \
+    obj/tor/circpathbias.o \
+    obj/tor/circuitbuild.o \
+    obj/tor/circuitlist.o \
+    obj/tor/circuitmux.o \
+    obj/tor/circuitmux_ewma.o \
+    obj/tor/circuitstats.o \
+    obj/tor/circuituse.o \
+    obj/tor/command.o \
+    obj/tor/compat.o \
+    obj/tor/compat_libevent.o \
+    obj/tor/config.o \
+    obj/tor/config_codedigest.o \
+    obj/tor/confparse.o \
+    obj/tor/connection.o \
+    obj/tor/connection_edge.o \
+    obj/tor/connection_or.o \
+    obj/tor/container.o \
+    obj/tor/control.o \
+    obj/tor/cpuworker.o \
+    obj/tor/crypto.o \
+    obj/tor/crypto_curve25519.o \
+    obj/tor/crypto_format.o \
+    obj/tor/curve25519-donna.o \
+    obj/tor/di_ops.o \
+    obj/tor/directory.o \
+    obj/tor/dirserv.o \
+    obj/tor/dirvote.o \
+    obj/tor/dns.o \
+    obj/tor/dnsserv.o \
+    obj/tor/entrynodes.o \
+    obj/tor/ext_orport.o \
+    obj/tor/fp_pair.o \
+    obj/tor/geoip.o \
+    obj/tor/hibernate.o \
+    obj/tor/log.o \
+    obj/tor/memarea.o \
+    obj/tor/mempool.o \
+    obj/tor/microdesc.o \
+    obj/tor/networkstatus.o \
+    obj/tor/nodelist.o \
+    obj/tor/onion.o \
+    obj/tor/onion_fast.o \
+    obj/tor/onion_main.o \
+    obj/tor/onion_ntor.o \
+    obj/tor/onion_tap.o \
+    obj/tor/policies.o \
+    obj/tor/procmon.o \
+    obj/tor/reasons.o \
+    obj/tor/relay.o \
+    obj/tor/rendclient.o \
+    obj/tor/rendcommon.o \
+    obj/tor/rendmid.o \
+    obj/tor/rendservice.o \
+    obj/tor/rephist.o \
+    obj/tor/replaycache.o \
+    obj/tor/router.o \
+    obj/tor/routerlist.o \
+    obj/tor/routerparse.o \
+    obj/tor/routerset.o \
+    obj/tor/sandbox.o \
+    obj/tor/statefile.o \
+    obj/tor/status.o \
+    obj/tor/torgzip.o \
+    obj/tor/tortls.o \
+    obj/tor/tor_util.o \
+    obj/tor/transports.o \
+    obj/tor/util_codedigest.o \
+    obj/tor/cloak.o \
+    obj/aes_helper.o \
+    obj/fugue.o \
+    obj/hamsi.o \
+    obj/groestl.o \
+    obj/blake.o \
+    obj/bmw.o \
+    obj/skein.o \
+    obj/keccak.o \
+    obj/shavite.o \
+    obj/jh.o \
+    obj/luffa.o \
+    obj/cubehash.o \
+    obj/echo.o \
+    obj/simd.o \
+    obj/alert.o \
+    obj/mixerann.o \
+    obj/version.o \
+    obj/checkpoints.o \
+    obj/netbase.o \
+    obj/addrman.o \
+    obj/crypter.o \
+    obj/key.o \
+    obj/db.o \
+    obj/init.o \
+    obj/irc.o \
+    obj/keystore.o \
+    obj/main.o \
+    obj/net.o \
+    obj/protocol.o \
+    obj/bitcoinrpc.o \
+    obj/rpcdump.o \
+    obj/rpcnet.o \
+    obj/rpcmining.o \
+    obj/rpcwallet.o \
+    obj/rpcblockchain.o \
+    obj/rpcrawtransaction.o \
+    obj/script.o \
+    obj/sync.o \
+    obj/util.o \
+    obj/wallet.o \
+    obj/walletdb.o \
+    obj/noui.o \
+    obj/kernel.o \
+    obj/pbkdf2.o \
+    obj/scrypt.o \
+    obj/scrypt_mine.o \
+    obj/scrypt-x86.o \
+    obj/scrypt-x86_64.o \
+    obj/stealth.o \
+    obj/onemarket.o \
+    obj/enigma/cloakingdata.o \
+    obj/enigma/cloakingrequest.o \
+    obj/enigma/enigmapeer.o \
+    obj/enigma/cloakshield.o \
+    obj/enigma/enigmaann.o \
+    obj/enigma/enigma.o
+
+all: cloakcoind.exe
+
+obj/build.h: FORCE
+	/bin/sh ../share/genbuild.sh obj/build.h
+version.cpp: obj/build.h
+DEFS += -DHAVE_BUILD_INFO
+
+obj/%.o: %.cpp $(HEADERS)
+	i586-mingw32msvc-g++ -c $(CFLAGS) -o $@ $<
+
+obj/tor/%.o: tor/%.c $(HEADERS)
+	i586-mingw32msvc-g++ -c $(CFLAGS) -fpermissive -o $@ $<
+
+obj/tor/%.o: tor/cloak.cpp $(HEADERS)
+	i586-mingw32msvc-g++ -c $(CFLAGS) -o $@ $<
+
+obj/enigma/%.o: enigma/%.cpp $(HEADERS)
+    i586-mingw32msvc-g++ -c $(CFLAGS) -o $@ $<    
+
+obj/%.o: %.c $(HEADERS)
+	i586-mingw32msvc-g++ -c $(CFLAGS) -fpermissive -o $@ $<
+
+cloakcoind.exe: $(OBJS:obj/%=obj/%)
+	i586-mingw32msvc-g++ $(CFLAGS) $(LDFLAGS) -o $@ $(LIBPATHS) $^ $(LIBS)
+
+TESTOBJS := $(patsubst test/%.cpp,obj-test/%.o,$(wildcard test/*.cpp))
+
+obj-test/%.o: test/%.cpp $(HEADERS)
+	i586-mingw32msvc-g++ -c $(TESTDEFS) $(CFLAGS) -o $@ $<
+
+test_cloakcoin.exe: $(TESTOBJS) $(filter-out obj/init.o,$(OBJS:obj/%=obj/%))
+	i586-mingw32msvc-g++ $(CFLAGS) $(LDFLAGS) -o $@ $(LIBPATHS) $^ -lboost_unit_test_framework-mt-s $(LIBS)
+
+obj/scrypt-x86.o: scrypt-x86.S
+	i586-mingw32msvc-g++ -c $(CFLAGS) -MMD -o $@ $<
+
+obj/scrypt-x86_64.o: scrypt-x86_64.S
+	i586-mingw32msvc-g++ -c $(CFLAGS) -MMD -o $@ $<
+
+clean:
+    -rm -f obj/*.o
+    -rm -f obj-test/*.o
+    -rm -f obj/*.P
+    -rm -f obj-test/*.P
+    -rm -f obj/build.h
+    -rm -f obj/tor/*.o
+    -rm -f obj/tor/*.P
+    -rm -f obj/enigma/*.o
+    -rm -f obj/enigma/*.P
+
+FORCE:

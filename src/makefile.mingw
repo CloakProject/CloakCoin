@@ -1,0 +1,281 @@
+# Copyright (c) 2009-2010 Satoshi Nakamoto
+# Distributed under the MIT/X11 software license, see the accompanying
+# file COPYING or http://www.opensource.org/licenses/mit-license.php.
+
+TOR_OBJS := $(shell mkdir -p $(CURDIR)/obj/tor)
+ENIGMA_OBJS := $(shell mkdir -p $(CURDIR)/obj/enigma)
+
+USE_UPNP:=0
+USE_IPV6:=1
+USE_LEVELDB:=1
+
+CC            = gcc
+CXX           = g++
+
+DEPSPATH=/c/deps
+
+#
+# 
+
+INCLUDEPATHS= \
+ -I"$(DEPSPATH)/boost_1_57_0" \
+ -I"$(DEPSPATH)/db-4.8.30.NC/build_unix" \
+ -I"$(DEPSPATH)/openssl-1.0.2g/include" \
+ -I"$(DEPSPATH)/libevent-2.0.21-stable\include" \
+ -I"$(CURDIR)/leveldb/include" \
+ -I"$(CURDIR)/leveldb/helpers" \
+ -I"$(CURDIR)"
+ 
+LIBPATHS= \
+ -L"$(DEPSPATH)/boost_1_57_0/stage/lib" \
+ -L"leveldb/lib/win/x86" \
+ -L"$(DEPSPATH)/db-4.8.30.NC/build_unix" \
+ -L"$(DEPSPATH)/openssl-1.0.2g" \
+ -L"$(CURDIR)/leveldb/lib/win/x86"
+
+LIBS= \
+ -lboost_system-mgw49-mt-s-1_57 \
+ -lboost_filesystem-mgw49-mt-s-1_57 \
+ -lboost_program_options-mgw49-mt-s-1_57 \
+ -lboost_thread-mgw49-mt-s-1_57 \
+ -lboost_chrono-mgw49-mt-s-1_57 \
+ -ldb_cxx \
+ -lleveldb \
+ -lmemenv \
+ -lssl \
+ -lcrypto \
+ -levent
+ 
+LIBS+=-L"$(DEPSPATH)/libevent-2.0.21-stable/.libs"
+ 
+DEFS=-DWIN32 -D_WINDOWS -DBOOST_THREAD_USE_LIB -DBOOST_SPIRIT_THREADSAFE -D__NO_SYSTEM_INCLUDES
+DEBUGFLAGS=-g
+CFLAGS=-mthreads -O2 -msse2 -w -Wall -Wextra -Wformat -Wformat-security -Wno-unused-parameter $(DEBUGFLAGS) $(DEFS) $(INCLUDEPATHS)
+xCXXFLAGS+=$(INCLUDEPATHS)
+#LDFLAGS=-Wl,--dynamicbase -Wl,--nxcompat
+LDFLAGS=-Wl,--dynamicbase -Wl,--nxcompat -Wl,--large-address-aware -static
+
+TESTDEFS = -DTEST_DATA_DIR=$(abspath test/data)
+
+ifndef USE_UPNP
+    override USE_UPNP = 0
+endif
+ifneq (${USE_UPNP}, 0)
+ INCLUDEPATHS += -I"$(DEPSPATH)"
+ LIBPATHS += -L"$(DEPSPATH)/miniupnpc"
+ LIBS += -l miniupnpc -l iphlpapi
+ DEFS += -DSTATICLIB -DUSE_UPNP=$(USE_UPNP)
+endif
+
+ifneq (${USE_IPV6}, -)
+	DEFS += -DUSE_IPV6=$(USE_IPV6)
+endif
+
+ifneq (${USE_LEVELDB}, -)
+    DEFS += -DUSE_LEVELDB=$(USE_LEVELDB)
+endif
+
+LIBS += -l kernel32 -l user32 -l gdi32 -l comdlg32 -l winspool -l winmm -l shell32 -l comctl32 -l ole32 -l oleaut32 -l uuid -l rpcrt4 -l advapi32 -l ws2_32 -l mswsock -l shlwapi -lz
+
+# TODO: make the mingw builds smarter about dependencies, like the linux/osx builds are
+HEADERS = $(wildcard *.h)
+
+OBJS= \
+    obj/tor/address.o \
+    obj/tor/addressmap.o \
+    obj/tor/aes.o \
+    obj/tor/backtrace.o \
+    obj/tor/buffers.o \
+    obj/tor/channel.o \
+    obj/tor/channeltls.o \
+    obj/tor/circpathbias.o \
+    obj/tor/circuitbuild.o \
+    obj/tor/circuitlist.o \
+    obj/tor/circuitmux.o \
+    obj/tor/circuitmux_ewma.o \
+    obj/tor/circuitstats.o \
+    obj/tor/circuituse.o \
+    obj/tor/command.o \
+    obj/tor/compat.o \
+    obj/tor/compat_libevent.o \
+    obj/tor/config.o \
+    obj/tor/config_codedigest.o \
+    obj/tor/confparse.o \
+    obj/tor/connection.o \
+    obj/tor/connection_edge.o \
+    obj/tor/connection_or.o \
+    obj/tor/container.o \
+    obj/tor/control.o \
+    obj/tor/cpuworker.o \
+    obj/tor/crypto.o \
+    obj/tor/crypto_curve25519.o \
+    obj/tor/crypto_format.o \
+    obj/tor/curve25519-donna.o \
+    obj/tor/di_ops.o \
+    obj/tor/directory.o \
+    obj/tor/dirserv.o \
+    obj/tor/dirvote.o \
+    obj/tor/dns.o \
+    obj/tor/dnsserv.o \
+    obj/tor/entrynodes.o \
+    obj/tor/ext_orport.o \
+    obj/tor/fp_pair.o \
+    obj/tor/geoip.o \
+    obj/tor/hibernate.o \
+    obj/tor/log.o \
+    obj/tor/memarea.o \
+    obj/tor/mempool.o \
+    obj/tor/microdesc.o \
+    obj/tor/networkstatus.o \
+    obj/tor/nodelist.o \
+    obj/tor/onion.o \
+    obj/tor/onion_fast.o \
+    obj/tor/onion_main.o \
+    obj/tor/onion_ntor.o \
+    obj/tor/onion_tap.o \
+    obj/tor/policies.o \
+    obj/tor/procmon.o \
+    obj/tor/reasons.o \
+    obj/tor/relay.o \
+    obj/tor/rendclient.o \
+    obj/tor/rendcommon.o \
+    obj/tor/rendmid.o \
+    obj/tor/rendservice.o \
+    obj/tor/rephist.o \
+    obj/tor/replaycache.o \
+    obj/tor/router.o \
+    obj/tor/routerlist.o \
+    obj/tor/routerparse.o \
+    obj/tor/routerset.o \
+    obj/tor/sandbox.o \
+    obj/tor/statefile.o \
+    obj/tor/status.o \
+    obj/tor/torgzip.o \
+    obj/tor/tortls.o \
+    obj/tor/tor_util.o \
+    obj/tor/transports.o \
+    obj/tor/util_codedigest.o \
+    obj/tor/cloak.o \
+    obj/fugue.o \
+    obj/hamsi.o \
+    obj/groestl.o \
+    obj/blake.o \
+    obj/bmw.o \
+    obj/skein.o \
+    obj/keccak.o \
+    obj/shavite.o \
+    obj/jh.o \
+    obj/luffa.o \
+    obj/cubehash.o \
+    obj/echo.o \
+    obj/simd.o \
+    obj/alert.o \
+    obj/version.o \
+    obj/checkpoints.o \
+    obj/netbase.o \
+    obj/addrman.o \
+    obj/crypter.o \
+    obj/key.o \
+    obj/db.o \
+    obj/txdb-leveldb.o \
+    obj/init.o \
+    obj/irc.o \
+    obj/keystore.o \
+    obj/main.o \
+    obj/net.o \
+    obj/protocol.o \
+    obj/bitcoinrpc.o \
+    obj/rpcdump.o \
+    obj/rpcnet.o \
+    obj/rpcmining.o \
+    obj/rpcwallet.o \
+    obj/rpcblockchain.o \
+    obj/rpcrawtransaction.o \
+    obj/script.o \
+    obj/sync.o \
+    obj/util.o \
+    obj/wallet.o \
+    obj/walletdb.o \
+    obj/noui.o \
+    obj/kernel.o \
+    obj/pbkdf2.o \
+    obj/scrypt.o \
+    obj/scrypt_mine.o \
+    obj/scrypt-x86.o \
+    obj/scrypt-x86_64.o \
+    obj/stealth.o \
+    obj/conemarketcreatelisting.o \
+    obj/enigma/cloakingdata.o \
+    obj/enigma/cloakingrequest.o \
+    obj/enigma/enigmapeer.o \
+    obj/enigma/cloakshield.o \
+	obj/enigma/encryption.o \
+    obj/enigma/enigmaann.o \
+    obj/enigma/enigma.o
+
+all: cloakcoind.exe
+
+test check: test_cloakcoin.exe FORCE
+	test_cloakcoin.exe
+
+obj/%.o: %.cpp $(HEADERS)
+	g++ -c $(CFLAGS) -o $@ $<
+	
+obj/tor/%.o: tor/%.c
+	$(CC) -c $(xCXXFLAGS) -MMD -MF $(@:%.o=%.d) -o $@ $<
+	@cp $(@:%.o=%.d) $(@:%.o=%.P); \
+	sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
+		-e '/^$$/ d' -e 's/$$/ :/' < $(@:%.o=%.d) >> $(@:%.o=%.P); \
+	rm -f $(@:%.o=%.d)
+
+obj/tor/%.o: tor/cloak.cpp
+	$(CXX) -c $(xCXXFLAGS) -MMD -MF $(@:%.o=%.d) -o $@ $<
+	@cp $(@:%.o=%.d) $(@:%.o=%.P); \
+	sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
+		-e '/^$$/ d' -e 's/$$/ :/' < $(@:%.o=%.d) >> $(@:%.o=%.P); \
+	rm -f $(@:%.o=%.d)
+
+obj/enigma/%.o: enigma/%.cpp
+	$(CXX) -c $(xCXXFLAGS) -MMD -MF $(@:%.o=%.dx) -o $@ $<
+	@cp $(@:%.o=%.d) $(@:%.o=%.P); \
+	sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
+		-e '/^$$/ d' -e 's/$$/ :/' < $(@:%.o=%.d) >> $(@:%.o=%.P); \
+	rm -f $(@:%.o=%.d)
+	
+obj/%.o: %.c
+	$(CXX) -c $(xCXXFLAGS) -fpermissive -MMD -MF $(@:%.o=%.d) -o $@ $<
+	@cp $(@:%.o=%.d) $(@:%.o=%.P); \
+	  sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
+	      -e '/^$$/ d' -e 's/$$/ :/' < $(@:%.o=%.d) >> $(@:%.o=%.P); \
+	rm -f $(@:%.o=%.d)	
+
+obj/scrypt-x86.o: scrypt-x86.S
+	$(CXX) -c $(xCXXFLAGS) -MMD -o $@ $<
+
+obj/scrypt-x86_64.o: scrypt-x86_64.S
+	$(CXX) -c $(xCXXFLAGS) -MMD -o $@ $<
+
+cloakcoind.exe: $(OBJS:obj/%=obj/%)
+	g++ $(CFLAGS) $(LDFLAGS) -o $@ $(LIBPATHS) $^ $(LIBS)
+
+TESTOBJS := $(patsubst test/%.cpp,obj-test/%.o,$(wildcard test/*.cpp))
+
+obj-test/%.o: test/%.cpp $(HEADERS)
+	g++ -c $(TESTDEFS) $(CFLAGS) -o $@ $<
+
+test_cloakcoin.exe: $(TESTOBJS) $(filter-out obj/init.o,$(OBJS:obj/%=obj/%))
+	g++ $(CFLAGS) $(LDFLAGS) -o $@ $(LIBPATHS) $^ -lboost_unit_test_framework $(LIBS)
+
+clean:
+	-rm -f cloakcoind test_cloakcoin
+	-rm -f obj/*.o
+	-rm -f obj-test/*.o
+	-rm -f obj/*.P
+	-rm -f obj-test/*.P
+	-rm -f obj/build.h
+	-rm -f obj/tor/*.o
+	-rm -f obj/tor/*.P
+	-rm -f obj/enigma/*.o
+	-rm -f obj/enigma/*.P
+
+FORCE:

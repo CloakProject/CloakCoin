@@ -1,0 +1,79 @@
+---
+name: "cloakcoin"
+suites:
+- "trusty"
+architectures:
+- "amd64"
+- "i386"
+packages: 
+- "qtdeclarative5-dev"
+- "qt5-default"
+- "libboost-system-dev"
+- "libboost-filesystem-dev"
+- "libboost-program-options-dev"
+- "libboost-thread-dev"
+- "git-core"
+- "unzip"
+- "pkg-config"
+- "libpng12-dev"
+- "libevent-dev"
+- "libcurl4-openssl-dev"
+reference_datetime: "2015-12-01 00:00:00"
+remotes:
+  []
+files:
+- "openssl-1.0.1i.tar.gz"
+- "qrencode-3.4.3.tar.bz2"
+- "libevent-2.0.22-stable.tar.gz"
+- "miniupnpc-1.9.20140401.tar.gz"
+- "db-4.8.30.NC.tar.gz"
+- "cloakcoin.zip"
+script: |
+  INSTDIR="$HOME/install"
+  export LIBRARY_PATH="$INSTDIR/lib"
+  #
+  echo "3c179f46ca77069a6a0bac70212a9b3b838b2f66129cb52d568837fc79d8fcc7  openssl-1.0.1i.tar.gz"  | sha256sum -c
+  echo "12edc0df75bf9abd7f82f821795bcee50f42cb2e5f76a6a281b85732798364ef  db-4.8.30.NC.tar.gz" | sha256sum -c
+  echo "d02670112125300f7a3d61421714d99105edd90190bf12542d16785f16f017aa  miniupnpc-1.9.20140401.tar.gz" | sha256sum -c
+  echo "dfd71487513c871bad485806bfd1fdb304dedc84d2b01a8fb8e0940b50597a98  qrencode-3.4.3.tar.bz2" | sha256sum -c
+  echo "71c2c49f0adadacfdbe6332a372c38cf9c8b7895bb73dabeaa53cdcc1d4e1fa3  libevent-2.0.22-stable.tar.gz" | sha256sum -c
+  #
+  tar xzf openssl-1.0.1i.tar.gz
+  cd openssl-1.0.1i
+  ./config --openssldir=$INSTDIR
+  make
+  make install_sw
+  cd ..  
+  #
+  tar xzf db-4.8.30.NC.tar.gz
+  cd db-4.8.30.NC/build_unix
+  ../dist/configure --prefix=$INSTDIR --enable-cxx --enable-static --disable-shared
+  make $MAKEOPTS library_build
+  make install_lib install_include
+  cd ../..
+  #
+  tar xzf libevent-2.0.22-stable.tar.gz
+  cd libevent-2.0.22-stable
+  ./configure --prefix=$INSTDIR --enable-static --disable-shared
+  make $MAKEOPTS install
+  cd ..
+  #
+  tar xzf miniupnpc-1.9.20140401.tar.gz
+  cd miniupnpc-1.9.20140401
+  INSTALLPREFIX=$INSTDIR make $MAKEOPTS install
+  cd ..
+  #
+  tar xjf qrencode-3.4.3.tar.bz2
+  cd qrencode-3.4.3
+  ./configure --prefix=$INSTDIR --enable-static --disable-shared
+  make $MAKEOPTS install
+  cd ..
+  #
+  unzip cloakcoin.zip
+  cd cloakcoin
+  qmake INCLUDEPATH="$INSTDIR/include" LIBS="-L$INSTDIR/lib" RELEASE=1 USE_QRCODE=1 USE_SSE2=1
+  make $MAKEOPTS
+  strip ./cloakcoin-qt
+  mkdir -p $OUTDIR/bin/$GBUILD_BITS
+  install cloakcoin-qt $OUTDIR/bin/$GBUILD_BITS
+

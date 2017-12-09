@@ -1,0 +1,48 @@
+CloakCoin
+
+-------------------
+v2.0.2.0
+-------------------
+* BugFix: Fix active CloakShield peer list pruning.
+* NewFeature: Add French translations.
+* Enhancement: Update Russian translations.
+* Enhancement: Improve node-banning mechanisms for Enigma and CloakShield.
+* Enhancement: Add signatures and verify sender and data integrity for CloakShield onion packets.
+* Enhancement: Add signatures and verify sender and data integrity for Enigma announcements.
+* Enhancement: Enigma peers broadcast a message to announce they are going offline.
+* Enhancement: Add 'View TX on Block Explorer' to context menu in transaction view [QT].
+* Enhancement: Give the QT wallet an additional lick of red paint [QT].
+* Enhancement: Improve peer-node discovery at wallet startup.
+* Enhancement: Trim input text for RPC command 'importprivkey'.
+* Misc: Bump Enigma protocol version.
+
+-------------------
+v2.0.1.2
+-------------------
+* BugFix: Fix ‘CloakShield Unavailable’ issue in QT-Wallet GUI.
+* BugFix: Ensure out-of-date Enigma announcements are always culled.
+* BugFix: Improve shutdown detection in child threads to avoid crash-on-exit issues.
+* Enhancement: Improve wallet-unlock workflow for Enigma sends.
+
+-------------------
+v2.0.1.1
+-------------------
+* BugFix: Fix issue with old Enigma requests being repeatedly expired.
+
+-------------------
+v2.0.1.0
+-------------------
+* NewFeature: Implement blockchain downloader.
+* NewFeature: Add SendCloakedToAddress RPC command.
+* Enhancement: Implement Enigma Message system.
+* Enhancement: Add "Copy TX ID" option to transaction view in QT Wallet.
+* Enhancement: Speed up block loading.
+* Enhancement: Improve PoS block validation.
+* Enhancement: New Feature: Implement automatic wallet backup system.
+* Enhancement: Refactor CloakShield to decrease traffic and improve reliability.
+* Enhancement: Refactor and improve Enigma input selection code.
+* Enhancement: Switch blockchain database format to LevelDB.
+* Enhancement: Remove 'NumSplits' from the Enigma process and increase min-cloakers by one.
+* BugFix: Retain coin-lock once a Cloaker signs an Enigma transaction until new block is recieved.
+* BugFix: Stop Cloakers supplying an extra blank output address causing the Enigma transaction to fail.
+* Misc: Rename PoSA to Enigma.

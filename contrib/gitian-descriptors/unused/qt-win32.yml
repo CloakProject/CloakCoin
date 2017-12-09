@@ -1,0 +1,46 @@
+---
+name: "qt"
+suites:
+- "trusty"
+architectures:
+- "i386"
+packages: 
+- "mingw32"
+- "zip"
+- "unzip"
+- "libz-dev"
+reference_datetime: "2015-12-01 00:00:00"
+remotes: []
+files:
+- "qt-everywhere-opensource-src-5.2.1.tar.gz"
+- "cloakcoin-deps-win32-gitian.zip"
+script: |
+  TEMPDIR=$HOME/tmp
+  INSTALLPREFIX=$HOME/staging
+  BUILDDIR=$HOME/build
+  DEPSDIR=$HOME/deps
+  #HOST=i586-mingw32msvc
+  HOST=i686-w64-mingw32
+  #
+  echo "84e924181d4ad6db00239d87250cc89868484a14841f77fb85ab1f1dbdcd7da1  qt-everywhere-opensource-src-5.2.1.tar.gz" | sha256sum -c
+  #
+  mkdir -p $INSTALLPREFIX $INSTALLPREFIX/host/bin $DEPSDIR
+  #
+  cd $DEPSDIR
+  unzip $BUILDDIR/cloakcoin-deps-win32-gitian.zip
+  #
+  cd $BUILDDIR
+  tar xzf qt-everywhere-opensource-src-5.2.1.tar.gz
+  cd qt-everywhere-opensource-src-5.2.1
+  SPECNAME="win32-g++"
+  SPECFILE="qtbase/mkspecs/${SPECNAME}/qmake.conf"
+  #sed 's/qt_instdate=`date +%Y-%m-%d`/qt_instdate=2011-01-30/' -i qtbase/configure
+  sed --posix "s|QMAKE_CFLAGS            = -pipe -fno-keep-inline-dllexport|QMAKE_CFLAGS\t\t= -pipe -fno-keep-inline-dllexport -isystem /usr/$HOST/include/ -frandom-seed=qtbuild -I$DEPSDIR/include|" -i ${SPECFILE}
+  sed --posix "s|QMAKE_LFLAGS            =|QMAKE_LFLAGS\t\t= -L$DEPSDIR/lib|" -i ${SPECFILE}
+  #
+  OPENSSL_LIBS="-L$DEPSDIR/lib -lssl -lcrypto -lgdi32" ./configure -v -prefix $INSTALLPREFIX -bindir $INSTALLPREFIX/host/bin -confirm-license -release -opensource -static -xplatform $SPECNAME -device-option CROSS_COMPILE="$HOST-" -no-audio-backend -no-javascript-jit -no-sql-sqlite -no-sql-odbc -no-nis -no-cups -no-iconv -no-dbus -no-gif -no-opengl -no-compile-examples -no-feature-style-windowsce -no-feature-style-windowsmobile -no-qml-debug -openssl-linked -skip qtsvg -skip qtwebkit -skip qtwebkit-examples -skip qtserialport -skip qtdeclarative -skip qtmultimedia -skip qtimageformats -skip qtlocation -skip qtsensors -skip qtquick1 -skip qtquickcontrols -skip qtactiveqt -skip qtconnectivity -skip qtwinextras -skip qtxmlpatterns -skip qtscript -skip qtdoc -system-libpng -system-zlib
+  make $MAKEOPTS install
+  #
+  cd $INSTALLPREFIX
+  zip -r $OUTDIR/cloakcoin-qt-win32-gitian.zip *
+
