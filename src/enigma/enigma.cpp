@@ -219,7 +219,7 @@ bool CCloakingInputsOutputs::CheckValid(int64 minInputAmount, bool printToLog, s
     {
         CCloakShield* cs = CCloakShield::GetShield();
         int64 nValueIn = 0;
-        int64 nValueOut = 0;
+        //int64 nValueOut = 0;
         //int64 nFees = 0;
 
         CTransaction txTemp;
@@ -548,6 +548,10 @@ bool CCloakingAcceptResponse::ProcessAcceptResponse(CCloakingEncryptionKey* myKe
             printf("ProcessAcceptResponse - stealth address invalid!\n");
             return false;
         }
+        /* else if (this->participantInfo.stealthAddress == request->senderAddress) {
+            printf("ProcessAcceptResponse - receiver address can't help, rejected.\n");
+            return false;
+        } */
 
         this->participantInfo.stealthAddressObj.SetEncoded(this->participantInfo.stealthAddress);
 
@@ -628,9 +632,16 @@ bool Enigma::HandleCloakingAccept(CCloakingData cloakData)
                         {
                             if(pwalletMain->mapOurCloakingRequests.find(ccar.requestIdentifier) != pwalletMain->mapOurCloakingRequests.end())
                             {
-                                // it's one of ours, add the participant (from response) to the cloaking request and relay updated request
-                                ccar.ProcessAcceptResponse(cs->GetRoutingKey());
-                                handled = true;
+                                // wfd if (ccar.requestIdentifier != cloakData.identifier)
+                                {
+                                    // it's one of ours, add the participant (from response) to the cloaking request and relay updated request
+                                    ccar.ProcessAcceptResponse(cs->GetRoutingKey());
+                                    handled = true;
+                                }
+                                /* else
+                                {
+                                    printf("ENIGMA: HandleCloakingAccept - don't allow receiver to assist.");
+                                } */
                             }else{
                                 // couldn't find our associated request
                                 printf("ENIGMA: HandleCloakingAccept - request not found\n");
@@ -857,30 +868,30 @@ bool Enigma::HandleAcceptResponseFromSender(EnigmaMessageCode msgType, string re
 
         switch (msgType)
         {
-        case (ENIGMA_MSG_CLOAKER_ACCEPTED):
-            // our offer of cloaking assistance has been accepted
-            nCloakerCountAccepted++;
-            break;
+            case (ENIGMA_MSG_CLOAKER_ACCEPTED):
+                // our offer of cloaking assistance has been accepted
+                nCloakerCountAccepted++;
+                break;
 
-        case (ENIGMA_MSG_CLOAKER_REJECTED):
-            // our offer of cloaking assistance has been rejected, cancel the request
-            {
-                LOCK(pwalletMain->cs_mapCloakingRequests);
-                if (pwalletMain->mapCloakingRequests.find(requestHash) != pwalletMain->mapCloakingRequests.end())
+            case (ENIGMA_MSG_CLOAKER_REJECTED):
+                // our offer of cloaking assistance has been rejected, cancel the request
                 {
-                    CCloakingRequest* req = &pwalletMain->mapCloakingRequests[requestHash];
-                    req->Abort();
+                    LOCK(pwalletMain->cs_mapCloakingRequests);
+                    if (pwalletMain->mapCloakingRequests.find(requestHash) != pwalletMain->mapCloakingRequests.end())
+                    {
+                        CCloakingRequest* req = &pwalletMain->mapCloakingRequests[requestHash];
+                        req->Abort();
+                    }
+                    else
+                    {
+                        printf("CCloakingRequest::SignAndRespond: cached request not found.\n");
+                        return false;
+                    }
                 }
-                else
-                {
-                    printf("CCloakingRequest::SignAndRespond: cached request not found.\n");
-                    return false;
-                }
-            }
-            break;
+                break;
 
-        default:
-            break;
+            default:
+                break;
         }
 
     }catch (std::exception& e){
@@ -894,46 +905,46 @@ void Enigma::LogCloakMessage(CCloakingMessage msg)
     char codeStr[255];
     switch(msg.messageCode)
     {
-    case ENIGMA_MSG_CLOAKER_REJECTED:
-        sprintf(codeStr, "ENIGMA_MSG_CLOAKER_REJECTED");
-        break;
-    case ENIGMA_MSG_SIGN_INPUTS_OUTPUTS_MISSING:
-        sprintf(codeStr, "ENIGMA_MSG_SIGN_INPUTS_OUTPUTS_MISSING");
-        break;
-    case ENIGMA_MSG_SIGN_INPUT_NOT_FOUND:
-        sprintf(codeStr, "ENIGMA_MSG_SIGN_INPUT_NOT_FOUND");
-        break;
-    case ENIGMA_MSG_SIGN_CHANGE_MISSING:
-        sprintf(codeStr, "ENIGMA_MSG_SIGN_CHANGE_MISSING");
-        break;
-    case ENIGMA_MSG_SIGN_REQUEST_NOT_FOUND:
-        sprintf(codeStr, "ENIGMA_MSG_SIGN_REQUEST_NOT_FOUND");
-        break;
-    case ENIGMA_MSG_CLOAKER_ACCEPTED:
-        sprintf(codeStr, "ENIGMA_MSG_CLOAKER_ACCEPTED");
-        break;
-    case ENIGMA_MSG_OK:
-        sprintf(codeStr, "ENIGMA_MSG_OK");
-        break;
-    case ENIGMA_MSG_NODE_GONE_OFFLINE:
-        sprintf(codeStr, "ENIGMA_MSG_NODE_GONE_OFFLINE");
-        break;
-    default:
-        sprintf(codeStr, "ENIGMA_MSG_???");
-        break;
+        case ENIGMA_MSG_CLOAKER_REJECTED:
+            sprintf(codeStr, "ENIGMA_MSG_CLOAKER_REJECTED");
+            break;
+        case ENIGMA_MSG_SIGN_INPUTS_OUTPUTS_MISSING:
+            sprintf(codeStr, "ENIGMA_MSG_SIGN_INPUTS_OUTPUTS_MISSING");
+            break;
+        case ENIGMA_MSG_SIGN_INPUT_NOT_FOUND:
+            sprintf(codeStr, "ENIGMA_MSG_SIGN_INPUT_NOT_FOUND");
+            break;
+        case ENIGMA_MSG_SIGN_CHANGE_MISSING:
+            sprintf(codeStr, "ENIGMA_MSG_SIGN_CHANGE_MISSING");
+            break;
+        case ENIGMA_MSG_SIGN_REQUEST_NOT_FOUND:
+            sprintf(codeStr, "ENIGMA_MSG_SIGN_REQUEST_NOT_FOUND");
+            break;
+        case ENIGMA_MSG_CLOAKER_ACCEPTED:
+            sprintf(codeStr, "ENIGMA_MSG_CLOAKER_ACCEPTED");
+            break;
+        case ENIGMA_MSG_OK:
+            sprintf(codeStr, "ENIGMA_MSG_OK");
+            break;
+        case ENIGMA_MSG_NODE_GONE_OFFLINE:
+            sprintf(codeStr, "ENIGMA_MSG_NODE_GONE_OFFLINE");
+            break;
+        default:
+            sprintf(codeStr, "ENIGMA_MSG_???");
+            break;
     }
 
     switch(msg.messageCode)
     {
-    case ENIGMA_MSG_CLOAKER_REJECTED:
-    case ENIGMA_MSG_SIGN_INPUTS_OUTPUTS_MISSING:
-    case ENIGMA_MSG_SIGN_INPUT_NOT_FOUND:
-    case ENIGMA_MSG_SIGN_CHANGE_MISSING:
-    case ENIGMA_MSG_SIGN_REQUEST_NOT_FOUND:
-    case ENIGMA_MSG_NODE_GONE_OFFLINE:
-    case ENIGMA_MSG_CLOAKER_ACCEPTED:
-        printf("%s : %s\n", codeStr, msg.messageData.c_str());
-        break;
+        case ENIGMA_MSG_CLOAKER_REJECTED:
+        case ENIGMA_MSG_SIGN_INPUTS_OUTPUTS_MISSING:
+        case ENIGMA_MSG_SIGN_INPUT_NOT_FOUND:
+        case ENIGMA_MSG_SIGN_CHANGE_MISSING:
+        case ENIGMA_MSG_SIGN_REQUEST_NOT_FOUND:
+        case ENIGMA_MSG_NODE_GONE_OFFLINE:
+        case ENIGMA_MSG_CLOAKER_ACCEPTED:
+            printf("%s : %s\n", codeStr, msg.messageData.c_str());
+            break;
     }
 }
 
@@ -954,19 +965,19 @@ bool Enigma::HandleCloakMessage(CCloakingData cloakData)
 
                 switch(msg.messageCode)
                 {
-                case ENIGMA_MSG_NODE_GONE_OFFLINE:
-                    Enigma::HandleNodeOffline(msg.messageData);
-                case ENIGMA_MSG_CLOAKER_REJECTED:
-                case ENIGMA_MSG_CLOAKER_ACCEPTED:
-                    Enigma::HandleAcceptResponseFromSender((EnigmaMessageCode)msg.messageCode, msg.messageData);
-                    break;
-                case ENIGMA_MSG_SIGN_INPUTS_OUTPUTS_MISSING:
-                case ENIGMA_MSG_SIGN_INPUT_NOT_FOUND:
-                case ENIGMA_MSG_SIGN_CHANGE_MISSING:
-                case ENIGMA_MSG_SIGN_REQUEST_NOT_FOUND:
-                case ENIGMA_MSG_OK:
-                default:
-                    break;
+                    case ENIGMA_MSG_NODE_GONE_OFFLINE:
+                        Enigma::HandleNodeOffline(msg.messageData);
+                    case ENIGMA_MSG_CLOAKER_REJECTED:
+                    case ENIGMA_MSG_CLOAKER_ACCEPTED:
+                        Enigma::HandleAcceptResponseFromSender((EnigmaMessageCode)msg.messageCode, msg.messageData);
+                        break;
+                    case ENIGMA_MSG_SIGN_INPUTS_OUTPUTS_MISSING:
+                    case ENIGMA_MSG_SIGN_INPUT_NOT_FOUND:
+                    case ENIGMA_MSG_SIGN_CHANGE_MISSING:
+                    case ENIGMA_MSG_SIGN_REQUEST_NOT_FOUND:
+                    case ENIGMA_MSG_OK:
+                    default:
+                        break;
                 }
 
                 if(GetBoolArg("-printenigma", false)){

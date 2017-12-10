@@ -317,12 +317,16 @@ Value getaddressesbyaccount(const Array& params, bool fHelp)
 
 Value sendcloakedtoaddress(const Array& params, bool fHelp)
 {
+    throw JSONRPCError(RPC_INVALID_REQUEST, "Sorry, enigma is not enabled in daemon.  Send coins without enigma on daemon or revert to wallet.");
+
     if (fHelp || params.size() < 2 || params.size() > 6)
         throw runtime_error(
         "sendcloakedtoaddress <CloakCoinaddress> <amount> [numCloakers] [timeoutMins] [comment] [comment-to]\n"
             "<amount> is a real and is rounded to the nearest 0.000001\n"
         ""
             + HelpRequiringPassphrase());
+    throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "using this code");
+
 
     string strAddress = params[0].get_str();
 
@@ -345,10 +349,24 @@ Value sendcloakedtoaddress(const Array& params, bool fHelp)
     int timeoutMins = 1;
 
     if (params.size() > 2 && params[2].type() != null_type && !params[2].get_str().empty())
-        numCloakers = params[2].get_int();
+    {
+        if (params[2].type() != json_spirit::int_type) {
+            if (params[2].type() == json_spirit::str_type)
+                numCloakers = atoi(params[2].get_str().c_str());
+        }
+        else
+            numCloakers = params[2].get_int();
+    }
 
     if (params.size() > 3 && params[3].type() != null_type && !params[3].get_str().empty())
-        timeoutMins = params[3].get_int();
+    {
+        if (params[3].type() != json_spirit::int_type) {
+            if (params[3].type() == json_spirit::str_type)
+                timeoutMins = atoi(params[3].get_str().c_str());
+        }
+        else
+            timeoutMins = params[3].get_int();
+    }
 
     if (pwalletMain->IsLocked())
         throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");

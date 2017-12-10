@@ -122,7 +122,11 @@ OverviewPage::OverviewPage(QWidget *parent) :
     ui->labelEnigmaProgressVal->setStyleSheet(qs);
     ui->labelUnconfirmed->setStyleSheet(qs);
     ui->labelNumTransactions->setStyleSheet(qs);
-    ui->labCloakAssistEarnings->setStyleSheet(qs);
+
+    QString qsEarnings("color: #0000FF;");
+    ui->labCloakAssistEarnings->setStyleSheet(qsEarnings);
+    QString qsToolTip("QToolTip { color: #cecece; background-color: #333333;  border:0px;}");
+    ui->labCloakAssistEarnings->setStyleSheet(qsToolTip);
 
     // start with displaying the "out of sync" warnings
     showOutOfSyncWarning(true);

@@ -38,12 +38,13 @@ BitcoinAmountField::BitcoinAmountField(QWidget *parent):
     setFocusProxy(amount);
 
     // If one if the widgets changes, the combined content changes as well
-    connect(amount, SIGNAL(valueChanged(QString)), this, SIGNAL(textChanged()));
+    connect(amount, SIGNAL(valueChanged(QString)), this, SLOT(textChanged()));
     connect(unit, SIGNAL(currentIndexChanged(int)), this, SLOT(unitChanged(int)));
 
     // Set default based on configuration
     unitChanged(unit->currentIndex());
 }
+
 
 void BitcoinAmountField::setText(const QString &text)
 {
@@ -51,6 +52,23 @@ void BitcoinAmountField::setText(const QString &text)
         amount->clear();
     else
         amount->setValue(text.toDouble());
+}
+
+// SIGNAL 0
+void BitcoinAmountField::textChanged()
+{
+    qint64 sendAmount = this->value();
+
+    // if the total amount sent is greater than the number of people willing
+    // to assist in enigma, then we get a failure/halt in the code.  Prevent
+    // anyone from sending over 100,000 cloak at this time.  Will look into
+    // this later.  wfd
+    if (sendAmount > 100000000000)
+    {
+        this->setValue(100000000000);
+    }
+
+    QMetaObject::activate(this, &staticMetaObject, 0, Q_NULLPTR);
 }
 
 void BitcoinAmountField::clear()

@@ -1328,7 +1328,7 @@ void BitcoinGUI::updateMintingIcon()
 void BitcoinGUI::setEnigmaGuiEnabled(bool enabled)
 {
     enigmaEnabledToggleAction->setIcon(enabled ? QIcon(":/icons/lock_closed") : QIcon(":/icons/lock_open"));
-    enigmaEnabledToggleAction->setText(enabled ? tr("&Disable Enigma") : tr("&Enigma Enigma"));
+    enigmaEnabledToggleAction->setText(enabled ? tr("&Disable Enigma") : tr("&Enable Enigma"));
     enigmaEnabledToggleAction->setToolTip(enabled ? tr("Disable Enigma Sending and Cloaking functionality") : tr("Enable Enigma Sending and Cloaking functionality"));
     sendCoinsPage->setEnigmaEnabled(enabled);
 }

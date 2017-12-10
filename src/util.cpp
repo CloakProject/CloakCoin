@@ -193,7 +193,7 @@ int64 GetRandRange(int64 nMin, int64 nMax)
 std::vector<int64> SplitAmount(int64 amount, int64 min, int64 maxparts)
 {
     std::vector<int64> results;
-    uint64 assigned = 0;
+    int64 assigned = 0;
 
     if (amount/maxparts <= min){
         results.push_back(amount);
@@ -207,6 +207,7 @@ std::vector<int64> SplitAmount(int64 amount, int64 min, int64 maxparts)
             results.push_back(amt);
         }
     }
+
     // handle dust
     if (assigned < amount){
         int64 remain = amount - assigned;
