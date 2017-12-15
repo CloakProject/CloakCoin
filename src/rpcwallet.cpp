@@ -474,7 +474,16 @@ Value sendtoaddress(const Array& params, bool fHelp)
 
     CBitcoinAddress address(strAddress);
     if (!address.IsValid())
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid CloakCoin address");
+    {
+        if (IsStealthAddress(strAddress))
+        {
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Stealth addresses are not available through the daemon.  Coming soon.");
+        }
+        else
+        {
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid CloakCoin address");
+        }
+    }
 
     // Amount
     int64 nAmount = AmountFromValue(params[1]);

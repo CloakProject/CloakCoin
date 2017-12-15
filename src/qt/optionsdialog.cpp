@@ -20,6 +20,7 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     mapper(0),
     fRestartWarningDisplayed_Proxy(false),
     fRestartWarningDisplayed_Lang(false),
+    fRestartWarningDisplayed_EnigmaStaking(false),
     fRestartWarningDisplayed_PosaStaking(false),
     fProxyIpValid(true)
 {
@@ -242,6 +243,17 @@ void OptionsDialog::showRestartWarning_Lang()
     {
         QMessageBox::warning(this, tr("Warning"), tr("This setting will take effect after restarting CloakCoin."), QMessageBox::Ok);
         fRestartWarningDisplayed_Lang = true;
+    }
+}
+
+
+void OptionsDialog::showRestartWarning_EnigmaStaking()
+{
+    if(!fRestartWarningDisplayed_EnigmaStaking)
+    {
+        // nEnigmaReservedBalancePercent gets set upon pressing the apply button.
+        QMessageBox::warning(this, tr("Warning"), tr("After pressing Apply, this setting will take effect immediately; but will reset to 50% after restarting CloakCoin."), QMessageBox::Ok);
+        fRestartWarningDisplayed_EnigmaStaking = true;
     }
 }
 
