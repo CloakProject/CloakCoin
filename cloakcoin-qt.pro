@@ -111,13 +111,16 @@ macx {
 linux {
      message(*** linux build ***)
 
-     QRENCODE_LIB_PATH="/home/joe/Documents/deps/qrencode-3.4.4/.libs"
-     QRENCODE_INCLUDE_PATH="/home/joe/Documents/deps/qrencode-3.4.4"
+     QRENCODE_LIB_PATH="/opt/deps/qrencode-3.4.4/.libs"
+     QRENCODE_INCLUDE_PATH="/opt/deps/qrencode-3.4.4"
+
+     OPENSSL_INCLUDE_PATH="/opt/deps/openssl-1.0.2g/include"
+     OPENSSL_LIB_PATH="/opt/deps/openssl-1.0.2g"
 
      DEFINES += USE_LEVELDB
      INCLUDEPATH += src/leveldb/include src/leveldb/helpers src/leveldb/helpers/memenv
      SOURCES += src/txdb-leveldb.cpp
-     LIBS+=$$PWD/src/leveldb/libleveldb.a $$PWD/src/leveldb/libmemenv.a
+     LIBS+=$$PWD/src/leveldb/libleveldb.a $$PWD/src/leveldb/libmemenv.a /opt/deps/openssl-1.0.2g/libssl.a /opt/deps/openssl-1.0.2g/libcrypto.a
 }
 
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12
@@ -136,8 +139,8 @@ contains(RELEASE, 1) {
 
 !win32 {
 # for extra security against potential buffer overflows: enable GCCs Stack Smashing Protection
-QMAKE_CXXFLAGS *= -fstack-protector-all --param ssp-buffer-size=1
-QMAKE_LFLAGS *= -fstack-protector-all --param ssp-buffer-size=1
+QMAKE_CXXFLAGS *= -fstack-protector-all --param ssp-buffer-size=1 -std=c++11
+QMAKE_LFLAGS *= -fstack-protector-all --param ssp-buffer-size=1 -std=c++11 -fno-pie -no-pie
 # We need to exclude this for Windows cross compile with MinGW 4.2.x, as it will result in a non-working executable!
 # This can be enabled for Windows, when we switch to MinGW >= 4.4.x.
 }
@@ -172,7 +175,8 @@ contains(USE_UPNP, -) {
         USE_UPNP=1
     }
     INCLUDEPATH += $$PWD/src
-    INCLUDEPATH += C:/deps/miniupnpc
+    win32:INCLUDEPATH += C:/deps/miniupnpc
+    INCLUDEPATH += /opt/deps/miniupnpc
     DEFINES += USE_UPNP=$$USE_UPNP MINIUPNP_STATICLIB
     win32:LIBS += C:/deps/miniupnpc/libminiupnpc.a
     macx:LIBS += /opt/local/lib/libminiupnpc.a
@@ -702,7 +706,7 @@ TRANSLATIONS = src/qt/locale/bitcoin_en.ts src/qt/locale/bitcoin_ru.ts src/qt/lo
 isEmpty(QMAKE_LRELEASE) {
     #win32:QMAKE_LRELEASE = $$[QT_INSTALL_BINS]\\lrelease.exe
 win32:QMAKE_LRELEASE = $$[QT_INSTALL_BINS]\\lrelease
-    else:QMAKE_LRELEASE = $$[QT_INSTALL_BINS]/lrelease
+    else:QMAKE_LRELEASE = /usr/bin/lrelease
 }
 isEmpty(QM_DIR):QM_DIR = $$PWD/src/qt/locale
 
@@ -774,13 +778,13 @@ INCLUDEPATH += $$BOOST_INCLUDE_PATH $$BDB_INCLUDE_PATH $$OPENSSL_INCLUDE_PATH $$
 # libdb_cxx-4.8.a
 macx:LIBS += /Users/joe/Documents/cloak_deps/db-4.8.30.NC/build_unix/libdb_cxx-4.8.a
 LIBS += $$join(BOOST_LIB_PATH,,-L,) $$join(OPENSSL_LIB_PATH,,-L,) $$join(QRENCODE_LIB_PATH,,-L,)
-LIBS += -lssl -lcrypto
+#LIBS += -lssl -lcrypto
 !macx:LIBS += $$join(BDB_LIB_PATH,,-L,) -ldb_cxx$$BDB_LIB_SUFFIX
 !win32:LIBS += -levent -lz
 #LIBS += -lz
 # -lgdi32 has to happen after -lcrypto (see  #681)
 windows:LIBS += -lws2_32 -lshlwapi -lmswsock -lole32 -loleaut32 -luuid -lgdi32 
-LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX
+LIBS += -L/usr/local/lib/ -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX
 windows:LIBS += -lboost_chrono$$BOOST_LIB_SUFFIX
 
 contains(RELEASE, 1) {
