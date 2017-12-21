@@ -317,16 +317,14 @@ Value getaddressesbyaccount(const Array& params, bool fHelp)
 
 Value sendcloakedtoaddress(const Array& params, bool fHelp)
 {
-    throw JSONRPCError(RPC_INVALID_REQUEST, "Sorry, enigma is not enabled in daemon.  Send coins without enigma on daemon or revert to wallet.");
-
     if (fHelp || params.size() < 2 || params.size() > 6)
         throw runtime_error(
         "sendcloakedtoaddress <CloakCoinaddress> <amount> [numCloakers] [timeoutMins] [comment] [comment-to]\n"
             "<amount> is a real and is rounded to the nearest 0.000001\n"
         ""
             + HelpRequiringPassphrase());
-    throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "using this code");
-
+    
+    throw JSONRPCError(RPC_INVALID_REQUEST, "Sorry, enigma is not enabled in daemon.  Send coins without enigma on daemon or revert to wallet.");
 
     string strAddress = params[0].get_str();
 
