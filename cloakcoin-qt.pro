@@ -41,7 +41,7 @@ win32 {
 
     INCLUDEPATH+=C:\deps\curl-7.40.0\include
     INCLUDEPATH+=C:\deps\libevent-2.0.21-stable\include
-    INCLUDEPATH += $$PWD/ex_lib/qrencode-3.4.1-1-mingw32-dev
+    INCLUDEPATH +=C:\deps\qrencode-3.4.4 
     INCLUDEPATH += $$PWD/src/leveldb/include/leveldb
     INCLUDEPATH += $$PWD/build	
 
