@@ -440,7 +440,7 @@ void CWallet::MarkDirty()
 
 bool CWallet::AddToWallet(const CWalletTx& wtxIn)
 {
-    OutputDebugStringF("AddToWalletx");
+    OutputDebugStringF("AddToWalletx ");
 
     uint256 hash = wtxIn.GetHash();
     {
@@ -585,6 +585,8 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn)
             boost::thread t(runCommand, strCmd); // thread runs free
         }
     }
+
+    printf("AddToWallet: Success.\n");
     return true;
 }
 
@@ -2225,7 +2227,7 @@ bool CWallet::CreateStealthTransaction(CScript scriptPubKey, int64 nValue, std::
     CScript scriptP = CScript() << OP_RETURN << P;
     if (narr.size() > 0)
         scriptP = scriptP << OP_RETURN << narr;
-    vecSend.push_back(make_pair(scriptP, 0));
+    vecSend.push_back(make_pair(scriptP, MIN_TXOUT_AMOUNT));
 
     // -- shuffle inputs, change output won't mix enough as it must be not fully random for plantext narrations
     std::random_shuffle(vecSend.begin(), vecSend.end());
