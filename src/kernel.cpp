@@ -407,7 +407,7 @@ bool CheckCoinStakeTimestamp(int64 nTimeBlock, int64 nTimeTx)
 // Get stake modifier checksum
 unsigned int GetStakeModifierChecksum(const CBlockIndex* pindex)
 {
-    uint256 hashGenesisBlockTestnet = testnetNumber == 3 ? hashGenesisBlockTestNet3 : hashGenesisBlockTestNet4;
+    uint256 hashGenesisBlockTestnet = testnetNumber == 5 ? hashGenesisBlockTestNet5 : hashGenesisBlockTestNet4;
     assert (pindex->pprev || pindex->GetBlockHash() == (!fTestNet ? hashGenesisBlock : hashGenesisBlockTestnet));
     // Hash previous checksum with flags, hashProofOfStake and nStakeModifier
     CDataStream ss(SER_GETHASH, 0);

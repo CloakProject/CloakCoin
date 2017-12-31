@@ -4031,8 +4031,8 @@ Isto significa uma taxa de pelo menos %2 é necessária.</translation>
     </message>
     <message>
         <location line="+3"/>
-        <source>Listen for connections on &lt;port&gt; (default: 29662 or testnet: 29664)</source>
-        <translation>Escutar ligações na &lt;port&gt; (por defeito:29662 ou testnet: 29664)</translation>
+        <source>Listen for connections on &lt;port&gt; (default: 29662 or testnet: 29665)</source>
+        <translation>Escutar ligações na &lt;port&gt; (por defeito:29662 ou testnet: 29665)</translation>
     </message>
     <message>
         <location line="+5"/>

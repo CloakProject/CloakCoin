@@ -245,7 +245,7 @@ std::string HelpMessage(HelpMessageMode hmm)
         "  -socks=<n>             " + _("Select the version of socks proxy to use (4-5, default: 5)") + "\n" +
         "  -tor=<ip:port>         " + _("Use proxy to reach tor hidden services (default: same as -proxy)") + "\n"
         "  -dns                   " + _("Allow DNS lookups for -addnode, -seednode and -connect") + "\n" +
-        "  -port=<port>           " + _("Listen for connections on <port> (default: 29662 or testnet: 29664)") + "\n" +
+        "  -port=<port>           " + _("Listen for connections on <port> (default: 29662 or testnet: 29665)") + "\n" +
         "  -maxconnections=<n>    " + _("Maintain at most <n> connections to peers (default: 125)") + "\n" +
         "  -addnode=<ip>          " + _("Add a node to connect to and attempt to keep the connection open") + "\n" +
         "  -connect=<ip>          " + _("Connect only to the specified node(s)") + "\n" +
@@ -370,7 +370,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     // ********************************************************* Step 2: parameter interactions
 
     fTestNet = GetBoolArg("-testnet") || FORCE_TESTNET;
-    testnetNumber = (int)GetArg("-testnetnumber", 3);
+    testnetNumber = (int)GetArg("-testnetnumber", 5);
     if (FORCE_TESTNET)
         testnetNumber = FORCE_TESTNET;
 

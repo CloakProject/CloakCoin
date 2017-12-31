@@ -4632,8 +4632,8 @@ If the file does not exist, create it with owner-readable-only file permissions.
     </message>
     <message>
         <location line="+1"/>
-        <source>Listen for connections on &lt;port&gt; (default: 29662 or testnet: 29664)</source>
-        <translation>Принимать входящие подключения на &lt;port&gt; (по умолчанию: 29662 или 29662 в тестовой сети)</translation>
+        <source>Listen for connections on &lt;port&gt; (default: 29662 or testnet: 29665)</source>
+        <translation>Принимать входящие подключения на &lt;port&gt; (по умолчанию: 29662 или 29665 в тестовой сети)</translation>
     </message>
     <message>
         <location line="+1"/>
