@@ -352,7 +352,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
     }
 
     // add fee for stealth returns
-    total+=stealth*MIN_TXOUT_AMOUNT;
+    total += stealth * MIN_TXOUT_AMOUNT;
 
     if(recipients.size() > setAddress.size())
     {

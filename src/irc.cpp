@@ -307,8 +307,8 @@ void ThreadIRCSeed2(void* parg)
                 Send(hSocket, "JOIN #CloakCoinTEST4\r");
                 Send(hSocket, "WHO #CloakCoinTEST4\r");
             }else{
-                Send(hSocket, "JOIN #CloakCoinTEST3\r");
-                Send(hSocket, "WHO #CloakCoinTEST3\r");
+                Send(hSocket, "JOIN #CloakCoinTEST5\r");
+                Send(hSocket, "WHO #CloakCoinTEST5\r");
             }
 
         } else {

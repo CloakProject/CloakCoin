@@ -109,7 +109,7 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, bool isTestNet) : QWidget(0, f), c
 
     // draw testnet string if testnet is on
     if(isTestNet) {
-        if (testnetNumber == 3)
+        if (testnetNumber == 5)
         {
             // test net
             QFont boldFont = QFont(cloakFontFamily, 24*fontFactor);

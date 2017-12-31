@@ -75,7 +75,7 @@ namespace Checkpoints
 
     static MapCheckpoints mapCheckpointsTestnet =
         boost::assign::map_list_of
-        ( 0, testnetNumber == 3 ? hashGenesisBlockTestNet3 : hashGenesisBlockTestNet4 )
+        ( 0, testnetNumber == 5 ? hashGenesisBlockTestNet5 : hashGenesisBlockTestNet4 )
         ;
 
     bool CheckHardened(int nHeight, const uint256& hash)
@@ -345,7 +345,7 @@ namespace Checkpoints
     {
         // Test signing a sync-checkpoint with genesis block
         CSyncCheckpoint checkpoint;
-        uint256 hashCheckpointTestnet = testnetNumber == 3 ? hashGenesisBlockTestNet3 : hashGenesisBlockTestNet4;
+        uint256 hashCheckpointTestnet = testnetNumber == 5 ? hashGenesisBlockTestNet5 : hashGenesisBlockTestNet4;
         checkpoint.hashCheckpoint = !fTestNet ? hashGenesisBlock : hashCheckpointTestnet;
         CDataStream sMsg(SER_NETWORK, PROTOCOL_VERSION);
         sMsg << (CUnsignedSyncCheckpoint)checkpoint;

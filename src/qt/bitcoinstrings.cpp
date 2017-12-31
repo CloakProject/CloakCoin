@@ -116,7 +116,7 @@ QT_TRANSLATE_NOOP("cloakcoin-core", "Invalid amount for -paytxfee=<amount>: '%s'
 QT_TRANSLATE_NOOP("cloakcoin-core", "Invalid amount for -reservebalance=<amount>"),
 QT_TRANSLATE_NOOP("cloakcoin-core", "Invalid amount"),
 QT_TRANSLATE_NOOP("cloakcoin-core", "List commands"),
-QT_TRANSLATE_NOOP("cloakcoin-core", "Listen for connections on <port> (default: 29662 or testnet: 29664)"),
+QT_TRANSLATE_NOOP("cloakcoin-core", "Listen for connections on <port> (default: 29662 or testnet: 29665)"),
 QT_TRANSLATE_NOOP("cloakcoin-core", "Loading addresses..."),
 QT_TRANSLATE_NOOP("cloakcoin-core", "Loading block index..."),
 QT_TRANSLATE_NOOP("cloakcoin-core", "Loading wallet..."),

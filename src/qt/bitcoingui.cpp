@@ -551,7 +551,7 @@ void BitcoinGUI::setClientModel(ClientModel *clientModel)
 
         if (clientModel->isTestNet())
         {
-            if (testnetNumber == 3)
+            if (testnetNumber == 5)
                 setWindowTitle(windowTitle() + QString(" ") + tr("[testnet]") + instanceText);
             else
                 setWindowTitle(windowTitle() + QString(" ") + tr("[devnet]") + instanceText);

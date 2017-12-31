@@ -1147,10 +1147,10 @@ const boost::filesystem::path &GetDataDir(bool fNetSpecific)
 
     if ((fNetSpecific && GetBoolArg("-testnet", false)) || FORCE_TESTNET)
     {
-        if ((GetArg("-testnetnumber", 3)==4 && !FORCE_TESTNET) || FORCE_TESTNET == 4)
+        if ((GetArg("-testnetnumber", 5)==4 && !FORCE_TESTNET) || FORCE_TESTNET == 4)
             path /=  "testnet4";
         else
-            path /=  "testnet3";
+            path /=  "testnet5";
     }
 
     fs::create_directory(path);
