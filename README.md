@@ -1,4 +1,7 @@
-* Master branch currently contains 2.1.0.0 [beta 1 - testnet only] *
+* 2.1.0 branch currently contains legacy dev code [beta 1 - testnet only] *
+* anorak_master branch contains windows targeted source *
+* anorak_linux branch contains (yes, you guessed it!) linux targeted source *
+* master branch is currently empty as we want to save it for a future unified source branch, to cover win/linux/mac platforms in one codebase*
 
 ---------------------------------------------------------------------------------------------------------------------------------------
 
