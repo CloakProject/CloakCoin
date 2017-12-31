@@ -15,8 +15,10 @@ STATIC:=1
 # Paths to locally built libraries
 BDB_INCLUDE_PATH:=/usr/local/BerkeleyDB.4.8/include
 BDB_LIB_PATH:=/usr/local/BerkeleyDB.4.8/lib
-OPENSSL_INCLUDE_PATH:=/usr/local/ssl/include
-OPENSSL_LIB_PATH:=/usr/local/ssl/lib
+OPENSSL_INCLUDE_PATH:=/opt/deps/openssl-1.0.2g/include
+OPENSSL_LIB_PATH:=/opt/deps/openssl-1.0.2g
+BOOST_INCLUDE_PATH:=/usr/local/include
+BOOST_LIB_PATH:=/usr/local/lib
 
 LINK:=$(CXX)
 
@@ -60,8 +62,8 @@ ifndef USE_UPNP
 	override USE_UPNP = -
 endif
 ifneq (${USE_UPNP}, -)
-	LIBS += -l miniupnpc -L$(CURDIR)/miniupnpc
-	DEFS += -DUSE_UPNP=$(USE_UPNP) $(addprefix -I,$(CURDIR)/miniupnpc)
+	LIBS += /opt/deps/miniupnpc/libminiupnpc.a
+	DEFS += -DUSE_UPNP=$(USE_UPNP) $(addprefix -I,$(/opt/deps/miniupnpc))
 endif
 
 ifneq (${USE_IPV6}, -)
@@ -113,7 +115,7 @@ DEBUGFLAGS=-g
 # CXXFLAGS can be specified on the make command line, so we use xCXXFLAGS that only
 # adds some defaults in front. Unfortunately, CXXFLAGS=... $(CXXFLAGS) does not work.
 #  xCXXFLAGS=-O2 -msse2 -pthread -Wall -Wextra -Wformat -Wformat-security -Wno-unused-parameter
-xCXXFLAGS=-static-libstdc++ -O2 $(EXT_OPTIONS) -pthread -Wformat -Wformat-security -Wno-unused-parameter -DNOSSE \
+xCXXFLAGS=-static-libstdc++ -std=c++11 -O2 $(EXT_OPTIONS) -pthread -Wformat -Wformat-security -Wno-unused-parameter -DNOSSE \
     $(DEBUGFLAGS) $(DEFS) $(HARDENING) $(CXXFLAGS)
 
 ifneq "$(or $(__arm__),$(__aarch64__))" ""
