@@ -76,10 +76,10 @@ static const uint256 hashMerkelRootTestNet4("0x1831d9f590f8b705ed996fcaa37ece517
 static const unsigned int blockTimeTestNet4 = 1414697233;
 static const unsigned int nNonceTestNet4 = 1363324;
 
-static const uint256 hashGenesisBlockTestNet3 ("d5c43cbc3f7ada64f950b045c3a25d3ba6a656198cb1f7a1b8aa0b6ec882a968");
-static const uint256 hashMerkelRootTestNet3("0x1831d9f590f8b705ed996fcaa37ece517cfa6eb619af6738b2606383eab5a619");
-static const unsigned int blockTimeTestNet3 = 1436293363;
-static const unsigned int nNonceTestNet3 = 1363333;
+static const uint256 hashGenesisBlockTestNet5 ("d5c43cbc3f7ada64f950b045c3a25d3ba6a656198cb1f7a1b8aa0b6ec882a968");
+static const uint256 hashMerkelRootTestNet5("0x1831d9f590f8b705ed996fcaa37ece517cfa6eb619af6738b2606383eab5a619");
+static const unsigned int blockTimeTestNet5 = 1436293363;
+static const unsigned int nNonceTestNet5 = 1363333;
 
 static const int64 nClockDriftSwitchHeight = 59860;
 static const int64 nMaxClockDriftOrig = 2 * 60 * 60;
@@ -1689,7 +1689,7 @@ public:
             if (vHave.size() > 10)
                 nStep *= 2;
         }
-        uint256 hashGenesisBlockTestnet = testnetNumber == 3 ? hashGenesisBlockTestNet3 : hashGenesisBlockTestNet4;
+        uint256 hashGenesisBlockTestnet = testnetNumber == 5 ? hashGenesisBlockTestNet5 : hashGenesisBlockTestNet4;
         vHave.push_back((!fTestNet ? hashGenesisBlock : hashGenesisBlockTestnet));
     }
 
@@ -1743,7 +1743,7 @@ public:
                     return hash;
             }
         }
-        uint256 hashGenesisBlockTestnet = testnetNumber == 3 ? hashGenesisBlockTestNet3 : hashGenesisBlockTestNet4;
+        uint256 hashGenesisBlockTestnet = testnetNumber == 5 ? hashGenesisBlockTestNet5 : hashGenesisBlockTestNet4;
         return (!fTestNet ? hashGenesisBlock : hashGenesisBlockTestnet);
     }
 

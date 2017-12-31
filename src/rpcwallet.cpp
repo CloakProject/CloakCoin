@@ -324,15 +324,10 @@ Value sendcloakedtoaddress(const Array& params, bool fHelp)
         ""
             + HelpRequiringPassphrase());
 
-    throw JSONRPCError(RPC_INVALID_REQUEST, "Sorry, enigma is not enabled in daemon.  Send coins without enigma on daemon or revert to wallet.");
-
     string strAddress = params[0].get_str();
-
-    CStealthAddress address;
     if (!IsStealthAddress(strAddress)){
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid CloakCoin address");
     }
-    address.SetEncoded(strAddress);
 
     // Amount
     int64 nAmount = AmountFromValue(params[1]);
@@ -397,9 +392,15 @@ Value sendcloakedtoaddress(const Array& params, bool fHelp)
     CCloakingRequest* req = CCloakingRequest::CreateForBroadcast(numCloakers-1, 1, timeoutMins * 60, CCloakShield::GetShield()->GetRoutingKey(), nAmount);
 
     // add outputs / fill vouts
+    CStealthAddress address;
+    address.SetEncoded(strAddress);
+
+    uint256 standardNonce = uint256(HexStr(req->stealthRootKey)); // recipients always use the root stealth nonce
+
+    printf("** generating recipient one-time stealth addresses **\n");
     vector<CScript> scripts;
     vector<ec_secret> secrets;
-    pwalletMain->GetEnigmaChangeAddresses(address, req->stealthRootKey, address.GetEnigmaAddressPrivateHash(), GetRandRange(2, 3), scripts, secrets);
+    pwalletMain->GetEnigmaChangeAddresses(address, req->stealthRootKey, standardNonce, GetRandRange(2, 3), scripts, secrets);
     vector<int64> amounts = SplitAmount(nAmount, MIN_TXOUT_AMOUNT, static_cast<int>(scripts.size()));
     for (unsigned int i = 0; i<(unsigned int)amounts.size(); i++){
         inOuts.vout.push_back(CTxOut(amounts.at(i), scripts.at(i)));
@@ -442,7 +443,7 @@ Value sendcloakedtoaddress(const Array& params, bool fHelp)
         Object result;
         result.push_back(Pair("result", "Enigma request initiated."));
         result.push_back(Pair("amount to cloak", FormatMoney(nAmount)));
-        result.push_back(Pair("cloakers", req->nParticipantsRequired));
+        result.push_back(Pair("cloakers", numCloakers));
         result.push_back(Pair("timeout secs", req->timeoutSecs));
         result.push_back(Pair("retry-enabled", req->autoRetry));
         result.push_back(Pair("request id", req->identifier.GetHash().GetHex()));
@@ -475,7 +476,7 @@ Value sendtoaddress(const Array& params, bool fHelp)
     {
         if (IsStealthAddress(strAddress))
         {
-            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Stealth addresses are not available through the daemon.  Coming soon.");
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "For Stealth addresses, use sendtostealthaddress.");
         }
         else
         {
@@ -2331,13 +2332,15 @@ Value sendtostealthaddress(const Array& params, bool fHelp)
     if (params.size() > 3 && params[3].type() != null_type && !params[3].get_str().empty())
         wtx.mapValue["to"]      = params[3].get_str();
 
-    std::string sNarr;
+    std::string sNarr = "";
     if (params.size() > 4 && params[4].type() != null_type && !params[4].get_str().empty())
+    {
         sNarr = params[4].get_str();
     
-    if (sNarr.length() > 24)
-        throw runtime_error("Narration must be 24 characters or less.");
-    
+        if (sNarr.length() > 24)
+            throw runtime_error("Narration must be 24 characters or less.");
+    }
+
     std::string sError;
     if (!pwalletMain->SendStealthMoneyToDestination(sxAddr, nAmount, sNarr, wtx, sError))
         throw JSONRPCError(RPC_WALLET_ERROR, sError);
@@ -2555,3 +2558,4 @@ Value listcloakingactive(const Array& params, bool fHelp)
 
     return result;
 }
+

@@ -4004,8 +4004,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+3"/>
-        <source>Listen for connections on &lt;port&gt; (default: 29662 or testnet: 29664)</source>
-        <translation type="unfinished">Listen for connections on &lt;port&gt; (default: 8333 or testnet: 18333) {29662 ?} {29664)?}</translation>
+        <source>Listen for connections on &lt;port&gt; (default: 29662 or testnet: 29665)</source>
+        <translation type="unfinished">Listen for connections on &lt;port&gt; (default: 8333 or testnet: 18333) {29662 ?} {29665)?}</translation>
     </message>
     <message>
         <location line="+5"/>

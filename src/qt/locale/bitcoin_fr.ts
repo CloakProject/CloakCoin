@@ -4025,8 +4025,8 @@ Cela veut dire que des frais d&apos;au moins %1 par kb sont requis.</translation
     </message>
     <message>
         <location line="+3"/>
-        <source>Listen for connections on &lt;port&gt; (default: 29662 or testnet: 29664)</source>
-        <translation>Écouter les connexions sur &lt;port&gt; (défaut: 29662 ou testnet: 29664)</translation>
+        <source>Listen for connections on &lt;port&gt; (default: 29662 or testnet: 29665)</source>
+        <translation>Écouter les connexions sur &lt;port&gt; (défaut: 29662 ou testnet: 29665)</translation>
     </message>
     <message>
         <location line="+5"/>

@@ -118,7 +118,7 @@ libpng v1.6.16
 
 libEvent v2.0.21
 
-miniupnpc v1.9
+miniupnpc v1.9.20140911
 
 protobuf v2.6.1
 

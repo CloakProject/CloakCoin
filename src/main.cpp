@@ -1804,7 +1804,7 @@ bool CBlock::SetBestChain(CTxDB& txdb, CBlockIndex* pindexNew)
     if (!txdb.TxnBegin())
         return error("SetBestChain() : TxnBegin failed");
 
-    uint256 hashGenesisBlockTestnet = testnetNumber == 3 ? hashGenesisBlockTestNet3 : hashGenesisBlockTestNet4;
+    uint256 hashGenesisBlockTestnet = testnetNumber == 5 ? hashGenesisBlockTestNet5 : hashGenesisBlockTestNet4;
     if (pindexGenesisBlock == NULL && hash == (!fTestNet ? hashGenesisBlock : hashGenesisBlockTestnet))
     {
         txdb.WriteHashBestChain(hash);
@@ -2469,7 +2469,7 @@ bool CBlock::SignBlock(const CKeyStore& keystore)
 // ppcoin: check block signature
 bool CBlock::CheckBlockSignature() const
 {
-    uint256 hashGenesisBlockTestnet = testnetNumber == 3 ? hashGenesisBlockTestNet3 : hashGenesisBlockTestNet4;
+    uint256 hashGenesisBlockTestnet = testnetNumber == 5 ? hashGenesisBlockTestNet5 : hashGenesisBlockTestNet4;
     if (GetHash() == (!fTestNet ? hashGenesisBlock : hashGenesisBlockTestnet))
         return vchBlockSig.empty();
 
@@ -2639,8 +2639,8 @@ bool LoadBlockIndex(bool fAllowNew)
         txNew.vin[0].scriptSig = CScript() << 486604799 << CBigNum(9999) << vector<unsigned char>((const unsigned char*)pszTimestamp, (const unsigned char*)pszTimestamp + strlen(pszTimestamp));
         txNew.vout[0].SetEmpty();
 
-        unsigned int blockTimeTestNet = testnetNumber == 3 ? blockTimeTestNet3 : blockTimeTestNet4;
-        unsigned int nNonceTestNet = testnetNumber == 3 ? nNonceTestNet3 : nNonceTestNet4;
+        unsigned int blockTimeTestNet = testnetNumber == 5 ? blockTimeTestNet5 : blockTimeTestNet4;
+        unsigned int nNonceTestNet = testnetNumber == 5 ? nNonceTestNet5 : nNonceTestNet4;
 
         CBlock block;
         block.vtx.push_back(txNew);
@@ -2678,13 +2678,13 @@ bool LoadBlockIndex(bool fAllowNew)
 
         if(fTestNet)
         {
-            uint256 hashMerkelRootTestnet = testnetNumber == 3 ? hashMerkelRootTestNet3 : hashMerkelRootTestNet4;
+            uint256 hashMerkelRootTestnet = testnetNumber == 5 ? hashMerkelRootTestNet5 : hashMerkelRootTestNet4;
             assert(block.hashMerkleRoot == hashMerkelRootTestnet);
         }else{
             assert(block.hashMerkleRoot == hashMerkelRootOfficial);
         }
 
-        uint256 hashGenesisBlockTestnet = testnetNumber == 3 ? hashGenesisBlockTestNet3 : hashGenesisBlockTestNet4;
+        uint256 hashGenesisBlockTestnet = testnetNumber == 5 ? hashGenesisBlockTestNet5 : hashGenesisBlockTestNet4;
         assert(block.GetHash() == (!fTestNet ? hashGenesisBlock : hashGenesisBlockTestnet));
 
         // Start new block file
