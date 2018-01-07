@@ -3681,11 +3681,6 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <translation>Показать подробности транзакции</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Remove TX from wallet</source>
-        <translation>Убрать TX из кошелька</translation>
-    </message>
-    <message>
         <location line="+148"/>
         <source>Export Transaction Data</source>
         <translation>Экспортировать данные транзакций</translation>

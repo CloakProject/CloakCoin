@@ -3671,11 +3671,6 @@ Isto significa uma taxa de pelo menos %2 é necessária.</translation>
         <translation>Mostrar detalhes da transação</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Remove TX from wallet</source>
-        <translation>Remover TX da carteira</translation>
-    </message>
-    <message>
         <location line="+148"/>
         <source>Export Transaction Data</source>
         <translation>Exportar dados da transação</translation>

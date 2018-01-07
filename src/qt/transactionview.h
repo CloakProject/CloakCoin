@@ -62,7 +62,6 @@ private slots:
     void dateRangeChanged();
     void viewTxExplorer();
     void showDetails();
-    bool removeFromWallet();
     void copyAddress();
     void copyTxId();
     void editLabel();

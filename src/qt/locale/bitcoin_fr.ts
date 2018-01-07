@@ -3665,11 +3665,6 @@ Cela veut dire que des frais d&apos;au moins %1 par kb sont requis.</translation
         <translation>Voir les détails de la transaction</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Remove TX from wallet</source>
-        <translation>Retirer la transaction du portefeuille</translation>
-    </message>
-    <message>
         <location line="+148"/>
         <source>Export Transaction Data</source>
         <translation>Exporter les données de transaction</translation>
