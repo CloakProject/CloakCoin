@@ -1689,7 +1689,6 @@ build/ui_rpcconsole.h: src/qt/forms/rpcconsole.ui
 	/usr/lib/x86_64-linux-gnu/qt5/bin/uic src/qt/forms/rpcconsole.ui -o build/ui_rpcconsole.h
 
 build/ui_optionsdialog.h: src/qt/forms/optionsdialog.ui \
-		src/qt/bitcoinamountfield.h \
 		src/qt/qvaluecombobox.h \
 		src/qt/qvalidatedlineedit.h
 	/usr/lib/x86_64-linux-gnu/qt5/bin/uic src/qt/forms/optionsdialog.ui -o build/ui_optionsdialog.h

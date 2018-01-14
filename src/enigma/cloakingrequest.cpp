@@ -236,26 +236,37 @@ bool CCloakingRequest::CreateCloakerTxOutputs(vector<CTxOut>& outputs)
 {
     // todo: this creates a zero / empty script output at end of outputs - fix!
     int64 totalReward = this->nSendAmount * ENIGMA_TOTAL_FEE_PERCENT * 0.01;
-    int64 reward = totalReward / this->nParticipantsRequired;
+    int indexReward = 0;
+
+    // wfd: making nparticants also npComplete. we do this by guaranteeing a participant
+    //      between 30-70 percent of the enigma fee for the fee they are guaranteeing.
+    uint64 totalParticipantDistribution = 0;
+    uint64 totalParticipantReward = 0;
+    uint64 participantDistribution[this->nParticipantsRequired];
+    uint64 participantReward[this->nParticipantsRequired];
+    for (int i=0; i<this->nParticipantsRequired; i++)
+    {
+        // each participant is guaranteed from 30-70% of the evenly split amount
+        participantDistribution[i] = GetRandRange(30000, 70000);
+        totalParticipantDistribution += participantDistribution[i];
+    }
+    // split the reward amoung participants.
+    for (int i=0; i<this->nParticipantsRequired - 1; i++)
+    {
+        participantReward[i] = totalReward * participantDistribution[i] / totalParticipantDistribution;
+        totalParticipantReward += participantReward[i];
+    }
+    participantReward[this->nParticipantsRequired - 1] = totalReward - totalParticipantReward;
+    totalParticipantReward += participantReward[this->nParticipantsRequired - 1]; // make value correct.
 
     BOOST_FOREACH(const CCloakingParticipant& cloaker, sParticipants){
-        int64 change = cloaker.inOuts.nInputAmount + reward;
-        // create 2-3 matching outputs that equal send amount before splitting up the rest of the change
-        std::vector<int64> amounts = SplitAmount(this->nSendAmount, MIN_TXOUT_AMOUNT, GetRandRange(2, 3));
-        change-=this->nSendAmount;
+        int64 input = cloaker.inOuts.nInputAmount + participantReward[indexReward++];
 
-        if (change > MIN_TXOUT_AMOUNT){
-            // now split up the remaining change between 1-3 outputs. any reward/change will be allocated to these
-            // outputs before the tx inputs and outputs are shuffled prior to tx creation (for signing)
-            std::vector<int64> amounts2 = SplitAmount(change, MIN_TXOUT_AMOUNT, GetRandRange(1, 3));
-            amounts.insert(amounts.end(), amounts2.begin(), amounts2.end());
-        }else{
-            int idx = GetRandInt(amounts.size()-1);
-            amounts.at(idx)+=change;
-        }
+        // create 2-4 matching outputs that equal send amount before splitting up the rest of the change
+        std::vector<int64> amounts = SplitAmount(input, MIN_TXOUT_AMOUNT, GetRandRange(2, 4));
 
         vector<ec_secret> secrets;
-        vector<CScript> scriptChange;        
+        vector<CScript> scriptChange;
         if (!pwalletMain->GetEnigmaChangeAddresses(cloaker.stealthAddressObj, this->stealthRootKey, cloaker.inOuts.stealthHash, amounts.size(), scriptChange, secrets)){
             printf("CCloakingRequest:HandleCloakerOutputs GetEnigmaChangeAddresses failed\n");
             return false;
@@ -289,6 +300,7 @@ bool CCloakingRequest::CreateCloakerTxOutputs(vector<CTxOut>& outputs)
     }
     return true;
 }
+
 
 bool CCloakingRequest::CreateEnigmaOutputs(CCloakingInputsOutputs &inOutsCloakers, CCloakingInputsOutputs &inOutsOurs, CCloakingInputsOutputs &inOutsFinal)
 {
