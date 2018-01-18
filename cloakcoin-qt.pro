@@ -80,32 +80,27 @@ macx {
      #QMAKE_RPATHDIR += @executable_path/lib
      #QMAKE_RPATHDIR += @executable_path
 
-     BOOST_INCLUDE_PATH += /Users/joe/Documents/cloak_deps/boost_1_57_0
-     BOOST_LIB_PATH=/Users/joe/Documents/cloak_deps/boost_1_57_0/stage/lib
+     BOOST_INCLUDE_PATH += /opt/local/include/boost
+     BOOST_LIB_PATH=/opt/local/lib
 
-     BOOST_LIB_SUFFIX = -clang-darwin42-mt-s-1_57
+     # Why was that so specific? No clue, brew version just have -mt
+     # BOOST_LIB_SUFFIX = -clang-darwin42-mt-s-1_57
+     BOOST_LIB_SUFFIX = -mt
 
-     #BDB_INCLUDE_PATH = /opt/local/include/db48
+     BDB_INCLUDE_PATH = /opt/local/include/db48
      #BDB_LIB_PATH = /opt/local/lib/db48
-
-     BDB_INCLUDE_PATH = /Users/joe/Documents/cloak_deps/db-4.8.30.NC/build_unix
-     BDB_LIB_PATH = /Users/joe/Documents/cloak_deps/db-4.8.30.NC/build_unix
      BDB_LIB_SUFFIX = -4.8
-
-     OPENSSL_INCLUDE_PATH = /usr/local/ssl/include
-     OPENSSL_LIB_PATH = /usr/local/ssl/lib
-
-     QRENCODE_LIB_PATH="/opt/local/lib"
-     QRENCODE_INCLUDE_PATH="/opt/local/include"
 
      DEFINES += USE_LEVELDB
      INCLUDEPATH += src/leveldb/include src/leveldb/helpers src/leveldb/helpers/memenv
      SOURCES += src/txdb-leveldb.cpp
-     LIBS+=$$PWD/src/leveldb/libleveldb.a $$PWD/src/leveldb/libmemenv.a
-     LIBS+=/opt/local/lib/libcurl.a
-     LIBS+=-L/usr/local/Cellar/libevent/2.0.22/lib/
-     INCLUDEPATH+=/opt/local/include/curl
-     INCLUDEPATH+=/usr/local/Cellar/libevent/2.0.22/include
+     # Use repo compiled version. Warning: repo doesn't have the Mac version
+     # LIBS+=$$PWD/src/leveldb/libleveldb.a $$PWD/src/leveldb/libmemenv.a
+     LIBS+=/usr/local/lib/*.a /opt/local/lib/*.a /opt/local/lib/db48/*.a
+     INCLUDEPATH+=/opt/local/include/curl /opt/local/include
+     INCLUDEPATH+=/usr/local/opt/libevent/include
+     # For .moc files
+     INCLUDEPATH += $$PWD/build	
 }
 
 linux {
@@ -133,13 +128,17 @@ contains(RELEASE, 1) {
 	LIBS += -Wl,-Bstatic
     }
 }
-
-!win32 {
 # for extra security against potential buffer overflows: enable GCCs Stack Smashing Protection
-QMAKE_CXXFLAGS *= -fstack-protector-all --param ssp-buffer-size=1
-QMAKE_LFLAGS *= -fstack-protector-all --param ssp-buffer-size=1
 # We need to exclude this for Windows cross compile with MinGW 4.2.x, as it will result in a non-working executable!
 # This can be enabled for Windows, when we switch to MinGW >= 4.4.x.
+linux {
+QMAKE_CXXFLAGS *= -fstack-protector-all --param ssp-buffer-size=1 -std=c++11
+QMAKE_LFLAGS *= -fstack-protector-all --param ssp-buffer-size=1 -std=c++11 -fno-pie -no-pie
+}
+macx {
+# Clang on Mac doesn't seem to support -no-pie option
+QMAKE_CXXFLAGS *= -fstack-protector-all --param ssp-buffer-size=1 -std=c++11
+QMAKE_LFLAGS *= -fstack-protector-all --param ssp-buffer-size=1 -std=c++11 -fno-pie
 }
 # for extra security on Windows: enable ASLR and DEP via GCC linker flags
 win32:QMAKE_LFLAGS *= -Wl,--dynamicbase -Wl,--nxcompat
@@ -175,7 +174,7 @@ contains(USE_UPNP, -) {
     INCLUDEPATH += C:/deps/miniupnpc
     DEFINES += USE_UPNP=$$USE_UPNP MINIUPNP_STATICLIB
     win32:LIBS += C:/deps/miniupnpc/libminiupnpc.a
-    macx:LIBS += /opt/local/lib/libminiupnpc.a
+    macx:LIBS += /usr/local/lib/libminiupnpc.a
     !windows:!macx{
 	LIBS += -lminiupnpc
     }
@@ -762,7 +761,6 @@ macx:DEFINES += MAC_OSX MSG_NOSIGNAL=0
 macx:ICON = src/qt/res/icons/bitcoin.icns
 macx:TARGET = "cloakcoin-qt"
 macx:QMAKE_CFLAGS_THREAD += -pthread
-macx:QMAKE_LFLAGS_THREAD += -pthread
 macx:QMAKE_CXXFLAGS_THREAD += -pthread
 
 # libsecp256k1
@@ -771,8 +769,6 @@ macx:QMAKE_CXXFLAGS_THREAD += -pthread
 
 # Set libraries and includes at end, to use platform-defined defaults if not overridden
 INCLUDEPATH += $$BOOST_INCLUDE_PATH $$BDB_INCLUDE_PATH $$OPENSSL_INCLUDE_PATH $$QRENCODE_INCLUDE_PATH
-# libdb_cxx-4.8.a
-macx:LIBS += /Users/joe/Documents/cloak_deps/db-4.8.30.NC/build_unix/libdb_cxx-4.8.a
 LIBS += $$join(BOOST_LIB_PATH,,-L,) $$join(OPENSSL_LIB_PATH,,-L,) $$join(QRENCODE_LIB_PATH,,-L,)
 LIBS += -lssl -lcrypto
 !macx:LIBS += $$join(BDB_LIB_PATH,,-L,) -ldb_cxx$$BDB_LIB_SUFFIX
