@@ -29,6 +29,7 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 OBJECTS_DIR = build
 MOC_DIR = build
 UI_DIR = build
+RCC_DIR = build
 
 message(LIBS = $$LIBS)
 
