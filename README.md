@@ -2,6 +2,8 @@
 
 CloakCoin is a cool new crypto currency that will feature a uniquely implemented anonymization feature that uses exchanges on the back end and a decoupled transaction flow architecture.
 
+CloakCoin uses the Enigma system in order to facilitate private/secure transactions. See the [explanation](ENIGMA.md) or the [Whitepaper](https://www.cloakcoin.com/resources/CloakCoin_ENIGMA_Whitepaper_v1.0.pdf) for more details.
+
 ## Branches explanation
 
 - `2.1.0` branch currently contains legacy dev code [beta 1 - testnet only

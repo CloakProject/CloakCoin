@@ -1,4 +1,4 @@
-Cloak uses the Enigma system in order to faclilate private/secure transactionns. 
+Cloak uses the Enigma system in order to facilitate private/secure transactions. 
 
 _How does this work?_
 
