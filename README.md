@@ -23,21 +23,22 @@ To install the depencies, you need to use your system package manager:
 
 **TODO: all Debian/Ubuntu packages must be checked.**
 
-| Dep            | Min. version  | Debian/Ubuntu pkg  | HomeBrew pkg    | Optional | Purpose        |
-| -------------- | ------------- | ------------------ | --------------- | -------- | -------------  |
-| Qt             | 5.5.1         | ???                | `qt`            | NO       | GUI            |
-| Boost          | 1.57          | `libboost-all-dev` | `boost`         | NO       | C++ libraries  |
-| OpenSSL        | 1.0.2g        | `libssl-dev`       | `openssl`       | NO       | ha256 sum      |
-| Curl           | any           | `curl`             | `curl`          | NO       | Requests       |
-| libpng         | 1.6.16        | `libpng`           | `libpng`        | NO       | Images (PNG)   |
-| libevent       | 2.0.21        | `libevent`         | `libevent`      | NO       | Requests       |
-| LevelDB        | 1.2           | `leveldb`          | `leveldb`       | NO       | Database       |
-| Berkeley DB    | 1.2           | `berkeley-db@4`    | `berkeley-db@4` | YES*     | Database       |
-| qrencode       | 3.4.4         | `qrencode`         | `qrencode`      | YES      | QR Codes       |
-| libminiupnpc   | 1.9           | `libminiupnpc-dev` | `miniupnpc`     | YES      | NAT punching   |
-| Doxygen        | any           | `doxygen`          | `doxygen`       | YES      | Documentation  |
+| Dep            | Min. version   | Debian/Ubuntu pkg  | HomeBrew pkg    | Optional | Purpose        |
+| -------------- | -------------- | ------------------ | --------------- | -------- | -------------  |
+| Qt             | 5.5.1          | ???                | `qt`            | NO       | GUI            |
+| Boost          | 1.57           | `libboost-all-dev` | `boost`         | NO       | C++ libraries  |
+| OpenSSL        | 1.0.2g         | `libssl-dev`       | `openssl`       | NO       | ha256 sum      |
+| Curl           | any            | `curl`             | `curl`          | NO       | Requests       |
+| libpng         | 1.6.16         | `libpng`           | `libpng`        | NO       | Images (PNG)   |
+| libevent       | 2.0.21         | `libevent`         | `libevent`      | NO       | Requests       |
+| LevelDB        | 1.2            | `leveldb`          | `leveldb`       | NO       | Database       |
+| Berkeley DB    | 1.2            | `berkeley-db@4`    | `berkeley-db@4` | YES*     | Database       |
+| qrencode       | 3.4.4          | `qrencode`         | `qrencode`      | YES      | QR Codes       |
+| libminiupnpc   | 1.9.20140911** | `libminiupnpc-dev` | `miniupnpc`     | YES      | NAT punching   |
+| Doxygen        | any            | `doxygen`          | `doxygen`       | YES      | Documentation  |
 
 \* You need either LevelDB or Berkeley DB. Berkeley DB support might be removed in the future.
+\*\* This version is very specific, as 1.9 seems to have some non-compatible changes. 2.0 probably won't work (test needed)
 
 ### Compiling
 
