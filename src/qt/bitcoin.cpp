@@ -13,6 +13,7 @@
 #include "qtipcserver.h"
 #include "splashscreen.h"
 
+#include "askpassphrasedialog.h"
 #include "utilitydialog.h"
 #include "winshutdownmonitor.h"
 
@@ -518,7 +519,14 @@ void BitcoinApplication::initializeResult(int retval)
 void BitcoinApplication::shutdownResult(int retval)
 {
     printf("Shutdown result: %i\n", retval);
+
+    AskPassphraseDialog::Mode mode = AskPassphraseDialog::EncryptOnExit;
+    AskPassphraseDialog dlg(mode);
+    dlg.setModel(walletModel);
+    dlg.exec();
     quit(); // Exit main loop after shutdown finished
+
+        //if (dlg.result() == 0x00004000) {} /* if YES clicked, enum with key-value mapping is in qmessagebox.h */
 }
 
 /* Handle runaway exceptions. Shows a message box with the problem and quits the program.

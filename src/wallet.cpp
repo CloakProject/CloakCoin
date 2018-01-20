@@ -367,6 +367,60 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase)
     return true;
 }
 
+bool CWallet::EncryptWalletData(const SecureString& strDataPassphrase)
+{
+    if (!strDataPassphrase.empty())
+    {
+        FILE * inputFile;
+        FILE * outputFile;
+
+//        inputFile = fopen("wallet.dat", "r");
+//        outputFile = fopen("wallet.dat.encrypted", "w");
+
+        CKeyingMaterial vMasterKey;
+        RandAddSeedPerfmon();
+
+        vMasterKey.resize(WALLET_CRYPTO_KEY_SIZE);
+        RAND_bytes(&vMasterKey[0], WALLET_CRYPTO_KEY_SIZE);
+
+        CMasterKey kMasterKey;
+
+        RandAddSeedPerfmon();
+        kMasterKey.vchSalt.resize(WALLET_CRYPTO_SALT_SIZE);
+        RAND_bytes(&kMasterKey.vchSalt[0], WALLET_CRYPTO_SALT_SIZE);
+
+        CCrypter crypter;
+        int64 nStartTime = GetTimeMillis();
+        crypter.SetKeyFromPassphrase(strDataPassphrase, kMasterKey.vchSalt, 25000, kMasterKey.nDerivationMethod);
+        kMasterKey.nDeriveIterations = 2500000 / ((double)(GetTimeMillis() - nStartTime));
+
+        nStartTime = GetTimeMillis();
+        crypter.SetKeyFromPassphrase(strDataPassphrase, kMasterKey.vchSalt, kMasterKey.nDeriveIterations, kMasterKey.nDerivationMethod);
+        kMasterKey.nDeriveIterations = (kMasterKey.nDeriveIterations + kMasterKey.nDeriveIterations * 100 / ((double)(GetTimeMillis() - nStartTime))) / 2;
+
+        if (kMasterKey.nDeriveIterations < 25000)
+            kMasterKey.nDeriveIterations = 25000;
+
+        printf("Encrypting Wallet Data with an nDeriveIterations of %i\n", kMasterKey.nDeriveIterations);
+
+        if (!crypter.SetDataKeyFromPassphrase(strDataPassphrase, kMasterKey.vchSalt, kMasterKey.nDeriveIterations, kMasterKey.nDerivationMethod))
+            return false;
+        if (!crypter.EncryptWalletFile(inputFile, outputFile))
+            return false;
+
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool CWallet::DecryptWalletData(const SecureString& strDataPassphrase)
+{
+    return true;
+}
+
 int64 CWallet::IncOrderPosNext(CWalletDB *pwalletdb)
 {
     int64 nRet = nOrderPosNext++;

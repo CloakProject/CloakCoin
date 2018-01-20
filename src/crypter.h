@@ -65,31 +65,43 @@ class CCrypter
 {
 private:
     unsigned char chKey[WALLET_CRYPTO_KEY_SIZE];
+    unsigned char chDataKey[WALLET_CRYPTO_KEY_SIZE];
     unsigned char chIV[WALLET_CRYPTO_KEY_SIZE];
+    unsigned char chDataIV[WALLET_CRYPTO_KEY_SIZE];
     bool fKeySet;
+    bool fDataKeySet;
 
 public:
     bool SetKeyFromPassphrase(const SecureString &strKeyData, const std::vector<unsigned char>& chSalt, const unsigned int nRounds, const unsigned int nDerivationMethod);
+    bool SetDataKeyFromPassphrase(const SecureString &strKeyData, const std::vector<unsigned char>& chSalt, const unsigned int nRounds, const unsigned int nDerivationMethod);
     bool Encrypt(const CKeyingMaterial& vchPlaintext, std::vector<unsigned char> &vchCiphertext);
+    bool EncryptWalletFile(FILE *ifp, FILE *ofp);
+    bool DecryptWalletFile(FILE *ifp, FILE *ofp);
     bool Decrypt(const std::vector<unsigned char>& vchCiphertext, CKeyingMaterial& vchPlaintext);
     bool SetKey(const CKeyingMaterial& chNewKey, const std::vector<unsigned char>& chNewIV);
 
     void CleanKey()
     {
         memset(&chKey, 0, sizeof chKey);
+        memset(&chDataKey, 0, sizeof chDataKey);
         memset(&chIV, 0, sizeof chIV);
+        memset(&chDataIV, 0, sizeof chDataIV);
         fKeySet = false;
+        fDataKeySet = false;
     }
 
     CCrypter()
     {
         fKeySet = false;
+        fDataKeySet = false;
 
         // Try to keep the key data out of swap (and be a bit over-careful to keep the IV that we don't even use out of swap)
         // Note that this does nothing about suspend-to-disk (which will put all our key data on disk)
         // Note as well that at no point in this program is any attempt made to prevent stealing of keys by reading the memory of the running process.
         LockedPageManager::instance.LockRange(&chKey[0], sizeof chKey);
+        LockedPageManager::instance.LockRange(&chDataKey[0], sizeof chDataKey);
         LockedPageManager::instance.LockRange(&chIV[0], sizeof chIV);
+        LockedPageManager::instance.LockRange(&chDataIV[0], sizeof chDataIV);
     }
 
     ~CCrypter()
@@ -97,7 +109,9 @@ public:
         CleanKey();
 
         LockedPageManager::instance.UnlockRange(&chKey[0], sizeof chKey);
+        LockedPageManager::instance.UnlockRange(&chDataKey[0], sizeof chDataKey);
         LockedPageManager::instance.UnlockRange(&chIV[0], sizeof chIV);
+        LockedPageManager::instance.UnlockRange(&chDataIV[0], sizeof chDataIV);
     }
 };
 

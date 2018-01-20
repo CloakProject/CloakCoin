@@ -87,12 +87,12 @@ void Shutdown(void* parg)
         boost::filesystem::remove(GetPidFile());
         UnregisterWallet(pwalletMain);
         delete pwalletMain;
-        NewThread(ExitTimeout, NULL);
-        Sleep(50);
-        printf("CloakCoin exited\n\n");
+//        NewThread(ExitTimeout, NULL);
+//        Sleep(50);
+//        printf("CloakCoin exited\n\n");
         fExit = true;
 #ifndef QT_GUI
-	printf("Exiting non-UI client");
+    printf("Exiting non-UI client");
         // ensure non-UI client gets exited here, but let Bitcoin-Qt reach 'return 0;' in bitcoin.cpp
         exit(0);
 #endif
