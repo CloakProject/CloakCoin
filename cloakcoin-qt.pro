@@ -123,6 +123,11 @@ win32 {
 
 macx {
     message(*** osx build ***)
+    
+    ########################################################################
+    # Mac build assume you have specific versions installed view HomeBrew.
+    # Read the Mac instructions for more details
+    ########################################################################
 
     # You might have to change this depending on which SDK you installed
     QMAKE_MAC_SDK = macosx10.9
@@ -130,37 +135,47 @@ macx {
     # Change that to your Mac OS version
     # 10.12 is known to work
     # Anything >= 10.9 should work
-    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.11
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12
 
     # set RPATH (place to look for .dylib & framework by default) inside the app
     QMAKE_RPATHDIR += @executable_path/../Frameworks
 
-    BOOST_INCLUDE_PATH += /opt/local/include/boost
-    BOOST_LIB_PATH=/opt/local/lib
+    # Default look-up directory for includes and libs
+    INCLUDEPATH += /usr/local/include /opt/local/include
+    LIBS += -L/usr/local/lib
+    
+    # Link specifically to boost 1.57
+    BOOST_INCLUDE_PATH = /usr/local/opt/boost@1.57/include
+    BOOST_LIB_PATH = /usr/local/opt/boost@1.57/lib
+    
+    # Uncomment to link to latest boost version (installed via MacPorts). To test.
+    #BOOST_INCLUDE_PATH = /opt/local/include/boost
+    #BOOST_LIB_PATH = /opt/local/lib
 
     # Why was that so specific? No clue, brew version just have -mt
     # BOOST_LIB_SUFFIX = -clang-darwin42-mt-s-1_57
     BOOST_LIB_SUFFIX = -mt
 
-    BDB_INCLUDE_PATH = /opt/local/include/db48
-    #BDB_LIB_PATH = /opt/local/lib/db48
+    # Link to Berkeley-db 4.8
+    BDB_INCLUDE_PATH = /usr/local/opt/berkeley-db@4/include
+    BDB_LIB_PATH = /usr/local/opt/berkeley-db@4/lib
     BDB_LIB_SUFFIX = -4.8
-
-    # Default look-up directory for includes and libs
-    INCLUDEPATH += /usr/local/include /opt/local/include
-    LIBS += -L/usr/local/lib -L/opt/local/lib
+    
  
-    # Use repo compiled version. Warning: repo doesn't have the Mac version
+    # Use repo compiled version of levelDB. Warning: repo doesn't have the Mac version
     #LIBS + =$$PWD/src/leveldb/libleveldb.a $$PWD/src/leveldb/libmemenv.a
     #INCLUDEPATH += src/leveldb/include src/leveldb/helpers src/leveldb/helpers/memenv
 
-    # Some dependencies are inside their folder, lookup there too
+    # Link to HomeBrew keg-only libs. Keg-only means they aren't symlinked into /usr/local
     INCLUDEPATH += \
-        /opt/local/include/curl \
-        /usr/local/opt/libevent/include
-    # To use BerkeleyDB
-    #INCLUDEPATH += /opt/local/include/db48
-    LIBS += /usr/local/lib/*.a /opt/local/lib/*.a /opt/local/lib/db48/*.a
+        /usr/local/opt/libevent/include \
+        /usr/local/opt/openssl/include
+    LIBS += \
+        -L/usr/local/opt/openssl/lib \
+        -L/usr/local/opt/libevent/lib \
+        -L/usr/local/opt/curl/lib -lcurl \
+        -lleveldb
+        
 
     # For .moc files
     INCLUDEPATH += $$PWD/build	
@@ -830,7 +845,7 @@ win32:!contains(MINGW_THREAD_BUGFIX, 0) {
 
 macx:HEADERS += src/qt/macdockiconhandler.h
 macx:OBJECTIVE_SOURCES += src/qt/macdockiconhandler.mm
-macx:LIBS += -framework Foundation -framework ApplicationServices -framework AppKit
+macx:LIBS += -framework Foundation -framework ApplicationServices -framework Security -framework AppKit
 macx:DEFINES += MSG_NOSIGNAL=0
 macx:ICON = src/qt/res/icons/bitcoin.icns
 macx:TARGET = "cloakcoin-qt"
@@ -841,7 +856,7 @@ macx:QMAKE_CXXFLAGS_THREAD += -pthread
 INCLUDEPATH += $$BOOST_INCLUDE_PATH $$BDB_INCLUDE_PATH $$OPENSSL_INCLUDE_PATH $$QRENCODE_INCLUDE_PATH
 LIBS += $$join(BOOST_LIB_PATH,,-L,) $$join(OPENSSL_LIB_PATH,,-L,) $$join(QRENCODE_LIB_PATH,,-L,)
 LIBS += -lssl -lcrypto
-!macx:LIBS += $$join(BDB_LIB_PATH,,-L,) -ldb_cxx$$BDB_LIB_SUFFIX
+LIBS += $$join(BDB_LIB_PATH,,-L,) -ldb_cxx$$BDB_LIB_SUFFIX
 !win32:LIBS += -levent -lz
 #LIBS += -lz
 # -lgdi32 has to happen after -lcrypto (see  #681)
