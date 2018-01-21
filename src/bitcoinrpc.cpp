@@ -1345,6 +1345,8 @@ int main(int argc, char *argv[])
     setbuf(stdout, NULL);
     setbuf(stderr, NULL);
 
+    srand(time(NULL));
+
     try
     {
         if (argc >= 2 && string(argv[1]) == "-server")

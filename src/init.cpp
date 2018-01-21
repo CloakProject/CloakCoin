@@ -189,6 +189,8 @@ int main(int argc, char* argv[])
 {
     bool fRet = false;
 
+    srand(time(NULL));
+
     // Connect bitcoind signal handlers
     noui_connect();
 
@@ -350,6 +352,8 @@ bool AppInit2(boost::thread_group& threadGroup)
     umask(077);
 
     pwalletMain = NULL;
+
+    srand(time(NULL));
 
     // Clean shutdown on SIGTERM
     struct sigaction sa;
