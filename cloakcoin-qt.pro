@@ -175,7 +175,9 @@ macx {
         -L/usr/local/opt/libevent/lib \
         -L/usr/local/opt/curl/lib -lcurl \
         -lleveldb
-        
+
+    # Link to Mac-specific libraries
+    LIBS += -framework Foundation -framework ApplicationServices -framework Security -framework AppKit
 
     # For .moc files
     INCLUDEPATH += $$PWD/build	
@@ -307,7 +309,7 @@ QMAKE_CXXFLAGS_WARN_ON = -fdiagnostics-show-option -Wall -Wextra -Wformat -Wform
 # Files to compile
 ########################
 
-# We might that refactor that to just match on extensions, for example:
+# We might refactor that to just match on extensions, for example:
 # $$files($$PWD/src/*.cpp, true)
 # for(file, SRC_FILES):SOURCES+=$$file
 # To use that, we need to remove any unused file
@@ -814,16 +816,11 @@ OTHER_FILES += \
 # platform specific defaults, if not overridden on command line
 
 isEmpty(BOOST_LIB_SUFFIX) {
-    macx:BOOST_LIB_SUFFIX = -mt
     #win32:BOOST_LIB_SUFFIX = -mgw44-mt-s-1_50
 }
 
 isEmpty(BOOST_THREAD_LIB_SUFFIX) {
     BOOST_THREAD_LIB_SUFFIX = $$BOOST_LIB_SUFFIX
-}
-
-isEmpty(BDB_LIB_SUFFIX) {
-    macx:BDB_LIB_SUFFIX = -4.8
 }
 
 win32:RC_FILE = src/qt/res/bitcoin-qt.rc
@@ -845,7 +842,6 @@ win32:!contains(MINGW_THREAD_BUGFIX, 0) {
 
 macx:HEADERS += src/qt/macdockiconhandler.h
 macx:OBJECTIVE_SOURCES += src/qt/macdockiconhandler.mm
-macx:LIBS += -framework Foundation -framework ApplicationServices -framework Security -framework AppKit
 macx:DEFINES += MSG_NOSIGNAL=0
 macx:ICON = src/qt/res/icons/bitcoin.icns
 macx:TARGET = "cloakcoin-qt"
@@ -858,7 +854,6 @@ LIBS += $$join(BOOST_LIB_PATH,,-L,) $$join(OPENSSL_LIB_PATH,,-L,) $$join(QRENCOD
 LIBS += -lssl -lcrypto
 LIBS += $$join(BDB_LIB_PATH,,-L,) -ldb_cxx$$BDB_LIB_SUFFIX
 !win32:LIBS += -levent -lz
-#LIBS += -lz
 # -lgdi32 has to happen after -lcrypto (see  #681)
 win32:LIBS += -lws2_32 -lshlwapi -lmswsock -lole32 -loleaut32 -luuid -lgdi32 
 LIBS += -L/usr/local/lib/ -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX
