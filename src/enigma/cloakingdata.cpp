@@ -134,7 +134,7 @@ bool CCloakingData::Transmit(CNode* sender, bool shuffle, bool onionRoute)
             for (int route=0; route<cs->NumRoutesRequired(); route++)
             {
                 // shuffle available nodes so we end up with a different subset per route
-                std::random_shuffle(relayNodes.begin(), relayNodes.end());
+                std::random_shuffle(relayNodes.begin(), relayNodes.end(), GetRandInt);
 
                 vector<CEnigmaAnnouncement> routeNodes;
                 routeNodes.insert(routeNodes.end(), relayNodes.begin(), relayNodes.begin()+cs->NumNodesRequired());
@@ -145,7 +145,7 @@ bool CCloakingData::Transmit(CNode* sender, bool shuffle, bool onionRoute)
                 for(int hop=0; hop<cs->NumHopsRequired(); hop++)
                 {
                     // shuffle available nodes so we end up with a different subset per hop
-                    std::random_shuffle(routeNodes.begin(), routeNodes.end());
+                    std::random_shuffle(routeNodes.begin(), routeNodes.end(), GetRandInt);
 
                     // encode this data in wrapper data for target node
                     CCloakingData cloakData;
@@ -186,7 +186,7 @@ bool CCloakingData::Transmit(CNode* sender, bool shuffle, bool onionRoute)
             }
 
             if (shuffle)
-                std::random_shuffle(shuffledNodes.begin(), shuffledNodes.end());
+                std::random_shuffle(shuffledNodes.begin(), shuffledNodes.end(), GetRandInt);
 
             CCloakingData datapacket = packetsToSend[i];
 

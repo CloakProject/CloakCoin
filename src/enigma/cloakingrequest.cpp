@@ -401,8 +401,8 @@ bool CCloakingRequest::CreateTransactionAndRequestSign(CCloakingEncryptionKey* m
             pwalletMain->mapCloakingInputsOutputs[GetIdHash()] = inOutsMine;
 
             // shuffle inputs and outputs
-            random_shuffle(inOuts.vin.begin(), inOuts.vin.end());
-            random_shuffle(inOuts.vout.begin(), inOuts.vout.end());
+            random_shuffle(inOuts.vin.begin(), inOuts.vin.end(), GetRandInt);
+            random_shuffle(inOuts.vout.begin(), inOuts.vout.end(), GetRandInt);
 
             // create zero output with op return and nonce for stealth change collection
             CScript scriptP = CScript() << OP_RETURN << stealthRootKey;
