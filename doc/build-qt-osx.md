@@ -3,28 +3,35 @@
 ## Introduction
 
 This is a tutorial to build the CloakCoin wallet with a graphical user interface (GUI), intended for end-users.
+
 It is designed to walk you through all the steps required to build the wallet from scratch.
-If you are experienced, there are concise instructions in the README.
+
+If you are experienced, there are short instructions in the README.
 
 
 ## Install a package manager
 
 To build the wallet, you first need to install a package manager, which will let you install dependencies easily.
+
 On Mac OS X, there is no pre-installed package manager, but there are several you can install.
+
 The one CloakCoin use is HomeBrew. 
-First, go on [HomeBrew main page](https://brew.sh/) and follow the instructions to install it.
+
+First, **go on [HomeBrew main page](https://brew.sh/) and follow the instructions to install it.**
 
 
 ## Installing the dependencies
 
 To install dependencies, you need to open the Terminal app and run commands.
+
 The command to install dependencies is `brew install` followed by a package name.
+
 When you do that, HomeBrew will download the pre-compiled package and installed it in a pre-determined folder.
 
-*Warning*: if HomeBrew doesn't have the pre-compiled package for your OS version (generally if you have an older version of Mac OS X), it will need to compile it. To do that, it will require that you install Xcode. To do that, go over to  [from Apple Developer](http://developer.apple.com/download/more/) and find a version of Xcode compatible with your OS version.
+*Warning*: if HomeBrew doesn't have the pre-compiled package for your OS version (generally if you have an older version of Mac OS X), it will need to compile it. To do that, it will require that you **install Xcode**. To do that, go over to  [from Apple Developer](http://developer.apple.com/download/more/) and find a version of Xcode compatible with your OS version.
 
 You can install dependencies one-by-one, or all at once.
-To install all at once, run: `brew install qt boost@1.57 leveldb curl openssl libevent berkeley-db@4 miniupnpc qrencode`
+To install all at once, **run: `brew install qt boost@1.57 leveldb curl openssl libevent berkeley-db@4 miniupnpc qrencode`**
 
 Otherwise, here is the detail:
 * Qt is required for the graphical interface: `brew install qt`
@@ -41,17 +48,17 @@ Otherwise, here is the detail:
 ## Expose qmake
 
 To compile the code, you will need your Terminal to have access to the `qmake` command, which was installed with Qt.
-To do that, run the command `echo 'export PATH="/usr/local/opt/qt/bin:$PATH"' >> ~/.bash_profile`, then restart your terminal.
+To do that, **run the command `echo 'export PATH="/usr/local/opt/qt/bin:$PATH"' >> ~/.bash_profile`**, then restart your terminal.
 
 ## Download the code
 
-You can either [download a .zip of the code](https://github.com/CloakProject/Cloak2Public/archive/master.zip) or clone the repository using `git` (which is pre-installed on all Macs): `git clone https://github.com/CloakProject/Cloak2Public.git`.
+You can either [download a .zip of the code](https://github.com/CloakProject/Cloak2Public/archive/master.zip) or **clone the repository using `git` (which is pre-installed on all Macs): `git clone https://github.com/CloakProject/Cloak2Public.git`**.
 
 ## Compiling the wallet
 
-In the Terminal, go where you downloaded the code using the `cd` command. For example, if you cloned the repository, run `cd Cloak2Public`.
+In the Terminal, go where you downloaded the code using the `cd` command. For example, if you cloned the repository, **run `cd Cloak2Public`.**
 
-Then, run `qmake && make`, and wait until it finishes (it will take a few minutes and display a lot of things, be patient).
+Then, **run `qmake && make`**, and wait until it finishes (it will take a few minutes and display a lot of things, be patient).
 
 **Congratulations**, you now have the CloakCoin wallet you built yourself. Be advised that by downloading from the repo, you got a bleeding edge version, that may contain bugs.
 It is advised not to use it to store your real CloakCoin. By default, this version will be on TestNet anyway.
@@ -65,6 +72,7 @@ There is an alternate way to build the wallet instead of running `qmake && make`
 If you have an issue with this guide, please open issue with:
 * your Mac OS X version
 * the result of `brew list`
+
 We'll try to help you as best as we can.
 
 ## Known issues
