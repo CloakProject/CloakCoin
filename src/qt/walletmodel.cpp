@@ -251,6 +251,8 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsEnigma(const QList<SendCoinsR
         }
         address.SetEncoded(rcp.address.toStdString());
 
+        req->recipientAddress = rcp.address.toStdString();
+
         vector<CScript> scripts;
         uint256 standardNonce = uint256(HexStr(req->stealthRootKey)); // recipients always use the root stealth nonce
 

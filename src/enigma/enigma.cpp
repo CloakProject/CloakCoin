@@ -548,10 +548,11 @@ bool CCloakingAcceptResponse::ProcessAcceptResponse(CCloakingEncryptionKey* myKe
             printf("ProcessAcceptResponse - stealth address invalid!\n");
             return false;
         }
-        /* else if (this->participantInfo.stealthAddress == request->senderAddress) {
+        else if (!this->participantInfo.stealthAddress.compare(request->recipientAddress.c_str()) != 0)
+        {
             printf("ProcessAcceptResponse - receiver address can't help, rejected.\n");
             return false;
-        } */
+        }
 
         this->participantInfo.stealthAddressObj.SetEncoded(this->participantInfo.stealthAddress);
 
