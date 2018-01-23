@@ -8,6 +8,10 @@ It is designed to walk you through all the steps required to build the wallet fr
 
 If you are experienced, there are short instructions in the README.
 
+You will need about 3Go of free space, unless you need to install Xcode, in which case you will need somewhere around 10Go, depending on the Xcode version.
+
+It should take less than 1 hour to complete this guide, provided you have a good connection and good computer (just copy-pasting the commands on fiber connection and recent computer could be completed in under 20 minutes).
+
 
 ## Install a package manager
 
