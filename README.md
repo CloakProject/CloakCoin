@@ -18,32 +18,30 @@ CloakCoin uses the Enigma system in order to facilitate private/secure transacti
 
 If you are new, please follow the detailed instructions
 * for Windows (soon)
-* for Linux (soon)
+* [for Linux with apt](doc/build-qt-linux-apt.md)
 * [for Mac OS X](doc/build-qt-osx.md)
 
 ### Dependencies
 
 To install the dependencies, you need to use your system package manager:
 - Windows: ???
-- Debian/Ubuntu: use `apt-get install *package*`
+- Debian/Ubuntu: use `sudo apt-get install *package*`. To install all at once, including build tools (not listed in the chart): `sudo apt-get install git make build-essential g++ qttools5-dev-tools qt5-default libboost-all-dev libleveldb-dev libcurl4-openssl-dev libssl-dev libevent-dev libminiupnpc libqrencode-dev`
 - Mac OS X: install [HomeBrew](https://brew.sh/), and use `brew install *package*`. To install all at once: `brew install qt boost@1.57 leveldb curl openssl libevent berkeley-db@4 miniupnpc`
 
-**TODO: all Debian/Ubuntu packages must be checked.**
+| Dep            | Min. version   | Debian/Ubuntu pkg      | HomeBrew pkg    | Optional | Purpose        |
+| -------------- | -------------- | ---------------------- | --------------- | -------- | -------------  |
+| Qt             | 5.5.1          | `qt5-default`          | `qt`            | NO       | GUI            |
+| Boost          | 1.57/1.58*     | `libboost-all-dev`     | `boost@1.57`    | NO       | C++ libraries  |
+| OpenSSL        | 1.0.2g         | `libssl-dev`           | `openssl`       | NO       | ha256 sum      |
+| Curl           | any            | `libcurl4-openssl-dev` | `curl`          | NO       | Requests       |
+| libevent       | 2.0.21         | `libevent-dev `        | `libevent`      | NO       | Events         |
+| LevelDB        | 1.2            | `libleveldb-dev`       | `leveldb`       | NO       | Database       |
+| Berkeley DB    | 4.8*           |  install from source   | `berkeley-db@4` | NO       | Database       |
+| qrencode       | 3.4.4          | `libqrencode-dev`      | `qrencode`      | YES      | QR Codes       |
+| libminiupnpc   | 1.9.20140911** | `libminiupnpc`         | `miniupnpc`     | YES      | NAT punching   |
+| Doxygen        | any            | `doxygen`              | `doxygen`       | YES      | Documentation  |
 
-| Dep            | Min. version   | Debian/Ubuntu pkg  | HomeBrew pkg    | Optional | Purpose        |
-| -------------- | -------------- | ------------------ | --------------- | -------- | -------------  |
-| Qt             | 5.5.1          | ???                | `qt`            | NO       | GUI            |
-| Boost          | 1.57*          | `libboost-all-dev` | `boost@1.57`    | NO       | C++ libraries  |
-| OpenSSL        | 1.0.2g         | `libssl-dev`       | `openssl`       | NO       | ha256 sum      |
-| Curl           | any            | `curl`             | `curl`          | NO       | Requests       |
-| libevent       | 2.0.21         | `libevent`         | `libevent`      | NO       | Events         |
-| LevelDB        | 1.2            | `leveldb`          | `leveldb`       | NO       | Database       |
-| Berkeley DB    | 4.8*           | `berkeley-db@4`    | `berkeley-db@4` | NO       | Database       |
-| qrencode       | 3.4.4          | `qrencode`         | `qrencode`      | YES      | QR Codes       |
-| libminiupnpc   | 1.9.20140911** | `libminiupnpc-dev` | `miniupnpc`     | YES      | NAT punching   |
-| Doxygen        | any            | `doxygen`          | `doxygen`       | YES      | Documentation  |
-
-\* You need this specific version. Newer version won't work
+\* Those specific version are known to work. Latest versions are known not to work.
 \*\* This version is very specific, as 1.9 seems to have some non-compatible changes. 2.0 probably won't work (test needed)
 
 ### Compiling
