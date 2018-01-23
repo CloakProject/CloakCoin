@@ -76,6 +76,8 @@ DEFINES +=  __NO_SYSTEM_INCLUDES
 # Use Level DB (default)
 DEFINES += USE_LEVELDB
 SOURCES += src/txdb-leveldb.cpp
+# Windows currently statically link it
+!win32LIBS += -lleveldb
 
 # Use Berkeley DB (legacy, will be removed)
 #SOURCES += src/txdb-bdb.cpp
@@ -173,8 +175,7 @@ macx {
     LIBS += \
         -L/usr/local/opt/openssl/lib \
         -L/usr/local/opt/libevent/lib \
-        -L/usr/local/opt/curl/lib -lcurl \
-        -lleveldb
+        -L/usr/local/opt/curl/lib -lcurl
 
     # Link to Mac-specific libraries
     LIBS += -framework Foundation -framework ApplicationServices -framework Security -framework AppKit
@@ -184,17 +185,12 @@ macx {
 }
 
 linux {
-     message(*** linux build ***)
+    message(*** linux build ***)
 
-     # Is there a good reason to pin those versions? 
-     QRENCODE_LIB_PATH = "/opt/deps/qrencode-3.4.4/.libs"
-     QRENCODE_INCLUDE_PATH = "/opt/deps/qrencode-3.4.4"
-
-     OPENSSL_INCLUDE_PATH = "/opt/deps/openssl-1.0.2g/include"
-     OPENSSL_LIB_PATH = "/opt/deps/openssl-1.0.2g"
-
-     INCLUDEPATH += src/leveldb/include src/leveldb/helpers src/leveldb/helpers/memenv
-     LIBS += $$PWD/src/leveldb/libleveldb.a $$PWD/src/leveldb/libmemenv.a /opt/deps/openssl-1.0.2g/libssl.a /opt/deps/openssl-1.0.2g/libcrypto.a
+    # This presume you compile BerkeleyDB 4.8 yourself. That's where the includes are
+    BDB_INCLUDE_PATH = /usr/local/BerkeleyDB.4.8/include
+    # The lib path isn't necessary. You should configure that using a .conf in /etc/ld.so.conf.d/
+    #BDB_LIB_PATH = /usr/local/BerkeleyDB.4.8/lib
 }
 
 # use: qmake "RELEASE=1"
@@ -793,7 +789,7 @@ TRANSLATIONS = src/qt/locale/bitcoin_en.ts src/qt/locale/bitcoin_ru.ts src/qt/lo
 isEmpty(QMAKE_LRELEASE) {
     #win32:QMAKE_LRELEASE = $$[QT_INSTALL_BINS]\\lrelease.exe
     win32:QMAKE_LRELEASE = $$[QT_INSTALL_BINS]\\lrelease
-    # lrelease should be installed in $PATH
+    # lrelease must be installed in $PATH
     linux:QMAKE_LRELEASE = lrelease
     macx:QMAKE_LRELEASE = lrelease
 }
