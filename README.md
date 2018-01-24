@@ -18,18 +18,18 @@ CloakCoin uses the Enigma system in order to facilitate private/secure transacti
 
 If you are new, please follow the detailed instructions
 * for Windows (soon)
-* [for Linux with apt](doc/build-qt-linux-apt.md)
+* [for Ubuntu](doc/build-qt-ubuntu.md) (any other Unix should have similar steps)
 * [for Mac OS X](doc/build-qt-osx.md)
 
 ### Dependencies
 
 To install the dependencies, you need to use your system package manager:
 - Windows: ???
-- Debian/Ubuntu: use `sudo apt-get install *package*`. To install all at once, including build tools (not listed in the chart): `sudo apt-get install git make build-essential g++ qttools5-dev-tools qt5-default libboost-all-dev libleveldb-dev libcurl4-openssl-dev libssl-dev libevent-dev libminiupnpc libqrencode-dev`
+- Ubuntu: use `sudo apt-get install *package*`. To install all at once, including build tools (not listed in the chart): `sudo apt-get install git make build-essential g++ qttools5-dev-tools qt5-default libboost-all-dev libleveldb-dev libcurl4-openssl-dev libssl-dev libevent-dev libminiupnpc libqrencode-dev`
 - Mac OS X: install [HomeBrew](https://brew.sh/), and use `brew install *package*`. To install all at once: `brew install qt boost@1.57 leveldb curl openssl libevent berkeley-db@4 miniupnpc`
 
 
-| Dep            | Min. version   | Debian/Ubuntu pkg      | HomeBrew pkg    | Optional | Purpose        |
+| Dep            | Min. version   | Ubuntu pkg             | HomeBrew pkg    | Optional | Purpose        |
 | -------------- | -------------- | ---------------------- | --------------- | -------- | -------------  |
 | Qt             | 5.5.1          | `qt5-default`          | `qt`            | NO       | GUI            |
 | Boost          | 1.57/1.58*     | `libboost-all-dev`     | `boost@1.57`    | NO       | C++ libraries  |

@@ -1,4 +1,4 @@
-# Instructions to build GUI CloakCoin wallet on Linux
+# Instructions to build GUI CloakCoin wallet on Ubuntu
 
 ## Introduction
 
