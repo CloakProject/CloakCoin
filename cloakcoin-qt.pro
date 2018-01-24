@@ -77,7 +77,7 @@ DEFINES +=  __NO_SYSTEM_INCLUDES
 DEFINES += USE_LEVELDB
 SOURCES += src/txdb-leveldb.cpp
 # Windows currently statically link it
-!win32LIBS += -lleveldb
+!win32:LIBS += -lleveldb
 
 # Use Berkeley DB (legacy, will be removed)
 #SOURCES += src/txdb-bdb.cpp
@@ -188,8 +188,9 @@ linux {
     message(*** linux build ***)
 
     # This presume you compile BerkeleyDB 4.8 yourself. That's where the includes are
-    BDB_INCLUDE_PATH = /usr/local/BerkeleyDB.4.8/include
-    # The lib path isn't necessary. You should configure that using a .conf in /etc/ld.so.conf.d/
+    #BDB_INCLUDE_PATH = /usr/local/BerkeleyDB.4.8/include
+    # The lib path shouldn't necessary. You should configure it using a .conf in /etc/ld.so.conf.d/ instead of including it here
+    # Otherwise, the executable won't be able to find the library when you start it
     #BDB_LIB_PATH = /usr/local/BerkeleyDB.4.8/lib
 }
 

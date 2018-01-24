@@ -13,9 +13,21 @@ If you are experienced, there are short instructions in the README.
 It should take less than 1 hour to complete this guide, provided you have a good connection and good computer (just copy-pasting the commands on fiber connection and recent computer could be completed in under 20 minutes).
 
 
-## Install Berkeley DB 4.8 from source
+## Install Berkeley DB 4.8 
 
 Unfortunately, Berkeley DB 4.8 isn't available from apt-get, and newer versions are not compatible.
+
+There is 2 ways to get Berkeley DB 4.8: get it from an existing Personal Package (PPA), which is easier but provided by the community, and as such cannot be guaranteed to always be there and be safe, or compile it from source, which is a bit more complicated and longer, but means you can fully trust it.
+
+If you are a beginner, we recommand you use PPA for ease of use, as long as it is available.
+
+### Install from PPA (recommended)
+
+* add the PPA repository to apt: `sudo add-apt-repository ppa:bitcoin/bitcoin`
+* update apt to take that into account: `sudo apt-get update`
+* install Berkeley DB 4.8: `sudo apt install db4.8`
+
+### Install from source (not recommended)
 
 Open a terminal and copy the commands to compile and install it from source.
 
@@ -28,6 +40,7 @@ Open a terminal and copy the commands to compile and install it from source.
 * here, check where it is installed. If it's not _/usr/local/BerkeleyDB.4.8/lib_, adapt the next command
 * add that path to your libs: `echo "/usr/local/BerkeleyDB.4.8/lib" | sudo tee -a /etc/ld.so.conf.d/BerkeleyDB.4.8.conf`
 * update your system to use those libs: `sudo ldconfig`
+* last, you will need to uncomment the line that reads `BDB_INCLUDE_PATH = /usr/local/BerkeleyDB.4.8/include` in the `cloakcoin-qt.pro` file
 
 
 ## Installing the dependencies
