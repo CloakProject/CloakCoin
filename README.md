@@ -28,6 +28,7 @@ To install the dependencies, you need to use your system package manager:
 - Debian/Ubuntu: use `sudo apt-get install *package*`. To install all at once, including build tools (not listed in the chart): `sudo apt-get install git make build-essential g++ qttools5-dev-tools qt5-default libboost-all-dev libleveldb-dev libcurl4-openssl-dev libssl-dev libevent-dev libminiupnpc libqrencode-dev`
 - Mac OS X: install [HomeBrew](https://brew.sh/), and use `brew install *package*`. To install all at once: `brew install qt boost@1.57 leveldb curl openssl libevent berkeley-db@4 miniupnpc`
 
+
 | Dep            | Min. version   | Debian/Ubuntu pkg      | HomeBrew pkg    | Optional | Purpose        |
 | -------------- | -------------- | ---------------------- | --------------- | -------- | -------------  |
 | Qt             | 5.5.1          | `qt5-default`          | `qt`            | NO       | GUI            |
@@ -41,8 +42,9 @@ To install the dependencies, you need to use your system package manager:
 | libminiupnpc   | 1.9.20140911** | `libminiupnpc`         | `miniupnpc`     | YES      | NAT punching   |
 | Doxygen        | any            | `doxygen`              | `doxygen`       | YES      | Documentation  |
 
-\* Those specific version are known to work. Latest versions are known not to work.
-\*\* This version is very specific, as 1.9 seems to have some non-compatible changes. 2.0 probably won't work (test needed)
+_\* Those specific version are known to work. Latest versions are known not to work._
+
+_\*\* This version is very specific, as 1.9 seems to have some non-compatible changes. 2.0 probably won't work (test needed)_
 
 ### Compiling
 
