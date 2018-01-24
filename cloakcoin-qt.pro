@@ -218,8 +218,9 @@ contains(RELEASE, 1) {
 !win32 {
     QMAKE_CXXFLAGS *= -fstack-protector-all --param ssp-buffer-size=1 -std=c++11
     QMAKE_LFLAGS *= -fstack-protector-all --param ssp-buffer-size=1 -std=c++11 -fno-pie
+    # Add the -no-pie option only if the linker supports it. clang and older gcc versions don't support it
+    QMAKE_LFLAGS *= $$system(if $$QMAKE_LINK -no-pie -S -o /dev/null -xc /dev/null > /dev/null 2>&1; then echo "-no-pie"; else echo ""; fi ;)
 }
-linux:QMAKE_LFLAGS *= -no-pie
 
 # for extra security on Windows: enable ASLR and DEP via GCC linker flags
 win32:QMAKE_LFLAGS *= -Wl,--dynamicbase -Wl,--nxcompat
