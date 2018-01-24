@@ -67,6 +67,9 @@ public:
     /** Ask the user whether they want to pay a fee or not. */
     boost::signals2::signal<bool (int64 nFeeRequired, const std::string& strCaption), boost::signals2::last_value<bool> > ThreadSafeAskFee;
 
+    /** Ask the user for a password to decrypt wallet */
+    boost::signals2::signal<void ()> ThreadSafeDecryptDialog;
+
     /** Handle a URL passed at the command line. */
     boost::signals2::signal<void (const std::string& strURI)> ThreadSafeHandleURI;
 

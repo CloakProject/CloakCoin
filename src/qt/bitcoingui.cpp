@@ -173,7 +173,7 @@ BitcoinGUI::BitcoinGUI(bool fIsTestnet, QWidget *parent):
     labelEncryptionIcon = new QLabel();
     labelMintingIcon = new QLabel();
     labelConnectionsIcon = new QLabel();
-    labelBlocksIcon = new QLabel();    
+    labelBlocksIcon = new QLabel();
 
     if (SHOW_CLOAKING_ICONS)
     {
@@ -506,7 +506,7 @@ void BitcoinGUI::createMenuBar()
     help->addAction(aboutAction);
     help->addAction(aboutQtAction);
 
-    // QString ss("QMenuBar::item { background-color: #effbef; color: black }"); 
+    // QString ss("QMenuBar::item { background-color: #effbef; color: black }");
     // appMenuBar->setStyleSheet(ss);
 }
 
@@ -787,7 +787,7 @@ void BitcoinGUI::setNumBlocks(int count, int nTotalBlocks)
     // Set icon state: spinning if catching up, tick otherwise
     if(secs < 90*60 && count >= nTotalBlocks)
     {
-	fSyncing = false;
+    fSyncing = false;
         tooltip = tr("Up to date") + QString(".<br>") + tooltip;
         labelBlocksIcon->setPixmap(QIcon(":/icons/synced").pixmap(STATUSBAR_ICONSIZE, STATUSBAR_ICONSIZE));
 
@@ -860,6 +860,12 @@ void BitcoinGUI::closeEvent(QCloseEvent *event)
 #endif
     }
     QMainWindow::closeEvent(event);
+}
+
+void BitcoinGUI::decryptWallet()
+{
+    AskPassphraseDialog dlg(AskPassphraseDialog::DecryptOnStart);
+    dlg.exec();
 }
 
 void BitcoinGUI::askFee(qint64 nFeeRequired, bool *payFee)
@@ -1256,7 +1262,7 @@ void BitcoinGUI::updateMintingIcon()
     }
     else
     {
-        labelPosaIcon->setToolTip(tr("Connected.<br><b>%1</b> anons.<br><b>%2</b> cloakings.").arg(nEnigmaNodeCount).arg(pwalletMain->EnigmaCount()));        
+        labelPosaIcon->setToolTip(tr("Connected.<br><b>%1</b> anons.<br><b>%2</b> cloakings.").arg(nEnigmaNodeCount).arg(pwalletMain->EnigmaCount()));
         labelPosaIcon->setEnabled(true);
     }
 

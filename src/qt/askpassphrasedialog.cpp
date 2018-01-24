@@ -3,6 +3,7 @@
 
 #include "guiconstants.h"
 #include "walletmodel.h"
+#include "wallet.h"
 
 #include <QMessageBox>
 #include <QPushButton>
@@ -53,6 +54,14 @@ AskPassphraseDialog::AskPassphraseDialog(Mode mode, QWidget *parent) :
             ui->passEdit1->hide();
             setWindowTitle(tr("Encrypt wallet data"));
             break;
+        case DecryptOnStart:
+            ui->warningLabel->setText(tr("Passphrase required for startup. Enter your passphrase to decrypt the wallet data."));
+            ui->passLabel2->hide();
+            ui->passEdit2->hide();
+            ui->passLabel3->hide();
+            ui->passEdit3->hide();
+            setWindowTitle(tr("Decrypt wallet data"));
+            break;
         case Decrypt:   // Ask passphrase
             ui->warningLabel->setText(tr("This operation needs your wallet passphrase to decrypt the wallet."));
             ui->passLabel2->hide();
@@ -90,8 +99,10 @@ void AskPassphraseDialog::setModel(WalletModel *model)
 void AskPassphraseDialog::accept()
 {
     SecureString oldpass, newpass1, newpass2;
-    if(!model)
-        return;
+    CWallet *wallet;
+
+//    if(!model)
+//        return;
     oldpass.reserve(MAX_PASSPHRASE_SIZE);
     newpass1.reserve(MAX_PASSPHRASE_SIZE);
     newpass2.reserve(MAX_PASSPHRASE_SIZE);
@@ -211,6 +222,21 @@ void AskPassphraseDialog::accept()
         }
         QApplication::quit();
         } break;
+
+    case DecryptOnStart:
+        if(!wallet->DecryptWalletData(oldpass))
+        {
+            QMessageBox::critical(this, tr("Wallet key decryption failed"),
+                                  tr("The passphrase entered for the wallet key decryption was incorrect."));
+            QDialog::reject(); // Cancelled
+            QApplication::quit();
+        }
+        else
+        {
+            QDialog::accept(); // Success
+        }
+        break;
+
     case Decrypt:
         if(!model->setWalletEncrypted(false, oldpass))
         {
@@ -259,6 +285,9 @@ void AskPassphraseDialog::textChanged()
     case Unlock: // Old passphrase x1
     case EncryptOnExit:
         acceptable = !ui->passEdit2->text().isEmpty() && !ui->passEdit3->text().isEmpty() && ui->passEdit2->text() == ui->passEdit3->text();
+        break;
+    case DecryptOnStart:
+        acceptable = !ui->passEdit1->text().isEmpty();
         break;
     case Decrypt:
         acceptable = !ui->passEdit1->text().isEmpty();

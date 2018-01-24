@@ -358,6 +358,13 @@ static void ThreadSafeMessageBox(const std::string& message, const std::string& 
     }
 }
 
+static void ThreadSafeDecryptDialog()
+{
+    if(guiref){
+        QMetaObject::invokeMethod(guiref, "decryptWallet", GUIUtil::blockingGUIThreadConnection()/*, Q_ARG(bool*, &decrypted)*/);
+    }
+}
+
 static bool ThreadSafeAskFee(int64 nFeeRequired, const std::string& strCaption)
 {
     if(!guiref)
@@ -525,8 +532,6 @@ void BitcoinApplication::shutdownResult(int retval)
     dlg.setModel(walletModel);
     dlg.exec();
     quit(); // Exit main loop after shutdown finished
-
-        //if (dlg.result() == 0x00004000) {} /* if YES clicked, enum with key-value mapping is in qmessagebox.h */
 }
 
 /* Handle runaway exceptions. Shows a message box with the problem and quits the program.
@@ -628,6 +633,7 @@ int main(int argc, char *argv[])
 
     // Subscribe to global signals from core
     uiInterface.ThreadSafeMessageBox.connect(ThreadSafeMessageBox);
+    uiInterface.ThreadSafeDecryptDialog.connect(ThreadSafeDecryptDialog);
     uiInterface.ThreadSafeAskFee.connect(ThreadSafeAskFee);
     uiInterface.ThreadSafeHandleURI.connect(ThreadSafeHandleURI);
     uiInterface.InitMessage.connect(InitMessage);

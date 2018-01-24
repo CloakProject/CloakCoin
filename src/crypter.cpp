@@ -68,13 +68,13 @@ bool CCrypter::SetKey(const CKeyingMaterial& chNewKey, const std::vector<unsigne
     return true;
 }
 
-bool CCrypter::EncryptWalletFile(FILE *ifp, FILE *ofp)
+bool CCrypter::EncryptWalletFile()
 {
     boost::filesystem::path inputPath = GetDataDir() / "wallet.dat";
     boost::filesystem::path outputPath = GetDataDir() / "wallet.dat.encrypted";
 
-    ifp = fopen(inputPath.string().c_str(), "rb");
-    ofp = fopen(outputPath.string().c_str(), "wb");
+    FILE *ifp = fopen(inputPath.string().c_str(), "rb");
+    FILE *ofp = fopen(outputPath.string().c_str(), "wb");
 
     if ( NULL == ifp )
     {
@@ -124,8 +124,24 @@ bool CCrypter::EncryptWalletFile(FILE *ifp, FILE *ofp)
     return true;
 }
 
-bool CCrypter::DecryptWalletFile(FILE *ifp, FILE *ofp)
+bool CCrypter::DecryptWalletFile()
 {
+    boost::filesystem::path inputPath = GetDataDir() / "wallet.dat.encrypted";
+    boost::filesystem::path outputPath = GetDataDir() / "wallet.dat";
+
+    FILE *ifp = fopen(inputPath.string().c_str(), "rb");
+    FILE *ofp = fopen(outputPath.string().c_str(), "wb");
+
+    if ( NULL == ifp )
+    {
+        return false;
+    }
+
+    if ( NULL == ofp )
+    {
+        return false;
+    }
+
     if (!fDataKeySet) {
         fclose(ifp);
         fclose(ofp);

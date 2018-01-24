@@ -50,7 +50,7 @@ public:
     CDBEnv();
     ~CDBEnv();
     void MakeMock();
-    bool IsMock() { return fMockDb; };
+    bool IsMock() { return fMockDb; }
 
     /*
      * Verify that database file strFile is OK. If it is not,
@@ -58,7 +58,7 @@ public:
      * This must be called BEFORE strFile is opened.
      * Returns true if strFile is OK.
      */
-    enum VerifyResult { VERIFY_OK, RECOVER_OK, RECOVER_FAIL };
+    enum VerifyResult { VERIFY_OK, RECOVER_OK, RECOVER_FAIL, TRY_DECRYPT };
     VerifyResult Verify(std::string strFile, bool (*recoverFunc)(CDBEnv& dbenv, std::string strFile));
     /*
      * Salvage data from a file that Verify says is bad.

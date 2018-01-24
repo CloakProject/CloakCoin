@@ -586,6 +586,7 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     if (filesystem::exists(GetDataDir() / "wallet.dat"))
     {
+
         CDBEnv::VerifyResult r = bitdb.Verify("wallet.dat", CWalletDB::Recover);
         if (r == CDBEnv::RECOVER_OK)
         {
@@ -594,6 +595,14 @@ bool AppInit2(boost::thread_group& threadGroup)
                                      " your balance or transactions are incorrect you should"
                                      " restore from a backup."), strDataDir.c_str());
             uiInterface.ThreadSafeMessageBox(msg, _("CloakCoin"), CClientUIInterface::OK | CClientUIInterface::ICON_EXCLAMATION | CClientUIInterface::MODAL);
+        }
+        if (r == CDBEnv::TRY_DECRYPT)
+        {
+            //Note: Dialog needs to be created in a GUI thread, calling QDialog here will not work!
+
+            uiInterface.ThreadSafeDecryptDialog();
+            r = bitdb.Verify("wallet.dat", CWalletDB::Recover);
+            if (r != CDBEnv::VERIFY_OK) r = CDBEnv::RECOVER_FAIL;
         }
         if (r == CDBEnv::RECOVER_FAIL)
             return InitError(_("wallet.dat corrupt, salvage failed"));

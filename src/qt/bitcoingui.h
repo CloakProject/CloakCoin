@@ -171,6 +171,7 @@ public slots:
       @param[out] payFee            true to pay the fee, false to not pay the fee
     */
     void askFee(qint64 nFeeRequired, bool *payFee);
+    void decryptWallet();
     void handleURI(QString strURI);
 
 private slots:

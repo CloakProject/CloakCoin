@@ -371,11 +371,6 @@ bool CWallet::EncryptWalletData(const SecureString& strDataPassphrase)
 {
     if (!strDataPassphrase.empty())
     {
-        FILE * inputFile;
-        FILE * outputFile;
-
-//        inputFile = fopen("wallet.dat", "r");
-//        outputFile = fopen("wallet.dat.encrypted", "w");
 
         CKeyingMaterial vMasterKey;
         RandAddSeedPerfmon();
@@ -405,8 +400,11 @@ bool CWallet::EncryptWalletData(const SecureString& strDataPassphrase)
 
         if (!crypter.SetDataKeyFromPassphrase(strDataPassphrase, kMasterKey.vchSalt, kMasterKey.nDeriveIterations, kMasterKey.nDerivationMethod))
             return false;
-        if (!crypter.EncryptWalletFile(inputFile, outputFile))
+        if (!crypter.EncryptWalletFile())
             return false;
+
+        // TODO: need to store kMasterKey.vchSalt, kMasterKey.nDeriveIterations, kMasterKey.nDerivationMethod in the file somewhere
+        //       so we can generate a key to decrypt the wallet file
 
         return true;
     }
@@ -418,7 +416,19 @@ bool CWallet::EncryptWalletData(const SecureString& strDataPassphrase)
 
 bool CWallet::DecryptWalletData(const SecureString& strDataPassphrase)
 {
-    return true;
+    if (!strDataPassphrase.empty())
+    {
+        // TODO:
+        // LOCK(cs_wallet); make sure to restric access to wallet critical sections
+        // add decryption methods; after retrieving salt, derivation iterations and derivation method, run:
+        // crypter.SetDataKeyFromPassphrase() to get decryption key
+        // crypter.DecryptWalletFile() to decrypt the wallet data
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 int64 CWallet::IncOrderPosNext(CWalletDB *pwalletdb)

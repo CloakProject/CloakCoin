@@ -149,17 +149,15 @@ CDBEnv::VerifyResult CDBEnv::Verify(std::string strFile, bool (*recoverFunc)(CDB
 
     Db db(&dbenv, 0);
     int result = db.verify(strFile.c_str(), NULL, NULL, 0);
-    if (result == 0)
+    if (result == 0)    // if all good return VERIFY_OK
         return VERIFY_OK;
-    else if (recoverFunc == NULL)
-
-        // TODO: need to call wallet decryption and try db.verify again; return VERIFY_OK on succcess
-
+    else if (recoverFunc == NULL)   // else if recovery function missing for some reason fail immediately
         return RECOVER_FAIL;
 
     // Try to recover:
     bool fRecovered = (*recoverFunc)(*this, strFile);
-    return (fRecovered ? RECOVER_OK : RECOVER_FAIL);
+    //return (fRecovered ? RECOVER_OK : RECOVER_FAIL);
+    return (fRecovered ? RECOVER_OK : TRY_DECRYPT);
 }
 
 bool CDBEnv::Salvage(std::string strFile, bool fAggressive,
