@@ -14,6 +14,12 @@ CloakCoin uses the Enigma system in order to facilitate private/secure transacti
 
 ## Compiling GUI CloakCoin wallet from source
 
+#### Disclaimer
+
+**We advise you that compiling from source gives you a bleeding edge version of the CloakCoin wallet. This means there might be bugs, crashes, and you could loose your Cloaks. Therefore, to avoid any issue, you should never run a development wallet on the same computer as the stable wallet which holds your Cloaks.**
+
+By default, development wallet runs on TestNet, but you can never be too safe.
+
 #### Step-by-step instructions
 
 If you are new, please follow the detailed instructions
