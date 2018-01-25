@@ -103,6 +103,7 @@ void Shutdown(void* parg)
             Sleep(500);
         Sleep(100);
         ExitThread(0);
+        //return;
     }
 }
 
@@ -604,8 +605,12 @@ bool AppInit2(boost::thread_group& threadGroup)
             r = bitdb.Verify("wallet.dat", CWalletDB::Recover);
             if (r != CDBEnv::VERIFY_OK) r = CDBEnv::RECOVER_FAIL;
         }
-        if (r == CDBEnv::RECOVER_FAIL)
-            return InitError(_("wallet.dat corrupt, salvage failed"));
+        if (r == CDBEnv::RECOVER_FAIL) {
+            /*return */InitError(_("wallet.dat corrupt, salvage failed"));
+            NewThread(ExitTimeout, NULL);
+            Shutdown(0);
+            return false;
+        }
     }
 
     // ********************************************************* Step 6: network initialization

@@ -67,7 +67,7 @@ void ThreadEnigma2(void* parg)
     printf("ThreadEnigma started\n");
 
     while (!fShutdown)
-    {        
+    {
         try
         {
             // expire any enigma requests that have exceed their time limit
@@ -625,7 +625,7 @@ bool Enigma::HandleCloakingAccept(CCloakingData cloakData)
                 if (cloakData.Decode(&ccar))
                 {
                     // If this is in response to one of *our* requests, process it
-                    uint256 acceptHash = ccar.GetHash();                    
+                    uint256 acceptHash = ccar.GetHash();
                     {
                         LOCK2(pwalletMain->cs_mapCloakingRequests, pwalletMain->cs_CloakingAccepts);
                         if (pwalletMain->sCloakingAccepts.find(acceptHash) == pwalletMain->sCloakingAccepts.end())
@@ -1031,7 +1031,7 @@ bool Enigma::HandleCloakOnionData(CCloakingData cloakDataIn, CNode* node, int le
         bool alreadyProcessed = cloakDataIn.AlreadyProcessed();
 
         if (!alreadyProcessed)
-        {                        
+        {
             cloakDataIn.hops++;
 
             if (level > 0){
@@ -1053,7 +1053,7 @@ bool Enigma::HandleCloakOnionData(CCloakingData cloakDataIn, CNode* node, int le
                         bool relayRequest = req.ProcessRequest(cs->GetRoutingKey());
                         if (relayRequest){
                             req.bBroadcasted = true;
-                            req.nBroadcastedTime = GetAdjustedTime();                            
+                            req.nBroadcastedTime = GetAdjustedTime();
                         }
                         break;
                     }
@@ -1198,8 +1198,13 @@ CCloakingRequest* Enigma::SendEnigma(CCloakingInputsOutputs inputsOutputs, int n
 
 bool Enigma::CloakShieldShutdown()
 {
-    CCloakingEncryptionKey* key = CCloakShield::GetShield()->GetShield()->GetRoutingKey();
-    return SendEnigmaMessage(key, ENIGMA_MSG_NODE_GONE_OFFLINE, key->pubkeyHexHash, true);
+    if (CCloakShield::GetShield()->GetShield())
+    {
+        CCloakingEncryptionKey* key = CCloakShield::GetShield()->GetShield()->GetRoutingKey();
+        return SendEnigmaMessage(key, ENIGMA_MSG_NODE_GONE_OFFLINE, key->pubkeyHexHash, true);
+    }
+
+    return true;
 }
 
 void StartProcessingEnigma()

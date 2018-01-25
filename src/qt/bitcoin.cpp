@@ -526,11 +526,13 @@ void BitcoinApplication::initializeResult(int retval)
 void BitcoinApplication::shutdownResult(int retval)
 {
     printf("Shutdown result: %i\n", retval);
-
-    AskPassphraseDialog::Mode mode = AskPassphraseDialog::EncryptOnExit;
-    AskPassphraseDialog dlg(mode);
-    dlg.setModel(walletModel);
-    dlg.exec();
+    if (retval == 1)
+    {
+        AskPassphraseDialog::Mode mode = AskPassphraseDialog::EncryptOnExit;
+        AskPassphraseDialog dlg(mode);
+        dlg.setModel(walletModel);
+        dlg.exec();
+    }
     quit(); // Exit main loop after shutdown finished
 }
 
