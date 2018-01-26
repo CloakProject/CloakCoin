@@ -68,7 +68,7 @@ bool CCrypter::SetKey(const CKeyingMaterial& chNewKey, const std::vector<unsigne
     return true;
 }
 
-bool CCrypter::EncryptWalletFile()
+bool CCrypter::EncryptWalletFile(const CMasterKey& kMasterKey)
 {
     boost::filesystem::path inputPath = GetDataDir() / "wallet.dat";
     boost::filesystem::path outputPath = GetDataDir() / "wallet.dat.encrypted";
@@ -118,7 +118,18 @@ bool CCrypter::EncryptWalletFile()
 
     if (!fOk) return false;
 
+    //  write header info: tag :), kMasterKey.vchSalt, kMasterKey.nDeriveIterations, kMasterKey.nDerivationMethod
+
+    fwrite("ANORAK_WAS_HERE", sizeof("ANORAK_WAS_HERE"), 1, ofp);
+    fwrite(&kMasterKey.vchSalt, WALLET_CRYPTO_SALT_SIZE, 1, ofp);
+    fwrite(&kMasterKey.nDeriveIterations, sizeof(unsigned int), 1, ofp);
+    fwrite(&kMasterKey.nDerivationMethod, sizeof(unsigned int), 1, ofp);
+
+    //  write encrypted data
     fwrite(outdata, sizeof(char), outLen1 + outLen2, ofp);
+
+    //const std::vector<unsigned char>& chSalt, const unsigned int nRounds, const unsigned int nDerivationMethod
+
     fclose(ifp);
     fclose(ofp);
     return true;

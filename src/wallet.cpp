@@ -400,7 +400,7 @@ bool CWallet::EncryptWalletData(const SecureString& strDataPassphrase)
 
         if (!crypter.SetDataKeyFromPassphrase(strDataPassphrase, kMasterKey.vchSalt, kMasterKey.nDeriveIterations, kMasterKey.nDerivationMethod))
             return false;
-        if (!crypter.EncryptWalletFile())
+        if (!crypter.EncryptWalletFile(kMasterKey))
             return false;
 
         // TODO: need to store kMasterKey.vchSalt, kMasterKey.nDeriveIterations, kMasterKey.nDerivationMethod in the file somewhere
@@ -418,10 +418,43 @@ bool CWallet::DecryptWalletData(const SecureString& strDataPassphrase)
 {
     if (!strDataPassphrase.empty())
     {
-        // TODO:
-        // LOCK(cs_wallet); make sure to restric access to wallet critical sections
+        LOCK(cs_wallet); //make sure to restrict access to wallet critical section
+
+        boost::filesystem::path inputPath = GetDataDir() / "wallet.dat";
+
+        FILE *ifp = fopen(inputPath.string().c_str(), "rb");
+
+        if ( NULL == ifp )
+            return false;
+
+        fseek(ifp, 0L, SEEK_SET);
+
+        // declare header data
+        std::vector<unsigned char> salt;
+        unsigned int iterations;
+        unsigned int method;
+        unsigned char awh[16];
+
+        salt.resize(WALLET_CRYPTO_SALT_SIZE);
+
+        //  READ salt, iterations, method
+        /*
+        fwrite("ANORAK_WAS_HERE", sizeof("ANORAK_WAS_HERE"), 1, ofp);
+        fwrite(kMasterKey.vchSalt, WALLET_CRYPTO_SALT_SIZE, 1, ofp);
+        fwrite(kMasterKey.nDeriveIterations, sizeof(unsigned int), 1, ofp);
+        fwrite(kMasterKey.nDerivationMethod, sizeof(unsigned int), 1, ofp);
+        */
+
+        fread(awh, sizeof(unsigned char), 16, ifp);
+        fread(&salt, WALLET_CRYPTO_SALT_SIZE, 1, ifp);
+        fread(&iterations, sizeof(unsigned int), 1, ifp);
+        fread(&method, sizeof(unsigned int), 1, ifp);
+
+        CCrypter crypter;
+
         // add decryption methods; after retrieving salt, derivation iterations and derivation method, run:
-        // crypter.SetDataKeyFromPassphrase() to get decryption key
+        if (!crypter.SetDataKeyFromPassphrase(strDataPassphrase, salt, iterations, method))
+            return false;
         // crypter.DecryptWalletFile() to decrypt the wallet data
         return true;
     }
