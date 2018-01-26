@@ -446,7 +446,7 @@ bool CWallet::DecryptWalletData(const SecureString& strDataPassphrase)
         */
 
         fread(awh, sizeof(unsigned char), 16, ifp);
-        fread(&salt, WALLET_CRYPTO_SALT_SIZE, 1, ifp);
+        fread(&salt[0], sizeof(unsigned char), WALLET_CRYPTO_SALT_SIZE, ifp);
         fread(&iterations, sizeof(unsigned int), 1, ifp);
         fread(&method, sizeof(unsigned int), 1, ifp);
 
