@@ -607,8 +607,8 @@ bool AppInit2(boost::thread_group& threadGroup)
         }
         if (r == CDBEnv::RECOVER_FAIL) {
             /*return */InitError(_("wallet.dat corrupt, salvage failed"));
-            NewThread(ExitTimeout, NULL);
-            Shutdown(0);
+            //NewThread(ExitTimeout, NULL);
+            //Shutdown(0);
             return false;
         }
     }

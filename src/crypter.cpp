@@ -71,24 +71,15 @@ bool CCrypter::SetKey(const CKeyingMaterial& chNewKey, const std::vector<unsigne
 bool CCrypter::EncryptWalletFile(const CMasterKey& kMasterKey)
 {
     boost::filesystem::path inputPath = GetDataDir() / "wallet.dat";
-    boost::filesystem::path outputPath = GetDataDir() / "wallet.dat.encrypted";
+    boost::filesystem::path outputPath = GetDataDir() / "wallet.dat";
 
     FILE *ifp = fopen(inputPath.string().c_str(), "rb");
-    FILE *ofp = fopen(outputPath.string().c_str(), "wb");
 
     if ( NULL == ifp )
-    {
         return false;
-    }
-
-    if ( NULL == ofp )
-    {
-        return false;
-    }
 
     if (!fDataKeySet){
         fclose(ifp);
-        fclose(ofp);
         return false;
     }
 
@@ -118,6 +109,12 @@ bool CCrypter::EncryptWalletFile(const CMasterKey& kMasterKey)
 
     if (!fOk) return false;
 
+    fclose(ifp);
+
+    FILE *ofp = fopen(outputPath.string().c_str(), "wb");
+    if ( NULL == ofp )
+        return false;
+
     //  write header info: tag :), kMasterKey.vchSalt, kMasterKey.nDeriveIterations, kMasterKey.nDerivationMethod
 
     fwrite("ANORAK_WAS_HERE", sizeof("ANORAK_WAS_HERE"), 1, ofp);
@@ -130,32 +127,22 @@ bool CCrypter::EncryptWalletFile(const CMasterKey& kMasterKey)
 
     //const std::vector<unsigned char>& chSalt, const unsigned int nRounds, const unsigned int nDerivationMethod
 
-    fclose(ifp);
     fclose(ofp);
     return true;
 }
 
 bool CCrypter::DecryptWalletFile()
 {
-    boost::filesystem::path inputPath = GetDataDir() / "wallet.dat.encrypted";
+    boost::filesystem::path inputPath = GetDataDir() / "wallet.dat";
     boost::filesystem::path outputPath = GetDataDir() / "wallet.dat";
 
     FILE *ifp = fopen(inputPath.string().c_str(), "rb");
-    FILE *ofp = fopen(outputPath.string().c_str(), "wb");
 
     if ( NULL == ifp )
-    {
         return false;
-    }
-
-    if ( NULL == ofp )
-    {
-        return false;
-    }
 
     if (!fDataKeySet) {
         fclose(ifp);
-        fclose(ofp);
         return false;
     }
 
@@ -187,8 +174,14 @@ bool CCrypter::DecryptWalletFile()
 
     if (!fOk) return false;
 
-    fwrite(outdata, sizeof(char), outLen1 + outLen2, ofp);
     fclose(ifp);
+
+    FILE *ofp = fopen(outputPath.string().c_str(), "wb");
+    if ( NULL == ofp )
+        return false;
+
+    fwrite(outdata, sizeof(char), outLen1 + outLen2, ofp);
+
     fclose(ofp);
     return true;
 }

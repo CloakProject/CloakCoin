@@ -455,7 +455,8 @@ bool CWallet::DecryptWalletData(const SecureString& strDataPassphrase)
         // add decryption methods; after retrieving salt, derivation iterations and derivation method, run:
         if (!crypter.SetDataKeyFromPassphrase(strDataPassphrase, salt, iterations, method))
             return false;
-        // crypter.DecryptWalletFile() to decrypt the wallet data
+        if (!crypter.DecryptWalletFile())
+            return false;
         return true;
     }
     else
