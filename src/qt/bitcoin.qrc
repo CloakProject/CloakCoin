@@ -46,7 +46,7 @@
         <file alias="filesave">res/icons/filesave.png</file>
         <file alias="qrcode">res/icons/qrcode.png</file>
         <file alias="debugwindow">res/icons/debugwindow.png</file>
-        <file alias="exchange">exchange.png</file>
+        <file alias="exchange">res/icons/exchange.png</file>
         <file alias="posadisconnected">res/icons/cloak_icon_gray.png</file>
         <file alias="posa">res/icons/cloak_icon_green.png</file>
         <file alias="posa1">res/icons/cloak_icon_green_1.png</file>
@@ -87,7 +87,7 @@
         <file alias="about">res/images/about.png</file>
         <file alias="backg">res/images/wallet.png</file>
         <file alias="shadowbar">res/images/shadow9202.png</file>
-        <file alias="exchange">exchange.png</file>
+        <file alias="exchange">res/icons/exchange.png</file>
         <file alias="background">res/images/background.png</file>
         <file alias="splash">res/images/splash.png</file>
         <file>res/icons/cloaker_signed.png</file>
