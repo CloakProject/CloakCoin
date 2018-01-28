@@ -1,4 +1,25 @@
 ########################
+# Introduction
+########################
+#
+# This is the file that controls how the Qt GUI wallet is built
+# It is the same for all platforms: use qmake to compile it to a Makefile (that will be specific to your platform)
+# Then run make to build the wallet.
+# It is splitted into sections:
+# * QT configuration: generic configuration specific to Qt
+# * Debug variables: variables you want to switch on or off to ease debugging
+# * Where to compile: the location where the various object files will be located. By default, everything goes to the "build" directory
+# * Platform defines: make the platform visible to the code via compiler DEFINE
+# * Mandatory dependencies: see README.md for more explanations, especially about specific version and how to install
+# * Optional Dependencies: turn them on or off through qmake arguments. See README.md for more explanations
+# * Security flags: various compiler flags to improve security
+# * Other compiler flags: various compiler flags, explained
+# * Translations: build the translations
+# * Files to compile: the list of all files that have to be compiled
+# * Misc: things that don't really fit anywhere else
+
+
+########################
 # QT configuration
 ########################
 
@@ -30,7 +51,13 @@ DEFINES += QT_GUI
 CONFIG += no_include_pwd thread static
 INCLUDEPATH += src src/json src/qt src/tor
 
-message($$QMAKESPEC)
+# "Other files" to show in Qt Creator
+OTHER_FILES += \
+    doc/*.rst doc/*.txt doc/README \
+    README.md \
+    res/bitcoin-qt.rc \
+    src/test/*.cpp src/test/*.h src/qt/test/*.cpp src/qt/test/*.h \
+    src/qt/locale/*.ts
 
 ########################
 # Debug variables
@@ -82,7 +109,7 @@ SOURCES += src/txdb-leveldb.cpp
 # Use Berkeley DB (legacy, will be removed)
 #SOURCES += src/txdb-bdb.cpp
 
-LIBS += -levent
+LIBS += -levent -lssl -lcrypto
 INCLUDEPATH += ex_lib
 
 # setup win32 specific libs, using msys mingw x-compile environment
@@ -120,7 +147,8 @@ win32 {
     BOOST_LIB_SUFFIX = -mgw49-mt-s-1_57
 
     LIBS += -LC:\deps\libevent-2.0.21-stable\.libs -LC:\deps\libpng-1.6.16\.libs
-    LIBS += -lcrypto -lws2_32 -lgdi32 -lcrypt32
+    # -lgdi32 has to happen after -lcrypto (see  #681)
+    LIBS += -lws2_32 -lgdi32 -lcrypt32 -lshlwapi -lmswsock -lole32 -loleaut32 -luuid
 }
 
 macx {
@@ -144,7 +172,6 @@ macx {
 
     # Default look-up directory for includes and libs
     INCLUDEPATH += /usr/local/include /opt/local/include
-    LIBS += -L/usr/local/lib
     
     # Link specifically to boost 1.57
     BOOST_INCLUDE_PATH = /usr/local/opt/boost@1.57/include
@@ -181,7 +208,7 @@ macx {
     LIBS += -framework Foundation -framework ApplicationServices -framework Security -framework AppKit
 
     # For .moc files
-    INCLUDEPATH += $$PWD/build	
+    INCLUDEPATH += $$PWD/build
 }
 
 linux {
@@ -192,6 +219,30 @@ linux {
     # The lib path shouldn't necessary. You should configure it using a .conf in /etc/ld.so.conf.d/ instead of including it here
     # Otherwise, the executable won't be able to find the library when you start it
     #BDB_LIB_PATH = /usr/local/BerkeleyDB.4.8/lib
+    LIBS += -lrt -ldl -lcurl
+}
+
+!win32 {
+    # Standard library lookup path on Unix systems
+    LIBS += -L/usr/local/lib
+    # Unix only libs
+    LIBS += -levent -lz
+}
+
+
+isEmpty(BOOST_THREAD_LIB_SUFFIX) {
+    BOOST_THREAD_LIB_SUFFIX = $$BOOST_LIB_SUFFIX
+}
+
+# Set libraries and includes at end, to use platform-defined defaults if not overridden
+INCLUDEPATH += $$BOOST_INCLUDE_PATH $$BDB_INCLUDE_PATH $$OPENSSL_INCLUDE_PATH $$QRENCODE_INCLUDE_PATH
+LIBS += $$join(BDB_LIB_PATH,,-L,) $$join(BOOST_LIB_PATH,,-L,) $$join(OPENSSL_LIB_PATH,,-L,) $$join(QRENCODE_LIB_PATH,,-L,)
+
+LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX -ldb_cxx$$BDB_LIB_SUFFIX
+
+win32 {
+    # Windows also need Boost Chrono
+    LIBS += -lboost_chrono$$BOOST_LIB_SUFFIX
 }
 
 # use: qmake "RELEASE=1"
@@ -201,31 +252,13 @@ contains(RELEASE, 1) {
     macx:QMAKE_CXXFLAGS += -mmacosx-version-min=10.7 #-arch i386 -isysroot /Developer/SDKs/MacOSX10.7.sd
     #macx:QMAKE_LFLAGS += -no_weak_imports
 
-    !win32:!macx {
+    linux {
+        # Linux: turn dynamic linking back on for c/c++ runtime libraries
+        LIBS += -Wl,-Bdynamic
         # Linux: static link
-        LIBS += -Wl,-Bstatic
+        #LIBS += -Wl,-Bstatic
     }
 }
-
-
-########################
-# Security flags
-########################
-
-# for extra security against potential buffer overflows: enable GCCs Stack Smashing Protection
-# We need to exclude this for Windows cross compile with MinGW 4.2.x, as it will result in a non-working executable!
-# This can be enabled for Windows, when we switch to MinGW >= 4.4.x.
-!win32 {
-    QMAKE_CXXFLAGS *= -fstack-protector-all --param ssp-buffer-size=1 -std=c++11
-    QMAKE_LFLAGS *= -fstack-protector-all --param ssp-buffer-size=1 -std=c++11 -fno-pie
-    # Add the -no-pie option only if the linker supports it. clang and older gcc versions don't support it
-    QMAKE_LFLAGS *= $$system(if $$QMAKE_LINK -no-pie -S -o /dev/null -xc /dev/null > /dev/null 2>&1; then echo "-no-pie"; else echo ""; fi ;)
-}
-
-# for extra security on Windows: enable ASLR and DEP via GCC linker flags
-win32:QMAKE_LFLAGS *= -Wl,--dynamicbase -Wl,--nxcompat
-# on Windows: enable GCC large address aware linker flag
-win32:QMAKE_LFLAGS *= -Wl,--large-address-aware
 
 ########################
 # Optional Dependencies
@@ -289,19 +322,83 @@ contains(BITCOIN_NEED_QT_PLUGINS, 1) {
     QTPLUGIN += qcncodecs qjpcodecs qtwcodecs qkrcodecs qtaccessiblewidgets
 }
 
-# regenerate src/build.h
-#!win32|contains(USE_BUILD_INFO, 1) {
-#    genbuild.depends = FORCE
-#    genbuild.commands = cd $$PWD; /bin/sh share/genbuild.sh $$OUT_PWD/build/build.h
-#    genbuild.target = $$OUT_PWD/build/build.h
-#    PRE_TARGETDEPS += $$OUT_PWD/build/build.h
-#    QMAKE_EXTRA_TARGETS += genbuild
-#    DEFINES += HAVE_BUILD_INFO
-#}
+# Output libs and include paths for debug
+message(LIBS = $$LIBS)
+message(INCLUDEPATH = $$INCLUDEPATH)
+
+
+########################
+# Security flags
+########################
+
+# for extra security against potential buffer overflows: enable GCCs Stack Smashing Protection
+# We need to exclude this for Windows cross compile with MinGW 4.2.x, as it will result in a non-working executable!
+# This can be enabled for Windows, when we switch to MinGW >= 4.4.x.
+!win32 {
+    QMAKE_CXXFLAGS *= -fstack-protector-all --param ssp-buffer-size=1 -std=c++11
+    QMAKE_LFLAGS *= -fstack-protector-all --param ssp-buffer-size=1 -std=c++11 -fno-pie
+    # Add the -no-pie option only if the linker supports it. clang and older gcc versions don't support it
+    QMAKE_LFLAGS *= $$system(if $$QMAKE_LINK -no-pie -S -o /dev/null -xc /dev/null > /dev/null 2>&1; then echo "-no-pie"; else echo ""; fi ;)
+}
+
+# for extra security on Windows: enable ASLR and DEP via GCC linker flags
+win32:QMAKE_LFLAGS *= -Wl,--dynamicbase -Wl,--nxcompat
+# on Windows: enable GCC large address aware linker flag
+win32:QMAKE_LFLAGS *= -Wl,--large-address-aware
+
+########################
+# Other compiler flags
+########################
 
 QMAKE_CXXFLAGS += -msse2
 QMAKE_CFLAGS += -msse2
 QMAKE_CXXFLAGS_WARN_ON = -fdiagnostics-show-option -Wall -Wextra -Wformat -Wformat-security -Wno-unused-parameter -Wstack-protector
+
+win32:!contains(MINGW_THREAD_BUGFIX, 0) {
+    # At least qmake's win32-g++-cross profile is missing the -lmingwthrd
+    # thread-safety flag. GCC has -mthreads to enable this, but it doesn't
+    # work with static linking. -lmingwthrd must come BEFORE -lmingw, so
+    # it is prepended to QMAKE_LIBS_QT_ENTRY.
+    # It can be turned off with MINGW_THREAD_BUGFIX=0, just in case it causes
+    # any problems on some untested qmake profile now or in the future.
+    DEFINES += _MT
+    QMAKE_LIBS_QT_ENTRY = -lmingwthrd $$QMAKE_LIBS_QT_ENTRY
+}
+
+mac {
+    # Why is this needed? Seems to compile fine without
+    QMAKE_CFLAGS_THREAD += -pthread
+    QMAKE_CXXFLAGS_THREAD += -pthread
+}
+
+########################
+# Translations
+########################
+
+# for lrelease/lupdate
+# also add new translations to src/qt/bitcoin.qrc under translations/
+TRANSLATIONS = src/qt/locale/bitcoin_en.ts src/qt/locale/bitcoin_ru.ts src/qt/locale/bitcoin_fr.ts
+
+isEmpty(QMAKE_LRELEASE) {
+    win32:QMAKE_LRELEASE = $$[QT_INSTALL_BINS]\\lrelease
+    !win32 {
+        # lrelease must be installed in $PATH
+        QMAKE_LRELEASE = lrelease
+    }
+}
+isEmpty(QM_DIR):QM_DIR = $$PWD/src/qt/locale
+
+# automatically build translations, so they can be included in resource file
+TSQM.name = lrelease ${QMAKE_FILE_IN}
+TSQM.input = TRANSLATIONS
+TSQM.output = $$QM_DIR/${QMAKE_FILE_BASE}.qm
+TSQM.commands = $$QMAKE_LRELEASE ${QMAKE_FILE_IN} -qm ${QMAKE_FILE_OUT}
+TSQM.CONFIG = no_link
+QMAKE_EXTRA_COMPILERS += TSQM
+
+# generate translations using lrelease
+system($$QMAKE_LRELEASE -silent $$_PRO_FILE_)
+
 
 ########################
 # Files to compile
@@ -766,112 +863,52 @@ FORMS += \
     src/qt/forms/enigmastatuspage.ui \
     src/qt/forms/helpmessagedialog.ui
 
-contains(USE_QRCODE, 1) {
-HEADERS += src/qt/qrcodedialog.h
-SOURCES += src/qt/qrcodedialog.cpp
-FORMS += src/qt/forms/qrcodedialog.ui
-}
-
-contains(BITCOIN_QT_TEST, 1) {
-SOURCES += src/qt/test/test_main.cpp \
-    src/qt/test/uritests.cpp
-HEADERS += src/qt/test/uritests.h
-DEPENDPATH += src/qt/test
-QT += testlib
-TARGET = cloakcoin-qt_test
-DEFINES += BITCOIN_QT_TEST
-}
-
-CODECFORTR = UTF-8
-
-# for lrelease/lupdate
-# also add new translations to src/qt/bitcoin.qrc under translations/
-TRANSLATIONS = src/qt/locale/bitcoin_en.ts src/qt/locale/bitcoin_ru.ts src/qt/locale/bitcoin_fr.ts
-
-isEmpty(QMAKE_LRELEASE) {
-    #win32:QMAKE_LRELEASE = $$[QT_INSTALL_BINS]\\lrelease.exe
-    win32:QMAKE_LRELEASE = $$[QT_INSTALL_BINS]\\lrelease
-    # lrelease must be installed in $PATH
-    linux:QMAKE_LRELEASE = lrelease
-    macx:QMAKE_LRELEASE = lrelease
-}
-isEmpty(QM_DIR):QM_DIR = $$PWD/src/qt/locale
-
-# automatically build translations, so they can be included in resource file
-TSQM.name = lrelease ${QMAKE_FILE_IN}
-TSQM.input = TRANSLATIONS
-TSQM.output = $$QM_DIR/${QMAKE_FILE_BASE}.qm
-TSQM.commands = $$QMAKE_LRELEASE ${QMAKE_FILE_IN} -qm ${QMAKE_FILE_OUT}
-TSQM.CONFIG = no_link
-QMAKE_EXTRA_COMPILERS += TSQM
-
-message($$QMAKE_LRELEASE)
-
-# "Other files" to show in Qt Creator
-OTHER_FILES += \
-    doc/*.rst doc/*.txt doc/README README.md res/bitcoin-qt.rc src/test/*.cpp src/test/*.h src/qt/test/*.cpp src/qt/test/*.h \
-	src/qt/locale/*.ts
-
-# platform specific defaults, if not overridden on command line
-
-isEmpty(BOOST_LIB_SUFFIX) {
-    #win32:BOOST_LIB_SUFFIX = -mgw44-mt-s-1_50
-}
-
-isEmpty(BOOST_THREAD_LIB_SUFFIX) {
-    BOOST_THREAD_LIB_SUFFIX = $$BOOST_LIB_SUFFIX
-}
-
-win32:RC_FILE = src/qt/res/bitcoin-qt.rc
-
-win32:!contains(MINGW_THREAD_BUGFIX, 0) {
-    # At least qmake's win32-g++-cross profile is missing the -lmingwthrd
-    # thread-safety flag. GCC has -mthreads to enable this, but it doesn't
-    # work with static linking. -lmingwthrd must come BEFORE -lmingw, so
-    # it is prepended to QMAKE_LIBS_QT_ENTRY.
-    # It can be turned off with MINGW_THREAD_BUGFIX=0, just in case it causes
-    # any problems on some untested qmake profile now or in the future.
-    DEFINES += _MT
-    QMAKE_LIBS_QT_ENTRY = -lmingwthrd $$QMAKE_LIBS_QT_ENTRY
-}
-
-!win32:!macx {
-    LIBS += -lrt
-}
-
-macx:HEADERS += src/qt/macdockiconhandler.h
-macx:OBJECTIVE_SOURCES += src/qt/macdockiconhandler.mm
-macx:DEFINES += MSG_NOSIGNAL=0
-macx:ICON = src/qt/res/icons/bitcoin.icns
-macx:TARGET = "cloakcoin-qt"
-macx:QMAKE_CFLAGS_THREAD += -pthread
-macx:QMAKE_CXXFLAGS_THREAD += -pthread
-
-# Set libraries and includes at end, to use platform-defined defaults if not overridden
-INCLUDEPATH += $$BOOST_INCLUDE_PATH $$BDB_INCLUDE_PATH $$OPENSSL_INCLUDE_PATH $$QRENCODE_INCLUDE_PATH
-LIBS += $$join(BOOST_LIB_PATH,,-L,) $$join(OPENSSL_LIB_PATH,,-L,) $$join(QRENCODE_LIB_PATH,,-L,)
-LIBS += -lssl -lcrypto
-LIBS += $$join(BDB_LIB_PATH,,-L,) -ldb_cxx$$BDB_LIB_SUFFIX
-!win32:LIBS += -levent -lz
-# -lgdi32 has to happen after -lcrypto (see  #681)
-win32:LIBS += -lws2_32 -lshlwapi -lmswsock -lole32 -loleaut32 -luuid -lgdi32 
-LIBS += -L/usr/local/lib/ -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX
-win32:LIBS += -lboost_chrono$$BOOST_LIB_SUFFIX
-
-contains(RELEASE, 1) {
-    !win32:!macx {
-        # Linux: turn dynamic linking back on for c/c++ runtime libraries
-        LIBS += -Wl,-Bdynamic
-    }
-}
-
-!win32:!macx {
-    LIBS += -ldl -lcurl
-}
-
-system($$QMAKE_LRELEASE -silent $$_PRO_FILE_)
-
 DISTFILES += \
     src/notes.txt
 
-message(LIBS = $$LIBS)
+contains(USE_QRCODE, 1) {
+    HEADERS += src/qt/qrcodedialog.h
+    SOURCES += src/qt/qrcodedialog.cpp
+    FORMS += src/qt/forms/qrcodedialog.ui
+}
+
+contains(BITCOIN_QT_TEST, 1) {
+    TARGET = cloakcoin-qt_test
+    DEFINES += BITCOIN_QT_TEST
+    SOURCES += src/qt/test/test_main.cpp src/qt/test/uritests.cpp
+    HEADERS += src/qt/test/uritests.h
+    DEPENDPATH += src/qt/test
+    QT += testlib
+}
+
+
+# Platform specific files
+mac {
+    HEADERS += src/qt/macdockiconhandler.h
+    OBJECTIVE_SOURCES += src/qt/macdockiconhandler.mm
+    DEFINES += MSG_NOSIGNAL=0
+    ICON = src/qt/res/icons/bitcoin.icns
+}
+
+win32 {
+    RC_FILE = src/qt/res/bitcoin-qt.rc
+}
+
+
+########################
+# Misc
+########################
+
+CODECFORTR = UTF-8
+
+# Is that still needed?
+# regenerate src/build.h
+#!win32|contains(USE_BUILD_INFO, 1) {
+#    genbuild.depends = FORCE
+#    genbuild.commands = cd $$PWD; /bin/sh share/genbuild.sh $$OUT_PWD/build/build.h
+#    genbuild.target = $$OUT_PWD/build/build.h
+#    PRE_TARGETDEPS += $$OUT_PWD/build/build.h
+#    QMAKE_EXTRA_TARGETS += genbuild
+#    DEFINES += HAVE_BUILD_INFO
+#}
+
