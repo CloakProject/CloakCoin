@@ -216,7 +216,7 @@ pip-log.txt
 
 #Translations
 *.mo
-#*.qm
+*.qm
 
 #Mr Developer
 .mr.developer.cfg
