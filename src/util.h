@@ -53,7 +53,7 @@ typedef int pid_t; /* define for Windows compatibility */
 #define ENIGMA_TX_LOCKTIME_SECS 0 // 5 minsGetTime()
 #define ENIGMA_MIN_FEE_PERCENT .2 // % of total cloaks at 100,000 coins
 #define ENIGMA_MAX_FEE_PERCENT 1.0 // % of total cloaks at 0 coins
-#define ENIGMA_MIN_FEE_SENDAMOUNT 100000000000 // 100,000 coins
+#define ENIGMA_MIN_FEE_SENDAMOUNT 1000000000 // 1,000 coins
 #define ENIGMA_TOTAL_FEE_PERCENT(x) (x > ENIGMA_MIN_FEE_SENDAMOUNT ? ENIGMA_MIN_FEE_PERCENT : ((ENIGMA_MAX_FEE_PERCENT - ENIGMA_MIN_FEE_PERCENT)*(ENIGMA_MIN_FEE_SENDAMOUNT-x)/ENIGMA_MIN_FEE_SENDAMOUNT) + ENIGMA_MIN_FEE_PERCENT ) // % of total cloaks randomly split between participants (per request) as a reward
 #define ENIGMA_MAX_CONCURRENT_TRANSACTIONS 3 // how many enigma transasctions can we have in play at any one time?
 #define ENIGMA_REQUEST_CURRENTVERSION 0010 // current version number of Enigma cloaking requests. Ignore requests with lesser or greater version #.
