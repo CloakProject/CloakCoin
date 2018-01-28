@@ -90,11 +90,13 @@ bool CCrypter::EncryptWalletFile(const CMasterKey& kMasterKey)
     fseek(ifp, 0L, SEEK_SET);
 
     int outLen1 = fsize + AES_BLOCK_SIZE; int outLen2 = 0;
-    unsigned char *indata = (unsigned char*)malloc(fsize);
-    unsigned char *outdata = (unsigned char*)malloc(fsize*2);
+    unsigned char *indata;
+    indata = (unsigned char*)malloc(fsize);
+    unsigned char *outdata;
+    outdata = (unsigned char*)malloc(fsize*2);
 
     //Read File
-    fread(indata, sizeof(char), fsize, ifp);//Read Entire File
+    fread(indata, sizeof(unsigned char), fsize, ifp);//Read Entire File
 
     //Set up encryption
     EVP_CIPHER_CTX ctx;
@@ -115,15 +117,15 @@ bool CCrypter::EncryptWalletFile(const CMasterKey& kMasterKey)
     if ( NULL == ofp )
         return false;
 
-    //  write header info: tag :), kMasterKey.vchSalt, kMasterKey.nDeriveIterations, kMasterKey.nDerivationMethod
+    //  write encrypted data
+    fwrite(outdata, sizeof(unsigned char), outLen1 + outLen2, ofp);
+
+    //  write encrypt info: tag :), kMasterKey.vchSalt, kMasterKey.nDeriveIterations, kMasterKey.nDerivationMethod
 
     fwrite("ANORAK_WAS_HERE", sizeof("ANORAK_WAS_HERE"), 1, ofp);
-    fwrite(&kMasterKey.vchSalt, WALLET_CRYPTO_SALT_SIZE, 1, ofp);
+    fwrite(&kMasterKey.vchSalt[0], WALLET_CRYPTO_SALT_SIZE, 1, ofp);
     fwrite(&kMasterKey.nDeriveIterations, sizeof(unsigned int), 1, ofp);
     fwrite(&kMasterKey.nDerivationMethod, sizeof(unsigned int), 1, ofp);
-
-    //  write encrypted data
-    fwrite(outdata, sizeof(char), outLen1 + outLen2, ofp);
 
     //const std::vector<unsigned char>& chSalt, const unsigned int nRounds, const unsigned int nDerivationMethod
 
@@ -146,18 +148,21 @@ bool CCrypter::DecryptWalletFile()
         return false;
     }
 
-    //Get file size
-    fseek(ifp, 0L, SEEK_END);
+    long offset = (sizeof("ANORAK_WAS_HERE")+WALLET_CRYPTO_SALT_SIZE+2*sizeof(unsigned int));
+    //Get encrypted block size
+    fseek(ifp, -offset, SEEK_END);   //  offset to get encrypted block size, excluding the appended info
     int fsize = ftell(ifp);
     //set back to normal
     fseek(ifp, 0L, SEEK_SET);
 
     // plaintext will always be equal to or lesser than length of ciphertext
-    int outLen1 = fsize, outLen2 = 0;
+    int outLen1 = fsize + AES_BLOCK_SIZE; int outLen2 = 0;
 
-    unsigned char *indata = (unsigned char*)malloc(fsize);
+    unsigned char *indata;
+    indata = (unsigned char*)malloc(fsize);
     //plaintext file size will always be equal to or lesser than the encrypted file
-    unsigned char *outdata = (unsigned char*)malloc(fsize);
+    unsigned char *outdata;
+    outdata = (unsigned char*)malloc(fsize*2);
 
     //Read File
     fread(indata, sizeof(char), fsize, ifp);

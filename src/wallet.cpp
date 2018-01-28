@@ -403,9 +403,6 @@ bool CWallet::EncryptWalletData(const SecureString& strDataPassphrase)
         if (!crypter.EncryptWalletFile(kMasterKey))
             return false;
 
-        // TODO: need to store kMasterKey.vchSalt, kMasterKey.nDeriveIterations, kMasterKey.nDerivationMethod in the file somewhere
-        //       so we can generate a key to decrypt the wallet file
-
         return true;
     }
     else
@@ -427,7 +424,8 @@ bool CWallet::DecryptWalletData(const SecureString& strDataPassphrase)
         if ( NULL == ifp )
             return false;
 
-        fseek(ifp, 0L, SEEK_SET);
+        long offset = (sizeof("ANORAK_WAS_HERE")+WALLET_CRYPTO_SALT_SIZE+2*sizeof(unsigned int));
+        fseek(ifp, -offset, SEEK_END);
 
         // declare header data
         std::vector<unsigned char> salt;
@@ -449,6 +447,8 @@ bool CWallet::DecryptWalletData(const SecureString& strDataPassphrase)
         fread(&salt[0], sizeof(unsigned char), WALLET_CRYPTO_SALT_SIZE, ifp);
         fread(&iterations, sizeof(unsigned int), 1, ifp);
         fread(&method, sizeof(unsigned int), 1, ifp);
+
+        fclose(ifp);
 
         CCrypter crypter;
 
