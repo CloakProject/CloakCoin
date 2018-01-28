@@ -235,7 +235,7 @@ int CCloakingRequest::TimeLeftMs()
 bool CCloakingRequest::CreateCloakerTxOutputs(vector<CTxOut>& outputs)
 {
     // todo: this creates a zero / empty script output at end of outputs - fix!
-    int64 totalReward = this->nSendAmount * ENIGMA_TOTAL_FEE_PERCENT * 0.01;
+    int64 totalReward = this->nSendAmount * ENIGMA_TOTAL_FEE_PERCENT(this->nSendAmount) * 0.01;
     int indexReward = 0;
 
     // wfd: making nparticants also npComplete. we do this by guaranteeing a participant

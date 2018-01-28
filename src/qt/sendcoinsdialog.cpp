@@ -168,8 +168,7 @@ void SendCoinsDialog::on_sendButton_clicked()
         formatted.append(tr("<b>%1</b> to %2 (%3)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::BTC, rcp.amount), Qt::escape(rcp.label), rcp.address));
     }
 
-    //quint64 posafee = total * 0.02 + 0.2;;// 2% Enigma fee
-    quint64 enigmaFee = total * (ENIGMA_TOTAL_FEE_PERCENT * 0.01) + 0.2;// 1.8% Enigma fee
+    quint64 enigmaFee = total * (ENIGMA_TOTAL_FEE_PERCENT(total) * 0.01) + 0.2;// (.2-1)% Enigma fee
     QString totalStr = tr("(total: <b>%1</b>)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::BTC, total));
 
     if(anonymize)
@@ -178,7 +177,7 @@ void SendCoinsDialog::on_sendButton_clicked()
         if ((ONION_ROUTING_ENABLED && fEnableOnionRouting) && !CCloakShield::GetShield()->OnionRoutingAvailable(true))
             return;
 
-        totalStr = tr("(total: <b>%1</b> + <b>%2</b> Enigma fee <b>(1.8% + output fees)</b> = <b>%3</b>)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::BTC, total), BitcoinUnits::formatWithUnit(BitcoinUnits::BTC, enigmaFee), BitcoinUnits::formatWithUnit(BitcoinUnits::BTC, total + enigmaFee));
+        totalStr = tr("(total: <b>%1</b> + <b>%2</b> Enigma fee <b>((.2-1)% + output fees)</b> = <b>%3</b>)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::BTC, total), BitcoinUnits::formatWithUnit(BitcoinUnits::BTC, enigmaFee), BitcoinUnits::formatWithUnit(BitcoinUnits::BTC, total + enigmaFee));
     }
 
     fNewRecipientAllowed = false;

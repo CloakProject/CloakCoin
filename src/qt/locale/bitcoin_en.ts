@@ -2807,7 +2807,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+8"/>
-        <source>(total: &lt;b&gt;%1&lt;/b&gt; + &lt;b&gt;%2&lt;/b&gt; Enigma fee &lt;b&gt;(1.8% + output fees)&lt;/b&gt; = &lt;b&gt;%3&lt;/b&gt;)</source>
+        <source>(total: &lt;b&gt;%1&lt;/b&gt; + &lt;b&gt;%2&lt;/b&gt; Enigma fee &lt;b&gt;((.2-1)% + output fees)&lt;/b&gt; = &lt;b&gt;%3&lt;/b&gt;)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

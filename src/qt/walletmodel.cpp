@@ -201,13 +201,13 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsEnigma(const QList<SendCoinsR
         total += rcp.amount;
     }
 
-    // 1.8% Enigma fee
+    // (.2-1)% Enigma fee
     // we initially reserve 10 * [numParticipants] * min fee, so that we have enough to cover the fees
     // if participants supply a large number of inputs, which bumps the tx size and boosts the fee.
     // any usused fee is redirected to one of our change addresses at tx creation time.
     //quint64 feeAndReward = total /* numSplits*/ * (POSA_3_TOTAL_FEE_PERCENT * 0.01) + (MIN_TX_FEE*20);
 
-    int64 reward = (int64)(total * (ENIGMA_TOTAL_FEE_PERCENT * 0.01));
+    int64 reward = (int64)(total * (ENIGMA_TOTAL_FEE_PERCENT(total) * 0.01));
     int64 reserveForFees = (MIN_TX_FEE * 10 * numParticipants);
 
     if(recipients.size() > setAddress.size()){

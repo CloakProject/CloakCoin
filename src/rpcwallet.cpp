@@ -364,7 +364,7 @@ Value sendcloakedtoaddress(const Array& params, bool fHelp)
     if (pwalletMain->IsLocked())
         throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
 
-    int64 reward = nAmount * (ENIGMA_TOTAL_FEE_PERCENT * 0.01);
+    int64 reward = nAmount * (ENIGMA_TOTAL_FEE_PERCENT(nAmount) * 0.01);
     int64 reserveForFees = (MIN_TX_FEE*20);
 
     int64 nBalance = 0;

@@ -32,7 +32,7 @@ typedef int pid_t; /* define for Windows compatibility */
 // general flags/settings
 #define ONEMARKET_ENABLED 0 // enable onemarket functionality?
 #define ONION_ROUTING_ENABLED 1 // enable onion routing?
-#define FORCE_TESTNET 5 // (4=TestNet4 for debug, 5=TestNet5) force running on testnet/devnet
+#define FORCE_TESTNET 4 // (4=TestNet4 for debug, 5=TestNet5) force running on testnet/devnet
 #define DEFAULT_CLOAKERS 3
 #define MIN_CLOAKERS 3 // min number of cloakers (for dropdown menu etc)
 #define MAX_CLOAKERS 25 // max number of cloakers (for dropdown menu etc)
@@ -51,7 +51,10 @@ typedef int pid_t; /* define for Windows compatibility */
 
 #define ENIGMA_MAX_COINAGE_DAYS 7 // if coins have more than [ENIGMA_MAX_COINAGE_DAYS] of coin age, they will be excluded from Enigma sending/mixing
 #define ENIGMA_TX_LOCKTIME_SECS 0 // 5 minsGetTime()
-#define ENIGMA_TOTAL_FEE_PERCENT 1.8 // % of total cloaks randomly split between participants (per request) as a reward
+#define ENIGMA_MIN_FEE_PERCENT .2 // % of total cloaks at 100,000 coins
+#define ENIGMA_MAX_FEE_PERCENT 1.0 // % of total cloaks at 0 coins
+#define ENIGMA_MIN_FEE_SENDAMOUNT 100000000000 // 100,000 coins
+#define ENIGMA_TOTAL_FEE_PERCENT(x) (x > ENIGMA_MIN_FEE_SENDAMOUNT ? ENIGMA_MIN_FEE_PERCENT : ((ENIGMA_MAX_FEE_PERCENT - ENIGMA_MIN_FEE_PERCENT)*(ENIGMA_MIN_FEE_SENDAMOUNT-x)/ENIGMA_MIN_FEE_SENDAMOUNT) + ENIGMA_MIN_FEE_PERCENT ) // % of total cloaks randomly split between participants (per request) as a reward
 #define ENIGMA_MAX_CONCURRENT_TRANSACTIONS 3 // how many enigma transasctions can we have in play at any one time?
 #define ENIGMA_REQUEST_CURRENTVERSION 0010 // current version number of Enigma cloaking requests. Ignore requests with lesser or greater version #.
 #define ENIGMA_BANSECS_MISSING_INPUTS 600 // when enigma nodes fails to provide valid inputs for a cloaking op

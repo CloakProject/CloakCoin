@@ -2832,8 +2832,8 @@ Isto significa uma taxa de pelo menos %2 é necessária.</translation>
     </message>
     <message>
         <location line="+8"/>
-        <source>(total: &lt;b&gt;%1&lt;/b&gt; + &lt;b&gt;%2&lt;/b&gt; Enigma fee &lt;b&gt;(1.8% + output fees)&lt;/b&gt; = &lt;b&gt;%3&lt;/b&gt;)</source>
-        <translation>(total: &lt;b&gt;%1&lt;/b&gt; + &lt;b&gt;%2&lt;/b&gt; Taxa Enigma &lt;b&gt;(1.8% + taxa de output)&lt;/b&gt; = &lt;b&gt;%3&lt;/b&gt;)</translation>
+        <source>(total: &lt;b&gt;%1&lt;/b&gt; + &lt;b&gt;%2&lt;/b&gt; Enigma fee &lt;b&gt;((.2-1)% + output fees)&lt;/b&gt; = &lt;b&gt;%3&lt;/b&gt;)</source>
+        <translation>(total: &lt;b&gt;%1&lt;/b&gt; + &lt;b&gt;%2&lt;/b&gt; Taxa Enigma &lt;b&gt;((.2-1)% + taxa de output)&lt;/b&gt; = &lt;b&gt;%3&lt;/b&gt;)</translation>
     </message>
     <message>
         <location line="+7"/>
