@@ -865,7 +865,8 @@ void BitcoinGUI::closeEvent(QCloseEvent *event)
 void BitcoinGUI::decryptWallet()
 {
     AskPassphraseDialog dlg(AskPassphraseDialog::DecryptOnStart);
-    dlg.exec();
+    if (dlg.exec() != QDialog::Accepted)
+        qApp->quit();
 }
 
 void BitcoinGUI::askFee(qint64 nFeeRequired, bool *payFee)

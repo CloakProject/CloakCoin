@@ -99,7 +99,6 @@ void AskPassphraseDialog::setModel(WalletModel *model)
 void AskPassphraseDialog::accept()
 {
     SecureString oldpass, newpass1, newpass2;
-    CWallet *wallet;
 
 //    if(!model)
 //        return;
