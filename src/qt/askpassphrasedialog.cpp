@@ -224,15 +224,22 @@ void AskPassphraseDialog::accept()
         } break;
 
     case DecryptOnStart:
+        CWallet* wallet;
+        wallet = new CWallet("wallet.dat");
+
         if(!wallet->DecryptWalletData(oldpass))
         {
             QMessageBox::critical(this, tr("Wallet key decryption failed"),
                                   tr("The passphrase entered for the wallet key decryption was incorrect."));
             QDialog::reject(); // Cancelled
+            delete wallet;
+            wallet = NULL;
             QApplication::quit();
         }
         else
         {
+            delete wallet;
+            wallet = NULL;
             QDialog::accept(); // Success
         }
         break;
