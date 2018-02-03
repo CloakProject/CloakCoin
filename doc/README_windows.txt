@@ -47,6 +47,6 @@ Start up the new cloakcoind.
 
 
 See the documentation/wiki at the CloakCoin site:
-  http://cloakcoin.cc/
+  http://cloakcoin.com/
 for help and more information.
 
