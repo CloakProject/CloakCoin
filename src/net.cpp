@@ -1246,26 +1246,22 @@ void ThreadOnionSeed()
 //static const char *strDNSSeed[][0] = {};
 // remove for testing
 
-const int cloakNodesCount = 9;
+const int cloakNodesCount = 7;
 const string cloakNodes[cloakNodesCount] = {
             "node1.cloakcoin.com",
             "node2.cloakcoin.com",
             "node3.cloakcoin.com",
             "node4.cloakcoin.com",
             "node5.cloakcoin.com",
-            "78.47.249.63",
-            "78.47.193.228",
-            "78.47.226.95",
-            "78.47.193.225"
+            "173.212.243.180",
+            "213.136.75.147",
             };
 
-const int cloakNodesTestnetCount = 5;
+const int cloakNodesTestnetCount = 3;
 const string cloakNodesTestnet[cloakNodesTestnetCount] = {
-    "79.91.150.83",
-    "213.136.73.207",
-    "46.101.97.122",
-    "173.212.243.180",
-    "213.136.75.147",
+            "testnet1.cloakcoin.com",
+            "testnet2.cloakcoin.com",
+            "testnet3.cloakcoin.com",
 };
 
 static const char *strDNSSeed[0][2] = {

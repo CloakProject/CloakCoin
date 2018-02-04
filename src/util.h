@@ -32,9 +32,9 @@ typedef int pid_t; /* define for Windows compatibility */
 // general flags/settings
 #define ONEMARKET_ENABLED 0 // enable onemarket functionality?
 #define ONION_ROUTING_ENABLED 1 // enable onion routing?
-#define FORCE_TESTNET 5 // (4=TestNet4 for debug, 5=TestNet5) force running on testnet/devnet
-#define DEFAULT_CLOAKERS 3
-#define MIN_CLOAKERS 3 // min number of cloakers (for dropdown menu etc)
+#define FORCE_TESTNET 0 // (4=TestNet4 for debug, 5=TestNet5, 0=Live) force running on testnet/devnet
+#define DEFAULT_CLOAKERS 5
+#define MIN_CLOAKERS 5 // min number of cloakers (for dropdown menu etc)
 #define MAX_CLOAKERS 25 // max number of cloakers (for dropdown menu etc)
 #define MAX_ONION_SKINS 10 // bail if onion contains more than this number of layers (crude DoS protection)
 #define MAX_CLOAKER_SPLITS 10 // max number of Enigma tx splits (for dropdown menu etc)

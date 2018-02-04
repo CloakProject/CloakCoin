@@ -101,7 +101,7 @@ private:
     BitcoinGUI *window;
     QTimer *pollShutdownTimer;
 
-    CCriticalSection cs_BlockchainDownload;
+    //CCriticalSection cs_BlockchainDownload;
 #ifdef ENABLE_WALLET
     PaymentServer* paymentServer;
     WalletModel *walletModel;
