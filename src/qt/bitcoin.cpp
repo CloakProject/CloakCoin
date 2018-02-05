@@ -245,6 +245,7 @@ int BitcoinApplication::unzipBlockchain()
 
 void BitcoinApplication::createSplashScreen(bool isaTestNet)
 {
+    downloadingBlockchain = false;
     SplashScreen *splash = new SplashScreen(0, isaTestNet);
     splash->show();
     if (!isaTestNet)
@@ -261,6 +262,7 @@ void BitcoinApplication::createSplashScreen(bool isaTestNet)
                                   QString("downloaded, you can expect much greater performance from the cloak ") +
                                   QString("network.<BR /><BR />Welcome to CloakCoin!"));
 
+            downloadingBlockchain = true;
             zipPath = dataDir /= "blockchain.zip";
             fileBcZip = fopen(zipPath.string().c_str(), "wb+");
             if (fileBcZip == NULL){
@@ -279,6 +281,7 @@ void BitcoinApplication::createSplashScreen(bool isaTestNet)
             //int res = unpackDownloadedBlockchain();
         }
     }
+
     connect(this, SIGNAL(splashFinished(QWidget*)), splash, SLOT(slotFinish(QWidget*)));
 }
 

@@ -28,7 +28,7 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, bool isTestNet) : QWidget(0, f), c
 
     float fontFactor            = 1.2;
 
-    QColor colorPen = QColor(64,64,64, 255);
+    QColor colorPen = QColor(164,164,164, 255);
     QColor colorShadow = QColor(92,92,92,96);
 
     // define text to place
@@ -174,7 +174,7 @@ static void InitMessage(SplashScreen *splash, const std::string &message)
         Qt::QueuedConnection,
         Q_ARG(QString, QString::fromStdString(message)),
         Q_ARG(int, Qt::AlignBottom|Qt::AlignHCenter),
-        Q_ARG(QColor, QColor(55,55,55)));
+        Q_ARG(QColor, QColor(255,100,0)));
 }
 
 void SplashScreen::showMessage(const QString &message, int alignment, const QColor &color)
