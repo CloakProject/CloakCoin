@@ -2843,8 +2843,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+8"/>
-        <source>(total: &lt;b&gt;%1&lt;/b&gt; + &lt;b&gt;%2&lt;/b&gt; Enigma fee &lt;b&gt;(1.8% + output fees)&lt;/b&gt; = &lt;b&gt;%3&lt;/b&gt;)</source>
-        <translation>(всего: &lt;b&gt;%1&lt;/b&gt; + &lt;b&gt;%2&lt;/b&gt; комса Энигмы &lt;b&gt;(1.8% + комса вывода)&lt;/b&gt; = &lt;b&gt;%3&lt;/b&gt;)</translation>
+        <source>(total: &lt;b&gt;%1&lt;/b&gt; + &lt;b&gt;%2&lt;/b&gt; Enigma fee &lt;b&gt;((.2-1)% + output fees)&lt;/b&gt; = &lt;b&gt;%3&lt;/b&gt;)</source>
+        <translation>(всего: &lt;b&gt;%1&lt;/b&gt; + &lt;b&gt;%2&lt;/b&gt; комса Энигмы &lt;b&gt;((.2-1)% + комса вывода)&lt;/b&gt; = &lt;b&gt;%3&lt;/b&gt;)</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -3679,11 +3679,6 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <location line="+1"/>
         <source>Show transaction details</source>
         <translation>Показать подробности транзакции</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Remove TX from wallet</source>
-        <translation>Убрать TX из кошелька</translation>
     </message>
     <message>
         <location line="+148"/>

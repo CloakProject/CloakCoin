@@ -161,6 +161,7 @@ void AskPassphraseDialog::accept()
         }
         } break;
     case UnlockMinting:
+        fWalletUnlockMintOnly = ui->mintingCheckBox->isChecked();
     case Unlock:
         if(!model->setWalletLocked(false, oldpass))
         {
@@ -169,7 +170,6 @@ void AskPassphraseDialog::accept()
         }
         else
         {
-            fWalletUnlockMintOnly = ui->mintingCheckBox->isChecked();
             QDialog::accept(); // Success
         }
         break;

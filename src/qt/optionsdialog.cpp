@@ -144,7 +144,7 @@ void OptionsDialog::setModel(OptionsModel *model)
 void OptionsDialog::setMapper()
 {
     /* Main */
-    mapper->addMapping(ui->transactionFee, OptionsModel::Fee);
+    //mapper->addMapping(ui->transactionFee, OptionsModel::Fee);
     mapper->addMapping(ui->bitcoinAtStartup, OptionsModel::StartAtStartup);
     mapper->addMapping(ui->detachDatabases, OptionsModel::DetachDatabases);
 
@@ -270,8 +270,13 @@ void OptionsDialog::updateDisplayUnit()
 {
     if(model)
     {
+        // wfd - no more transaction fee setting.  There are still
+        //       two places where the default display unit needs to be set.
+        //       one in the options->disply and one on the send coins.  For now,
+        //       leave this in place.
+
         /* Update transactionFee with the current unit */
-        ui->transactionFee->setDisplayUnit(model->getDisplayUnit());
+        // ui->transactionFee->setDisplayUnit(model->getDisplayUnit());
     }
 }
 

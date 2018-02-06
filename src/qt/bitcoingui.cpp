@@ -94,7 +94,7 @@ BitcoinGUI::BitcoinGUI(bool fIsTestnet, QWidget *parent):
     rpcConsole(0)
 {
     resize(850, 550);
-    setWindowTitle(tr("CloakCoin") + " - " + tr("Wallet"));
+    setWindowTitle(tr("CLOAK Core v2.1.0.0 - Codename: Evolution"));
 #ifndef Q_OS_MAC
     qApp->setWindowIcon(QIcon(":icons/bitcoin"));
     setWindowIcon(QIcon(":icons/bitcoin"));
@@ -557,7 +557,7 @@ void BitcoinGUI::setClientModel(ClientModel *clientModel)
                 setWindowTitle(windowTitle() + QString(" ") + tr("[devnet]") + instanceText);
         }else{
 #ifdef QT_DEBUG
-            setWindowTitle(windowTitle() + QString(" ") + tr("[live]") + instanceText);
+           // setWindowTitle(windowTitle() + QString(" ") + tr("[live]") + instanceText);
 #endif
         }
 

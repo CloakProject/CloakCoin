@@ -87,6 +87,7 @@ public:
     string rawtx; // the original transaction
     string signedrawtx; // the multi-signed version of the rawtx. this is sequentially signed by participants (we should have already signed it).
     set<string> signedByAddresses; // to keep track of addresses that have already signed rawtx (signed version stored in signedrawtx)
+    string recipientAddress; // keep track of recipient to prevent him from being enigma assistant.
     bool bBroadcasted;
     int64 nBroadcastedTime;
     bool processed; // if this is one of our requests, have

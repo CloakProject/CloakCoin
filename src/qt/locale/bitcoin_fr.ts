@@ -2828,8 +2828,8 @@ Cela veut dire que des frais d&apos;au moins %1 par kb sont requis.</translation
     </message>
     <message>
         <location line="+8"/>
-        <source>(total: &lt;b&gt;%1&lt;/b&gt; + &lt;b&gt;%2&lt;/b&gt; Enigma fee &lt;b&gt;(1.8% + output fees)&lt;/b&gt; = &lt;b&gt;%3&lt;/b&gt;)</source>
-        <translation>(total: &lt;b&gt;%1&lt;/b&gt; + &lt;b&gt;%2&lt;/b&gt; frais Enigma &lt;b&gt;(1.8% +  frais de sortie)&lt;/b&gt; = &lt;b&gt;%3&lt;/b&gt;)</translation>
+        <source>(total: &lt;b&gt;%1&lt;/b&gt; + &lt;b&gt;%2&lt;/b&gt; Enigma fee &lt;b&gt;((.2-1)% + output fees)&lt;/b&gt; = &lt;b&gt;%3&lt;/b&gt;)</source>
+        <translation>(total: &lt;b&gt;%1&lt;/b&gt; + &lt;b&gt;%2&lt;/b&gt; frais Enigma &lt;b&gt;((.2-1)% +  frais de sortie)&lt;/b&gt; = &lt;b&gt;%3&lt;/b&gt;)</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -3663,11 +3663,6 @@ Cela veut dire que des frais d&apos;au moins %1 par kb sont requis.</translation
         <location line="+1"/>
         <source>Show transaction details</source>
         <translation>Voir les détails de la transaction</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Remove TX from wallet</source>
-        <translation>Retirer la transaction du portefeuille</translation>
     </message>
     <message>
         <location line="+148"/>

@@ -167,6 +167,7 @@ void RandAddSeedPerfmon()
 #endif
 }
 
+// the returned value goes from 0 thru (nMax - 1)
 uint64 GetRand(uint64 nMax)
 {
     if (nMax == 0)
@@ -187,7 +188,21 @@ int64 GetRandRange(int64 nMin, int64 nMax)
     if (nMax - nMin <= 0)
         return 0;
 
-    return GetRand(nMax - nMin) + nMin;
+#if false
+    uint64 test[20];
+    for (int i=0; i<10; i++)
+    {
+        // return from 0-4
+        test[i] = GetRand(5);
+    }
+    for (int i=10; i<20; i++)
+    {
+        // returns 0-999999
+        test[i] = GetRand(1000000);
+    }
+#endif
+
+    return GetRand(nMax - nMin + 1) + nMin;
 }
 
 std::vector<int64> SplitAmount(int64 amount, int64 min, int64 maxparts)

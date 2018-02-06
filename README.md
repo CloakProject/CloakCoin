@@ -34,7 +34,7 @@ _**Enigma - Transaction Process**_
 
 When a node sends funds via Enigma to an stealth address, the following happens:
 
-1. Sender generates inputs to cover amount sent, enigma reward (sent * 1.8%) and network fee (unknown at present, so ample reserved).
+1. Sender generates inputs to cover amount sent, enigma reward (sent * (.2-1)%) and network fee (unknown at present, so ample reserved).
 2. Sender generates a CloakingRequest object (containing unique stealth nonce for this request).
 3. Sender generates 2 or 3 one-time stealth payment addresses using the recipients stealth address and splits the sent amount randomly between the addresses.
 4. Sender onion routes CloakRequest to network. The request contains the 'send amount' so that Cloakers know how much to reserve.

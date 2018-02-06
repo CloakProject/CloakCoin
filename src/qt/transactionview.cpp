@@ -142,7 +142,6 @@ TransactionView::TransactionView(QWidget *parent) :
     QAction *copyAmountAction = new QAction(tr("Copy amount"), this);
     QAction *editLabelAction = new QAction(tr("Edit label"), this);
     QAction *showDetailsAction = new QAction(tr("Show transaction details"), this);
-    QAction *removeFromWalletAction = new QAction(tr("Remove TX from wallet"), this);
 
     contextMenu = new QMenu();
     contextMenu->addAction(copyAddressAction);
@@ -152,7 +151,6 @@ TransactionView::TransactionView(QWidget *parent) :
     contextMenu->addAction(copyAmountAction);
     contextMenu->addAction(editLabelAction);
     contextMenu->addAction(showDetailsAction);
-    contextMenu->addAction(removeFromWalletAction);
 
     // Connect actions
     connect(dateWidget, SIGNAL(activated(int)), this, SLOT(chooseDate(int)));
@@ -170,7 +168,6 @@ TransactionView::TransactionView(QWidget *parent) :
     connect(copyAmountAction, SIGNAL(triggered()), this, SLOT(copyAmount()));
     connect(editLabelAction, SIGNAL(triggered()), this, SLOT(editLabel()));
     connect(showDetailsAction, SIGNAL(triggered()), this, SLOT(showDetails()));
-    connect(removeFromWalletAction, SIGNAL(triggered()), this, SLOT(removeFromWallet()));
 }
 
 void TransactionView::setModel(WalletModel *model)
@@ -406,48 +403,6 @@ void TransactionView::showDetails()
         dlg.exec();
     }
 }
-
-// WARNING: This should only be used to remove own stuck Enigma transactions
-bool TransactionView::removeFromWallet()
-{
-    if(!transactionView->selectionModel())
-        return false;
-    QModelIndexList selection = transactionView->selectionModel()->selectedRows();
-    if(!selection.isEmpty())
-    {
-        QModelIndex idx = selection.at(0);
-        QString desc = idx.data(TransactionTableModel::LongDescriptionRole).toString();
-        QString id = idx.data(TransactionTableModel::TxIDRole).toString();
-        uint256 hash(id.toStdString());
-
-        // remove our Tx from wallet. we should have checked that this was our Enigma Tx and we were the sender/initator.
-        CWalletTx wtx;
-        if (!pwalletMain->GetTransaction(hash, wtx))
-            return false;
-
-        QMessageBox::StandardButton retval = QMessageBox::question(this, tr("Confirm Tx deletion"),
-                  tr("Are you sure you wish to remove this Tx from wallet?"),
-                 QMessageBox::Yes|QMessageBox::Cancel,
-                 QMessageBox::Cancel);
-
-        if(retval != QMessageBox::Yes)
-            return false;
-
-        if (pwalletMain->EraseFromWallet(hash))
-        {
-            model->getTransactionTableModel()->updateTransaction(QString::fromStdString(hash.ToString()), CT_DELETED);
-
-            // remove the row from the model
-            QMessageBox::information(this, tr("Delete Enigma Tx"), tr("Enigma Tx %1 removed from wallet.").arg(id),
-                                  QMessageBox::Ok, QMessageBox::Ok);
-        }else{
-            QMessageBox::information(this, tr("Delete Enigma Tx"), tr("Failed to remove Enigma Tx %1 from wallet.").arg(id),
-                                  QMessageBox::Ok, QMessageBox::Ok);
-        }
-    }
-    return true;
-}
-
 
 QWidget *TransactionView::createDateRangeWidget()
 {

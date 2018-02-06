@@ -232,7 +232,7 @@ std::vector<CEnigmaAnnouncement> CEnigmaAnnouncement::electAnonymizers(const int
     if (enigmaAnnsAvail.size() > 0)
     {
         // shuffle
-        std::random_shuffle(enigmaAnnsAvail.begin(), enigmaAnnsAvail.end());
+        std::random_shuffle(enigmaAnnsAvail.begin(), enigmaAnnsAvail.end(), GetRandInt);
 
         // crop to size
         if ((int)enigmaAnnsAvail.size()>count && count > 0)

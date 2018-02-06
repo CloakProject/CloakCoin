@@ -257,31 +257,32 @@ void BitcoinApplication::createSplashScreen(bool isaTestNet)
 
         if (!boost::filesystem::is_directory(pathLevelDb))
         {
-            downloadingBlockchain = QMessageBox::Yes == QMessageBox::question(splash, "CloakCoin",
-                                  QString("Can't find local blockchain files. Would you like to auto-download them?"), QMessageBox::Yes, QMessageBox::No);
+            QMessageBox::information(splash, "CloakCoin",
+                                  QString("Local Blockchain files were not found.<BR /><BR />On initial configuration, ") +
+                                  QString("this could take some time, up to hours...  Once the Blockchain is ") +
+                                  QString("downloaded, you can expect much greater performance from the cloak ") +
+                                  QString("network.<BR /><BR />Welcome to CloakCoin!"));
 
-            if (downloadingBlockchain){
-                zipPath = dataDir /= "blockchain.zip";
-                fileBcZip = fopen(zipPath.string().c_str(), "wb+");
-                if (fileBcZip == NULL){
-                    QMessageBox::warning(0, "CloakCoin", QString("Failed to open blockchain file for writing: ").append(QString::fromStdString(zipPath.string())));
-                }
-
-                uiInterface.InitMessage(_("Downloading blockchain data..."));
-
-
-                FileDownloader* downloader = new FileDownloader(QUrl("http://82.211.30.193/wallet/v2/cloak_ldb.zip"));
-
-                //FileDownloader* downloader = new FileDownloader(QUrl("https://www.dropbox.com/s/aui31rlxk1s6xy9/blockchain_ldb.zip"));
-
-                //FileDownloader* downloader = new FileDownloader(QUrl("https://backend.cloakcoin.com/wallet/v2/cloak_ldb.zip"));
-                connect(downloader, SIGNAL(downloaded()), this, SLOT(unpackDownloadedBlockchain()));
-                connect(downloader, SIGNAL(gotBytes(const char*,int)), this, SLOT(gotBytesDownloadBlockchain(const char*, int)));
-                connect(downloader, SIGNAL(progressUpdated(qint64, qint64)), this, SLOT(updateDownloadBlockchainProgress(qint64, qint64)));
-                //int res = unpackDownloadedBlockchain();
+            downloadingBlockchain = true;
+            zipPath = dataDir /= "blockchain.zip";
+            fileBcZip = fopen(zipPath.string().c_str(), "wb+");
+            if (fileBcZip == NULL){
+                QMessageBox::warning(0, "CloakCoin", QString("Failed to open blockchain file for writing: ").append(QString::fromStdString(zipPath.string())));
             }
+
+            uiInterface.InitMessage(_("Downloading blockchain data..."));
+
+            //FileDownloader* downloader = new FileDownloader(QUrl("http://82.211.30.193/wallet/v2/cloak_ldb.zip"));
+            //FileDownloader* downloader = new FileDownloader(QUrl("https://www.dropbox.com/s/aui31rlxk1s6xy9/blockchain_ldb.zip"));
+
+            FileDownloader* downloader = new FileDownloader(QUrl("https://backend.cloakcoin.com/wallet/v2/cloak_ldb.zip"));
+            connect(downloader, SIGNAL(downloaded()), this, SLOT(unpackDownloadedBlockchain()));
+            connect(downloader, SIGNAL(gotBytes(const char*,int)), this, SLOT(gotBytesDownloadBlockchain(const char*, int)));
+            connect(downloader, SIGNAL(progressUpdated(qint64, qint64)), this, SLOT(updateDownloadBlockchainProgress(qint64, qint64)));
+            //int res = unpackDownloadedBlockchain();
         }
     }
+
     connect(this, SIGNAL(splashFinished(QWidget*)), splash, SLOT(slotFinish(QWidget*)));
 }
 
