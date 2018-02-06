@@ -13,6 +13,7 @@
 #include "qtipcserver.h"
 #include "splashscreen.h"
 
+#include "askpassphrasedialog.h"
 #include "utilitydialog.h"
 #include "winshutdownmonitor.h"
 
@@ -357,6 +358,13 @@ static void ThreadSafeMessageBox(const std::string& message, const std::string& 
     }
 }
 
+static void ThreadSafeDecryptDialog()
+{
+    if(guiref){
+        QMetaObject::invokeMethod(guiref, "decryptWallet", GUIUtil::blockingGUIThreadConnection()/*, Q_ARG(bool*, &decrypted)*/);
+    }
+}
+
 static bool ThreadSafeAskFee(int64 nFeeRequired, const std::string& strCaption)
 {
     if(!guiref)
@@ -518,6 +526,13 @@ void BitcoinApplication::initializeResult(int retval)
 void BitcoinApplication::shutdownResult(int retval)
 {
     printf("Shutdown result: %i\n", retval);
+    if (retval == 1)
+    {
+        AskPassphraseDialog::Mode mode = AskPassphraseDialog::EncryptOnExit;
+        AskPassphraseDialog dlg(mode);
+        dlg.setModel(walletModel);
+        dlg.exec();
+    }
     quit(); // Exit main loop after shutdown finished
 }
 
@@ -620,6 +635,7 @@ int main(int argc, char *argv[])
 
     // Subscribe to global signals from core
     uiInterface.ThreadSafeMessageBox.connect(ThreadSafeMessageBox);
+    uiInterface.ThreadSafeDecryptDialog.connect(ThreadSafeDecryptDialog);
     uiInterface.ThreadSafeAskFee.connect(ThreadSafeAskFee);
     uiInterface.ThreadSafeHandleURI.connect(ThreadSafeHandleURI);
     uiInterface.InitMessage.connect(InitMessage);

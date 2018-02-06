@@ -102,6 +102,7 @@ public:
 
     // Wallet encryption
     bool setWalletEncrypted(bool encrypted, const SecureString &passphrase);
+    bool setWalletDataEncrypted(bool encrypt, const SecureString &passPhrase);
     // Passphrase only needed when unlocking
     bool setWalletLocked(bool locked, const SecureString &passPhrase=SecureString());
     bool changePassphrase(const SecureString &oldPass, const SecureString &newPass);
@@ -131,7 +132,7 @@ public:
     UnlockContext requestUnlock();
     UnlockContext requestUnlock(bool leaveUnlockedForMinting);
     UnlockContext requestUnlock(bool leaveUnlockedForMinting, qint64 enigmaRelockTime);
-	
+
     bool getPubKey(const CKeyID &address, CPubKey& vchPubKeyOut) const;
     void getOutputs(const std::vector<COutPoint>& vOutpoints, std::vector<COutput>& vOutputs);
     void listCoins(std::map<QString, std::vector<COutput> >& mapCoins) const;
@@ -158,7 +159,7 @@ private:
     qint64 cachedImmatureBalance;
     qint64 cachedNumTransactions;
     EncryptionStatus cachedEncryptionStatus;
-    qint64 cachedPosaReserveBalance;    
+    qint64 cachedPosaReserveBalance;
     int cachedNumBlocks;
 
     QTimer *pollTimer;

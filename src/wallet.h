@@ -111,7 +111,7 @@ public:
 
     // enigma
     CCriticalSection cs_mapCloakingInputsOutputs;
-    CCriticalSection cs_mapCloakingRequests;    
+    CCriticalSection cs_mapCloakingRequests;
     CCriticalSection cs_mapOurCloakingRequests;
     CCriticalSection cs_mapCloakingKeys;
     CCriticalSection cs_sEnigmaRequests;
@@ -214,6 +214,8 @@ public:
     bool Unlock(const SecureString& strWalletPassphrase);
     bool ChangeWalletPassphrase(const SecureString& strOldWalletPassphrase, const SecureString& strNewWalletPassphrase);
     bool EncryptWallet(const SecureString& strWalletPassphrase);
+    bool EncryptWalletData(const SecureString& strDataPassphrase);
+    bool DecryptWalletData(const SecureString& strDataPassphrase);
     DBErrors ZapWalletTx();
 
     /** Increment the next transaction order id
@@ -257,7 +259,7 @@ public:
     bool CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int64 nSearchInterval, CTransaction& txNew);
     std::string SendMoney(CScript scriptPubKey, int64 nValue, std::string& sNarr, CWalletTx& wtxNew, bool bAnonymize, bool fAskFee=false, const std::string& txData="");
     std::string SendMoneyToDestination(const CTxDestination &address, int64 nValue, std::string& sNarr, CWalletTx& wtxNew, bool bAnonymize, bool fAskFee=false, const std::string& txData="");
-    std::string SendMoneyEnigma(CScript scriptPubKey, int64 nValue, CWalletTx& wtxNew, bool fAskFee, int numParticipantsRequired = 3);    
+    std::string SendMoneyEnigma(CScript scriptPubKey, int64 nValue, CWalletTx& wtxNew, bool fAskFee, int numParticipantsRequired = 3);
     std::string SendMoneyToDestinationEnigma(const CTxDestination &address, int64 nValue, CWalletTx& wtxNew, bool bAnonymize, bool fAskFee=false);
     std::string SendData(CWalletTx& wtxNew, bool fAskFee, const std::string& txData);
 
@@ -270,7 +272,7 @@ public:
     bool AddStealthAddress(CStealthAddress& sxAddr);
     bool UnlockStealthAddresses(const CKeyingMaterial& vMasterKeyIn);
     bool UpdateStealthAddress(std::string &addr, std::string &label, bool addIfNotExist);
-    
+
     bool CreateStealthTransaction(CScript scriptPubKey, int64 nValue, std::vector<uint8_t>& P, std::vector<uint8_t>& narr, std::string& sNarr, CWalletTx& wtxNew, CReserveKey& reservekey, int64& nFeeRet, const CCoinControl* coinControl=NULL);
     std::string SendStealthMoney(CScript scriptPubKey, int64 nValue, std::vector<uint8_t>& P, std::vector<uint8_t>& narr, std::string& sNarr, CWalletTx& wtxNew, bool fAskFee=false);
     bool SendStealthMoneyToDestination(CStealthAddress& sxAddress, int64 nValue, std::string& sNarr, CWalletTx& wtxNew, std::string& sError, bool fAskFee=false);

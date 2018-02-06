@@ -367,6 +367,104 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase)
     return true;
 }
 
+bool CWallet::EncryptWalletData(const SecureString& strDataPassphrase)
+{
+    if (!strDataPassphrase.empty())
+    {
+
+        CKeyingMaterial vMasterKey;
+        RandAddSeedPerfmon();
+
+        vMasterKey.resize(WALLET_CRYPTO_KEY_SIZE);
+        RAND_bytes(&vMasterKey[0], WALLET_CRYPTO_KEY_SIZE);
+
+        CMasterKey kMasterKey;
+
+        RandAddSeedPerfmon();
+        kMasterKey.vchSalt.resize(WALLET_CRYPTO_SALT_SIZE);
+        RAND_bytes(&kMasterKey.vchSalt[0], WALLET_CRYPTO_SALT_SIZE);
+
+        CCrypter crypter;
+        int64 nStartTime = GetTimeMillis();
+        crypter.SetKeyFromPassphrase(strDataPassphrase, kMasterKey.vchSalt, 25000, kMasterKey.nDerivationMethod);
+        kMasterKey.nDeriveIterations = 2500000 / ((double)(GetTimeMillis() - nStartTime));
+
+        nStartTime = GetTimeMillis();
+        crypter.SetKeyFromPassphrase(strDataPassphrase, kMasterKey.vchSalt, kMasterKey.nDeriveIterations, kMasterKey.nDerivationMethod);
+        kMasterKey.nDeriveIterations = (kMasterKey.nDeriveIterations + kMasterKey.nDeriveIterations * 100 / ((double)(GetTimeMillis() - nStartTime))) / 2;
+
+        if (kMasterKey.nDeriveIterations < 25000)
+            kMasterKey.nDeriveIterations = 25000;
+
+        printf("Encrypting Wallet Data with an nDeriveIterations of %i\n", kMasterKey.nDeriveIterations);
+
+        if (!crypter.SetDataKeyFromPassphrase(strDataPassphrase, kMasterKey.vchSalt, kMasterKey.nDeriveIterations, kMasterKey.nDerivationMethod))
+            return false;
+        if (!crypter.EncryptWalletFile(kMasterKey))
+            return false;
+
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool CWallet::DecryptWalletData(const SecureString& strDataPassphrase)
+{
+    if (!strDataPassphrase.empty())
+    {
+        LOCK(cs_wallet); //make sure to restrict access to wallet critical section
+
+        boost::filesystem::path inputPath = GetDataDir() / "wallet.dat";
+
+        FILE *ifp = fopen(inputPath.string().c_str(), "rb");
+
+        if ( NULL == ifp )
+            return false;
+
+        long offset = (sizeof("ANORAK_WAS_HERE")+WALLET_CRYPTO_SALT_SIZE+2*sizeof(unsigned int));
+        fseek(ifp, -offset, SEEK_END);
+
+        // declare header data
+        std::vector<unsigned char> salt;
+        unsigned int iterations;
+        unsigned int method;
+        unsigned char awh[16];
+
+        salt.resize(WALLET_CRYPTO_SALT_SIZE);
+
+        //  READ salt, iterations, method
+        /*
+        fwrite("ANORAK_WAS_HERE", sizeof("ANORAK_WAS_HERE"), 1, ofp);
+        fwrite(kMasterKey.vchSalt, WALLET_CRYPTO_SALT_SIZE, 1, ofp);
+        fwrite(kMasterKey.nDeriveIterations, sizeof(unsigned int), 1, ofp);
+        fwrite(kMasterKey.nDerivationMethod, sizeof(unsigned int), 1, ofp);
+        */
+
+        fread(awh, sizeof(unsigned char), 16, ifp);
+        fread(&salt[0], sizeof(unsigned char), WALLET_CRYPTO_SALT_SIZE, ifp);
+        fread(&iterations, sizeof(unsigned int), 1, ifp);
+        fread(&method, sizeof(unsigned int), 1, ifp);
+
+        fclose(ifp);
+
+        CCrypter crypter;
+
+        // add decryption methods; after retrieving salt, derivation iterations and derivation method, run:
+        if (!crypter.SetDataKeyFromPassphrase(strDataPassphrase, salt, iterations, method))
+            return false;
+        if (!crypter.DecryptWalletFile())
+            return false;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 int64 CWallet::IncOrderPosNext(CWalletDB *pwalletdb)
 {
     int64 nRet = nOrderPosNext++;
