@@ -174,7 +174,7 @@ static void InitMessage(SplashScreen *splash, const std::string &message)
         Qt::QueuedConnection,
         Q_ARG(QString, QString::fromStdString(message)),
         Q_ARG(int, Qt::AlignBottom|Qt::AlignHCenter),
-        Q_ARG(QColor, QColor(255,100,0)));
+        Q_ARG(QColor, QColor(111,111,111)));
 }
 
 void SplashScreen::showMessage(const QString &message, int alignment, const QColor &color)
