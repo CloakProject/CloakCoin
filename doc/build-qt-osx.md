@@ -71,6 +71,12 @@ It is advised not to use it to store your real CloakCoin. By default, this versi
 
 There is an alternate way to build the wallet instead of running `qmake && make`: you can use Qt Creator. Download it, import the `.pro` file, then build it.
 
+## Package dependencies inside the app
+
+To be able to run the app on another Mac which doesn't have all the dependencies installed, you need to package dependencies inside the app.
+
+There is a convenient tool named `macdeployqt` which does exactly that. Just **run `macdeployqt cloakcoin-qt.app`** 
+
 ## Troubleshooting
 
 If you have an issue with this guide, please open issue with:
