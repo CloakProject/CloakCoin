@@ -451,8 +451,8 @@ bool AppInit2(boost::thread_group& threadGroup)
 #endif
 
     fStaking = GetBoolArg("-staking", true);
-    //fEnigma = GetBoolArg("-enigma", isQtWallet);
-    fEnigma = GetBoolArg("-enigma", fTestNet); // default to enigma disabled on livenet until audit/code review is complete
+    fEnigma = GetBoolArg("-enigma", isQtWallet);
+    //fEnigma = GetBoolArg("-enigma", fTestNet); // default to enigma disabled on livenet until audit/code review is complete
 
     bitdb.SetDetach(GetBoolArg("-detachdb", false));
 
