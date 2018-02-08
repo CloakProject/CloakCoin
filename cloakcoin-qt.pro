@@ -48,7 +48,7 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 # Is that actually necessary?
 DEFINES += QT_GUI 
 
-CONFIG += no_include_pwd thread static
+CONFIG += no_include_pwd thread static c++11
 INCLUDEPATH += src src/json src/qt src/tor
 
 # "Other files" to show in Qt Creator
@@ -335,8 +335,8 @@ message(INCLUDEPATH = $$INCLUDEPATH)
 # We need to exclude this for Windows cross compile with MinGW 4.2.x, as it will result in a non-working executable!
 # This can be enabled for Windows, when we switch to MinGW >= 4.4.x.
 !win32 {
-    QMAKE_CXXFLAGS *= -fstack-protector-all --param ssp-buffer-size=1 -std=c++11
-    QMAKE_LFLAGS *= -fstack-protector-all --param ssp-buffer-size=1 -std=c++11 -fno-pie
+    QMAKE_CXXFLAGS *= -fstack-protector-all --param ssp-buffer-size=1
+    QMAKE_LFLAGS *= -fstack-protector-all --param ssp-buffer-size=1 -fno-pie
     # Add the -no-pie option only if the linker supports it. clang and older gcc versions don't support it
     QMAKE_LFLAGS *= $$system(if $$QMAKE_LINK -no-pie -S -o /dev/null -xc /dev/null > /dev/null 2>&1; then echo "-no-pie"; else echo ""; fi ;)
 }
