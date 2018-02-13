@@ -6,6 +6,8 @@ This is a tutorial to build the CloakCoin wallet with a graphical user interface
 
 It is designed to walk you through all the steps required to build the wallet from scratch.
 
+While it is primarily tested and maintained for Ubuntu, you can build it on other Unix platforms, but it will require searching for the right dependencies, and sometime compiling from source if the proper version isn't available. Known issues, at the end of the document, will list issues for all Unix platforms, not just Ubuntu.
+
 We assume you are using apt-get to install dependencies. If you use another package manager, you'll need to ensure you have the proper versions of every package (especially Boost)
 
 If you are experienced, there are short instructions in the README.
@@ -87,4 +89,5 @@ We'll try to help you as best as we can.
 
 ## Known issues
 
-Nothing yet.
+* [Debian Jessie] `-ldb_cxx not found` after compiling Berkeley DB from source. It seems even if ldconfig know the lib, it's not enough for the linker. First, check that the lib actually exist. If it does, symlink it to /usr/lib: `ln -s /usr/local/BerkeleyDB.4.8/lib/libdb_cxx.so /usr/lib/libdb_cxx.so`. It's dirty, but it works.
+* [Debian Jessie] `undefined reference to boost::filesystem::detail::copy_file [...]` means your Boost library is too old. You need 1.57 or newer (but not too new). 1.56 and 1.55 do not work, as explained in this [Boost ticket](https://svn.boost.org/trac10/ticket/10038). See [Boost 1.57](http://www.boost.org/doc/libs/1_57_0/more/getting_started/unix-variants.html) for instructions to install Boost. Make sure you remove your old Boost version first, otherwise the linker might still try the old version and fail (it won't detect the proper version on its own).
