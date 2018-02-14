@@ -4,12 +4,11 @@ TEMPLATE = app
 TARGET = cloakcoin-qt
 VERSION = 0.7.2
 INCLUDEPATH += src src/json src/qt src/tor
-DEFINES += QT_GUI BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE BOOST_THREAD_PROVIDES_GENERIC_SHARED_MUTEX_ON_WIN __NO_SYSTEM_INCLUDES CURL_STATICLIB
+DEFINES += QT_GUI BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE BOOST_THREAD_PROVIDES_GENERIC_SHARED_MUTEX_ON_WIN __NO_SYSTEM_INCLUDES
+#DEFINES += CURL_STATICLIB
 CONFIG += no_include_pwd
 CONFIG += thread
 CONFIG += static
-CONFIG += debug
-CONFIG -= app_bundle
 
 message($$QMAKESPEC)
 
@@ -36,14 +35,15 @@ message(LIBS = $$LIBS)
 # setup windows specific libs, using msys mingw x-compile environment
 win32 {
     message(*** win32 build ***)
-    LIBS += -L$$PWD/ex_lib/libcurl -lcurldll
-    LIBS += $$PWD/src/leveldb/lib/win/x86/libleveldb.a $$PWD/src/leveldb/lib/win/x86/libmemenv.a
+    #LIBS += -L$$PWD/ex_lib/libcurl -lcurldll
+    LIBS += C:\deps\curl-7.40.0\lib\.libs\libcurl.dll.a
+	LIBS += $$PWD/src/leveldb/lib/win/x86/libleveldb.a $$PWD/src/leveldb/lib/win/x86/libmemenv.a
 
-    INCLUDEPATH+=C:\deps\curl-7.40.0-devel-mingw32\include
+    INCLUDEPATH+=C:\deps\curl-7.40.0\include
     INCLUDEPATH+=C:\deps\libevent-2.0.21-stable\include
-    INCLUDEPATH += $$PWD/ex_lib/qrencode-3.4.1-1-mingw32-dev/include/
+    INCLUDEPATH +=C:\deps\qrencode-3.4.4
     INCLUDEPATH += $$PWD/src/leveldb/include/leveldb
-    INCLUDEPATH += $$PWD/build	
+    INCLUDEPATH += $$PWD/build
 
     DEFINES += USE_LEVELDB
     INCLUDEPATH += src/leveldb/include src/leveldb/helpers src/leveldb/helpers/memenv
@@ -54,7 +54,7 @@ win32 {
 
     BDB_INCLUDE_PATH=C:\deps\db-4.8.30.NC\build_unix
     BDB_LIB_PATH=C:\deps\db-4.8.30.NC\build_unix
-	
+
     OPENSSL_INCLUDE_PATH = C:\deps\openssl-1.0.2g\include
     OPENSSL_LIB_PATH=C:\deps\openssl-1.0.2g
 
@@ -63,7 +63,7 @@ win32 {
 
     BOOST_LIB_SUFFIX = -mgw49-mt-s-1_57
 
-    LIBS+=-LC:\deps\libevent-2.0.21-stable\.libs
+    LIBS+=-LC:\deps\libevent-2.0.21-stable\.libs -LC:\deps\libpng-1.6.16\.libs
     LIBS+=-lcrypto -lws2_32 -lgdi32 -lcrypt32
 }
 
@@ -129,8 +129,8 @@ contains(RELEASE, 1) {
     #macx:QMAKE_LFLAGS += -no_weak_imports
 
     !windows:!macx {
-        # Linux: static link
-        LIBS += -Wl,-Bstatic
+	# Linux: static link
+	LIBS += -Wl,-Bstatic
     }
 }
 
@@ -144,16 +144,16 @@ QMAKE_LFLAGS *= -fstack-protector-all --param ssp-buffer-size=1
 # for extra security on Windows: enable ASLR and DEP via GCC linker flags
 win32:QMAKE_LFLAGS *= -Wl,--dynamicbase -Wl,--nxcompat
 # on Windows: enable GCC large address aware linker flag
-win32:QMAKE_LFLAGS *= -Wl,--large-address-aware -static
+win32:QMAKE_LFLAGS *= -Wl,--large-address-aware
 
 # use: qmake "USE_QRCODE=1"
 # libqrencode (http://fukuchi.org/works/qrencode/index.en.html) must be installed for support
 contains(USE_QRCODE, 1) {
     message(Building with QRCode support)
     DEFINES += USE_QRCODE
-        !contains(USE_MXE, 1) {
-                LIBS += -lqrencode
-	}   
+	!contains(USE_MXE, 1) {
+		LIBS += -lqrencode
+	}
 }
 
 LIBS += -levent
@@ -169,7 +169,7 @@ contains(USE_UPNP, -) {
 } else {
     message(Building with UPNP support)
     count(USE_UPNP, 0) {
-        USE_UPNP=1
+	USE_UPNP=1
     }
     INCLUDEPATH += $$PWD/src
     INCLUDEPATH += C:/deps/miniupnpc
@@ -177,7 +177,7 @@ contains(USE_UPNP, -) {
     win32:LIBS += C:/deps/miniupnpc/libminiupnpc.a
     macx:LIBS += /opt/local/lib/libminiupnpc.a
     !windows:!macx{
-        LIBS += -lminiupnpc
+	LIBS += -lminiupnpc
     }
     win32:LIBS += -liphlpapi
 }
@@ -198,7 +198,7 @@ contains(USE_IPV6, -) {
 } else {
     message(Building with IPv6 support)
     count(USE_IPV6, 0) {
-        USE_IPV6=1
+	USE_IPV6=1
     }
     DEFINES += USE_IPV6=$$USE_IPV6
 }
@@ -779,14 +779,14 @@ LIBS += -lssl -lcrypto
 !win32:LIBS += -levent -lz
 #LIBS += -lz
 # -lgdi32 has to happen after -lcrypto (see  #681)
-windows:LIBS += -lws2_32 -lshlwapi -lmswsock -lole32 -loleaut32 -luuid -lgdi32 
+windows:LIBS += -lws2_32 -lshlwapi -lmswsock -lole32 -loleaut32 -luuid -lgdi32
 LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX
 windows:LIBS += -lboost_chrono$$BOOST_LIB_SUFFIX
 
 contains(RELEASE, 1) {
     !windows:!macx {
-        # Linux: turn dynamic linking back on for c/c++ runtime libraries
-        LIBS += -Wl,-Bdynamic
+	# Linux: turn dynamic linking back on for c/c++ runtime libraries
+	LIBS += -Wl,-Bdynamic
     }
 }
 
@@ -802,4 +802,3 @@ DISTFILES += \
     src/notes.txt
 
 message(LIBS = $$LIBS)
-
