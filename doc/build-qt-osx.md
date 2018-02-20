@@ -80,12 +80,12 @@ There is a convenient tool named `macdeployqt` which does exactly that. Just **r
 ## Creating a .dmg to distribute the app
 
 Users expect a .dmg where they can just drag&drop the app to their Applications folder. There are several ways to do this.
-You can use [create-dmg](https://github.com/andreyvit/create-dmg). **Clone it and make create-dmg accessible in your `$PATH`, then run:
+You can use [create-dmg](https://github.com/andreyvit/create-dmg). **Clone it and make create-dmg accessible in your `$PATH`, then run:**
 ```
 mkdir cloakcoin-release
 mv cloakcoin-qt.app cloakcoin-release/CloakCoin.app
 create-dmg --volname "CloakCoin" --volicon "src/qt/res/icons/CloakCoin.icns" --background "contrib/macdeploy/background.png" --window-pos 200 120 --window-size 500 320 --icon-size 100 --icon CloakCoin.app 120 150 --hide-extension CloakCoin.app --app-drop-link 380 150 CloakCoin.dmg cloakcoin-release/ 
-```**
+```
 
 ## Troubleshooting
 
