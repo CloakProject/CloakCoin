@@ -6,9 +6,9 @@ CloakCoin uses the Enigma system in order to facilitate private/secure transacti
 
 ## Branches explanation
 
-- `2.1.0` branch currently contains legacy dev code [beta 1 - testnet only
-- `anorak_master` branch contains windows targeted source
-- `anorak_linux` branch contains (yes, you guessed it!) linux targeted source
+- `2.1.0` branch contains the code of current live wallet
+- `anorak_master` branch contains windows targeted source for previous release (2.0.2.1)
+- `anorak_linux` branch contains (yes, you guessed it!) linux targeted source for previous release (2.0.2.1)
 - `master branch` is currently empty as we want to save it for a future unified source branch, to cover win/linux/mac platforms in one codebase
 
 
@@ -23,7 +23,7 @@ By default, development wallet runs on TestNet, but you can never be too safe.
 #### Step-by-step instructions
 
 If you are new, please follow the detailed instructions
-* for Windows (soon)
+* for Windows (coming soon)
 * [for Ubuntu](doc/build-qt-ubuntu.md) (any other Unix should have similar steps)
 * [for Mac OS X](doc/build-qt-osx.md)
 
