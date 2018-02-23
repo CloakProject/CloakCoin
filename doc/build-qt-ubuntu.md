@@ -67,12 +67,12 @@ Otherwise, here is the detail:
 
 ## Download the code
 
-You can either [download a .zip of the code](https://github.com/CloakProject/Cloak2Public/archive/master.zip) or **clone the repository using `git` (which is pre-installed on all Macs): `git clone https://github.com/CloakProject/Cloak2Public.git`**.
+You can either [download a .zip of the code](https://github.com/CloakProject/CloakCoin/archive/master.zip) or **clone the repository using `git` (which is pre-installed on all Macs): `git clone https://github.com/CloakProject/CloakCoin.git`**.
 
 
 ## Compiling the wallet
 
-In the Terminal, go where you downloaded the code using the `cd` command. For example, if you cloned the repository, **run `cd Cloak2Public`.**
+In the Terminal, go where you downloaded the code using the `cd` command. For example, if you cloned the repository, **run `cd CloakCoin`.**
 
 Then, **run `qmake && make`**, and wait until it finishes (it will take a few minutes and display a lot of things, be patient).
 
