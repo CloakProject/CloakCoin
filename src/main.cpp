@@ -3828,8 +3828,10 @@ bool ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
 
     else
     {
-        // Ignore unknown commands for extensibility
-        printf("unknown message=%s.\n",strCommand.c_str());
+        // Ban nodes sending unknown messages or spamming junk after 2 instances
+	// Will help with transitioning and phasing out older wallets that run older Enigma versions
+        // printf("unknown message=%s.\n",strCommand.c_str());
+	pfrom->Misbehaving(50);
     }
 
     // Update the last seen time for this node's address

@@ -288,7 +288,11 @@ void AskPassphraseDialog::textChanged()
         acceptable = !ui->passEdit2->text().isEmpty() && !ui->passEdit3->text().isEmpty();
         break;
     case UnlockMinting:
-    case Unlock: // Old passphrase x1
+        acceptable = !ui->passEdit1->text().isEmpty();
+        break;
+    case Unlock:
+        acceptable = !ui->passEdit1->text().isEmpty();
+        break;
     case EncryptOnExit:
         acceptable = !ui->passEdit2->text().isEmpty() && !ui->passEdit3->text().isEmpty() && ui->passEdit2->text() == ui->passEdit3->text();
         break;
