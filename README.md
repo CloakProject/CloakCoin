@@ -1,8 +1,6 @@
 # CloakCoin (CLOAK)
 
-CloakCoin is a cool new crypto currency that will feature a uniquely implemented anonymization feature that uses exchanges on the back end and a decoupled transaction flow architecture.
-
-CloakCoin uses the Enigma system in order to facilitate private/secure transactions. See the [explanation](ENIGMA.md) or the [Whitepaper](https://www.cloakcoin.com/resources/CloakCoin_ENIGMA_Whitepaper_v1.0.pdf) for more details.
+CloakCoin is a cryptocurrency that uses the proprietary Enigma system in order to facilitate private/secure transactions. See the [explanation](ENIGMA.md) or the [Whitepaper](https://www.cloakcoin.com/resources/CloakCoin_ENIGMA_Whitepaper_v1.0.pdf) for more details.
 
 ## Branches explanation
 
@@ -16,7 +14,7 @@ CloakCoin uses the Enigma system in order to facilitate private/secure transacti
 
 #### Disclaimer
 
-**We advise you that compiling from source gives you a bleeding edge version of the CloakCoin wallet. This means there might be bugs, crashes, and you could loose your Cloaks. Therefore, to avoid any issue, you should never run a development wallet on the same computer as the stable wallet which holds your Cloaks.**
+**We advise you that compiling from source gives you a bleeding edge version of the CloakCoin wallet. This means there might be bugs, crashes, and you could lose your Cloaks. Therefore, to avoid any issue, you should never run a development wallet on the same computer as the stable wallet which holds your Cloaks.**
 
 By default, development wallet runs on TestNet, but you can never be too safe.
 
@@ -30,7 +28,7 @@ If you are new, please follow the detailed instructions
 ### Dependencies
 
 To install the dependencies, you need to use your system package manager:
-- Windows: ???
+- Windows: you will need to download/compile the proper DLLs needed, depending on your system gen & version; this is very hard to get right (libcurl...), not recommended for beginners. 
 - Ubuntu: use `sudo apt-get install *package*`. To install all at once, including build tools (not listed in the chart): `sudo apt-get install git make build-essential g++ qttools5-dev-tools qt5-default libboost-all-dev libleveldb-dev libcurl4-openssl-dev libssl-dev libevent-dev libminiupnpc libqrencode-dev`
 - Mac OS X: install [HomeBrew](https://brew.sh/), and use `brew install *package*`. To install all at once: `brew install qt boost@1.57 leveldb curl openssl libevent berkeley-db@4 miniupnpc`
 
