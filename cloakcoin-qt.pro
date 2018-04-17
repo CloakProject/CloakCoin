@@ -43,7 +43,7 @@ win32 {
     INCLUDEPATH+=C:\deps\libevent-2.0.21-stable\include
     INCLUDEPATH +=C:\deps\qrencode-3.4.4
     INCLUDEPATH += $$PWD/src/leveldb/include/leveldb
-    INCLUDEPATH += $$PWD/build	
+    INCLUDEPATH += $$PWD/build
 
     DEFINES += USE_LEVELDB
     INCLUDEPATH += src/leveldb/include src/leveldb/helpers src/leveldb/helpers/memenv
@@ -54,7 +54,7 @@ win32 {
 
     BDB_INCLUDE_PATH=C:\deps\db-4.8.30.NC\build_unix
     BDB_LIB_PATH=C:\deps\db-4.8.30.NC\build_unix
-	
+
     OPENSSL_INCLUDE_PATH = C:\deps\openssl-1.0.2g\include
     OPENSSL_LIB_PATH=C:\deps\openssl-1.0.2g
 
@@ -132,8 +132,8 @@ contains(RELEASE, 1) {
     #macx:QMAKE_LFLAGS += -no_weak_imports
 
     !windows:!macx {
-        # Linux: static link
-        LIBS += -Wl,-Bstatic
+	# Linux: static link
+	LIBS += -Wl,-Bstatic
     }
 }
 
@@ -154,9 +154,9 @@ win32:QMAKE_LFLAGS *= -Wl,--large-address-aware
 contains(USE_QRCODE, 1) {
     message(Building with QRCode support)
     DEFINES += USE_QRCODE
-        !contains(USE_MXE, 1) {
-                LIBS += -lqrencode
-	}   
+	!contains(USE_MXE, 1) {
+		LIBS += -lqrencode
+	}
 }
 
 LIBS += -levent
@@ -172,7 +172,7 @@ contains(USE_UPNP, -) {
 } else {
     message(Building with UPNP support)
     count(USE_UPNP, 0) {
-        USE_UPNP=1
+	USE_UPNP=1
     }
     INCLUDEPATH += $$PWD/src
     win32:INCLUDEPATH += C:/deps/miniupnpc
@@ -181,7 +181,7 @@ contains(USE_UPNP, -) {
     win32:LIBS += C:/deps/miniupnpc/libminiupnpc.a
     macx:LIBS += /opt/local/lib/libminiupnpc.a
     !windows:!macx{
-        LIBS += -lminiupnpc
+	LIBS += -lminiupnpc
     }
     win32:LIBS += -liphlpapi
 }
@@ -202,7 +202,7 @@ contains(USE_IPV6, -) {
 } else {
     message(Building with IPv6 support)
     count(USE_IPV6, 0) {
-        USE_IPV6=1
+	USE_IPV6=1
     }
     DEFINES += USE_IPV6=$$USE_IPV6
 }
@@ -778,19 +778,20 @@ INCLUDEPATH += $$BOOST_INCLUDE_PATH $$BDB_INCLUDE_PATH $$OPENSSL_INCLUDE_PATH $$
 # libdb_cxx-4.8.a
 macx:LIBS += /Users/joe/Documents/cloak_deps/db-4.8.30.NC/build_unix/libdb_cxx-4.8.a
 LIBS += $$join(BOOST_LIB_PATH,,-L,) $$join(OPENSSL_LIB_PATH,,-L,) $$join(QRENCODE_LIB_PATH,,-L,)
-#LIBS += -lssl -lcrypto
+win32:LIBS += -lssl -lcrypto
 !macx:LIBS += $$join(BDB_LIB_PATH,,-L,) -ldb_cxx$$BDB_LIB_SUFFIX
 !win32:LIBS += -levent -lz
 #LIBS += -lz
 # -lgdi32 has to happen after -lcrypto (see  #681)
-windows:LIBS += -lws2_32 -lshlwapi -lmswsock -lole32 -loleaut32 -luuid -lgdi32 
-LIBS += -L/usr/local/lib/ -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX
+windows:LIBS += -lws2_32 -lshlwapi -lmswsock -lole32 -loleaut32 -luuid -lgdi32
+!win32:LIBS += -L/usr/local/lib/
+LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX
 windows:LIBS += -lboost_chrono$$BOOST_LIB_SUFFIX
 
 contains(RELEASE, 1) {
     !windows:!macx {
-        # Linux: turn dynamic linking back on for c/c++ runtime libraries
-        LIBS += -Wl,-Bdynamic
+	# Linux: turn dynamic linking back on for c/c++ runtime libraries
+	LIBS += -Wl,-Bdynamic
     }
 }
 
