@@ -69,11 +69,11 @@ unsigned int nTransactionsUpdated = 0;
 map<uint256, CBlockIndex*> mapBlockIndex;
 set<pair<COutPoint, unsigned int> > setStakeSeen;
 uint256 hashGenesisBlock = hashGenesisBlockOfficial;
-static CBigNum bnProofOfWorkLimit(~uint256(0) >> 20);
-static CBigNum bnProofOfStakeLimit(~uint256(0) >> 2);
+static uint256 bnProofOfWorkLimit = ~uint256(0) >> 20;
+static uint256 bnProofOfStakeLimit = ~uint256(0) >> 2;
 
-static CBigNum bnProofOfWorkLimitTestNet(~uint256(0) >> 2);
-static CBigNum bnProofOfStakeLimitTestNet(~uint256(0) >> 2);
+static uint256 bnProofOfWorkLimitTestNet = ~uint256(0) >> 2;
+static uint256 bnProofOfStakeLimitTestNet = ~uint256(0) >> 2;
 
 unsigned int nStakeMinAge = 60 * 60 * 1 * 1;	//1h, minimum age for coin age:  6h
 unsigned int nStakeMaxAge = 60 * 60 * 8 * 1;	//8h, stake age of full weight:  4d 60*60*24*1
@@ -83,8 +83,8 @@ int64 nChainStartTime = 1391393673;
 int nCoinbaseMaturity = 40;
 CBlockIndex* pindexGenesisBlock = NULL;
 int nBestHeight = -1;
-CBigNum bnBestChainTrust = 0;
-CBigNum bnBestInvalidTrust = 0;
+uint256 bnBestChainTrust = 0;
+uint256 bnBestInvalidTrust = 0;
 uint256 hashBestChain = 0;
 CBlockIndex* pindexBest = NULL;
 int64 nTimeBestReceived = 0;
@@ -1031,19 +1031,19 @@ static const int64 nTargetSpacingWorkMax = 3 * nStakeTargetSpacing;
 // maximum nBits value could possible be required nTime after
 // minimum proof-of-work required was nBase
 //
-unsigned int ComputeMaxBits(CBigNum bnTargetLimit, unsigned int nBase, int64 nTime)
+unsigned int ComputeMaxBits(uint256 bnTargetLimit, unsigned int nBase, int64 nTime)
 {
     CBigNum bnResult;
     bnResult.SetCompact(nBase);
     bnResult *= 2;
-    while (nTime > 0 && bnResult < bnTargetLimit)
+    while (nTime > 0 && bnResult.getuint256() < bnTargetLimit)
     {
         // Maximum 200% adjustment per day...
         bnResult *= 2;
         nTime -= 24 * 60 * 60;
     }
-    if (bnResult > bnTargetLimit)
-        bnResult = bnTargetLimit;
+    if (bnResult.getuint256() > bnTargetLimit)
+        bnResult = CBigNum(bnTargetLimit);
     return bnResult.GetCompact();
 }
 
@@ -1079,7 +1079,7 @@ unsigned int GetNextTargetRequired(const CBlockIndex* pindexLast, bool fProofOfS
     //if(fTestNet)
     //return bnProofOfWorkLimitTestNet.GetCompact();
 
-    CBigNum bnTargetLimit = bnProofOfWorkLimit;
+    uint256 bnTargetLimit = bnProofOfWorkLimit;
 
     if(fProofOfStake)
     {
@@ -1126,23 +1126,25 @@ unsigned int GetNextTargetRequired(const CBlockIndex* pindexLast, bool fProofOfS
         pindexPrev->GetBlockTime(), pindexPrev->nHeight, pindexPrevPrev->GetBlockTime(), pindexPrevPrev->nHeight);
     */
 
-    if (bnNew > bnTargetLimit)
-        bnNew = bnTargetLimit;
+    if (bnNew.getuint256() > bnTargetLimit)
+        bnNew = CBigNum(bnTargetLimit);
 
     return bnNew.GetCompact();
 }
 
 bool CheckProofOfWork(uint256 hash, unsigned int nBits)
 {
-    CBigNum bnTarget;
-    bnTarget.SetCompact(nBits);
+    bool fNegative;
+    bool fOverflow;
+    uint256 bnTarget;
+    bnTarget.SetCompact(nBits, &fNegative, &fOverflow);
 
     // Check range
-    if (bnTarget <= 0 || bnTarget > bnProofOfWorkLimit)
+    if (fNegative || bnTarget == 0 || fOverflow || bnTarget > bnProofOfWorkLimit)
         return error("CheckProofOfWork() : nBits below minimum work");
 
     // Check proof of work matches claimed amount
-    if (hash > bnTarget.getuint256())
+    if (hash > bnTarget)
         return error("CheckProofOfWork() : hash doesn't match nBits");
 
     return true;
@@ -2235,23 +2237,29 @@ bool CBlock::AcceptBlock()
 }
 
 
-CBigNum CBlockIndex::GetBlockTrust() const
+uint256 CBlockIndex::GetBlockTrust() const
 {
-    CBigNum bnTarget;
-    bnTarget.SetCompact(nBits);
-    if (bnTarget <= 0)
+    uint256 bnTarget;
+    bool fNegative;
+    bool fOverflow;
+    bnTarget.SetCompact(nBits, &fNegative, &fOverflow);
+    if (fNegative || fOverflow || bnTarget == 0)
         return 0;
 
     if (IsProofOfStake())
     {
-        // Return trust score as usual
-        return (CBigNum(1)<<256) / (bnTarget+1);
+        // We need to compute 2**256 / (bnTarget+1), but we can't represent 2**256
+        // as it's too large for a uint256. However, as 2**256 is at least as large
+        // as bnTarget+1, it is equal to ((2**256 - bnTarget - 1) / (bnTarget+1)) + 1,
+        // or ~bnTarget / (nTarget+1) + 1.
+        return (~bnTarget / (bnTarget + (uint256)1)) + (uint256)1;
+
     }
     else
     {
         // Calculate work amount for block
-        CBigNum bnPoWTrust = (bnProofOfWorkLimit / (bnTarget+1));
-        return bnPoWTrust > 1 ? bnPoWTrust : 1;
+        uint256 bnPoWTrust = (bnProofOfWorkLimit / (bnTarget+(uint256)1));
+        return bnPoWTrust > (uint256)1 ? bnPoWTrust : 1;
     }
 }
 
@@ -2324,16 +2332,18 @@ bool ProcessBlock(CNode* pfrom, CBlock* pblock)
     {
         // Extra checks to prevent "fill up memory by spamming with bogus blocks"
         int64 deltaTime = pblock->GetBlockTime() - pcheckpoint->nTime;
-        CBigNum bnNewBlock;
-        bnNewBlock.SetCompact(pblock->nBits);
-        CBigNum bnRequired;
+
+        bool fOverflow = false;
+        uint256 bnNewBlock;
+        bnNewBlock.SetCompact(pblock->nBits, NULL, &fOverflow);
+        uint256 bnRequired;
 
         if (pblock->IsProofOfStake())
             bnRequired.SetCompact(ComputeMinStake(GetLastBlockIndex(pcheckpoint, true)->nBits, deltaTime, pblock->nTime));
         else
             bnRequired.SetCompact(ComputeMinWork(GetLastBlockIndex(pcheckpoint, false)->nBits, deltaTime));
 
-        if (bnNewBlock > bnRequired)
+        if (fOverflow || bnNewBlock > bnRequired)
         {
             if (pfrom)
                 pfrom->Misbehaving(100);
@@ -2655,7 +2665,7 @@ bool LoadBlockIndex(bool fAllowNew)
         {
             // This will figure out a valid hash and Nonce if you're
             // creating a different genesis block:
-            uint256 hashTarget = CBigNum().SetCompact(block.nBits).getuint256();
+            uint256 hashTarget = uint256().SetCompact(block.nBits);
             while (block.GetHash() > hashTarget)
             {
                 ++block.nNonce;
@@ -4578,7 +4588,7 @@ void FormatHashBuffers(CBlock* pblock, char* pmidstate, char* pdata, char* phash
 bool CheckWork(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
 {
     uint256 hash = pblock->GetHash();
-    uint256 hashTarget = CBigNum().SetCompact(pblock->nBits).getuint256();
+    uint256 hashTarget = uint256().SetCompact(pblock->nBits);
 
     if (hash > hashTarget && pblock->IsProofOfWork())
         return error("BitcoinMiner : proof-of-work not meeting target");
@@ -4709,7 +4719,7 @@ void BitcoinMiner(CWallet *pwallet, bool fProofOfStake)
         // Search
         //
         int64 nStart = GetTime();
-        uint256 hashTarget = CBigNum().SetCompact(pblock->nBits).getuint256();
+        uint256 hashTarget = uint256().SetCompact(pblock->nBits);
         uint256 hash;
 
         while (true)

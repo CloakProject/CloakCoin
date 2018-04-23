@@ -109,8 +109,8 @@ extern CBlockIndex* pindexGenesisBlock;
 extern unsigned int nStakeMinAge;
 extern int nCoinbaseMaturity;
 extern int nBestHeight;
-extern CBigNum bnBestChainTrust;
-extern CBigNum bnBestInvalidTrust;
+extern uint256 bnBestChainTrust;
+extern uint256 bnBestInvalidTrust;
 extern uint256 hashBestChain;
 extern CBlockIndex* pindexBest;
 extern unsigned int nTransactionsUpdated;
@@ -376,40 +376,40 @@ public:
 class CEnigmaTxOut
 {
 public:
-	int64 nHop;
-	int64 nValue;
-	CScript scriptPubKey;
+    int64 nHop;
+    int64 nValue;
+    CScript scriptPubKey;
 
     CEnigmaTxOut()
-	{
-		SetNull();
-	}
+    {
+        SetNull();
+    }
 
     CEnigmaTxOut(int64 nHopIn, int64 nValueIn, CScript scriptPubKeyIn)
-	{
-		nHop = nHopIn;
-		nValue = nValueIn;
-		scriptPubKey = scriptPubKeyIn;
-	}
+    {
+        nHop = nHopIn;
+        nValue = nValueIn;
+        scriptPubKey = scriptPubKeyIn;
+    }
 
-	IMPLEMENT_SERIALIZE
-	(
-		READWRITE(nHop);
-		READWRITE(nValue);
-		READWRITE(scriptPubKey);
-	)
+    IMPLEMENT_SERIALIZE
+    (
+        READWRITE(nHop);
+        READWRITE(nValue);
+        READWRITE(scriptPubKey);
+    )
 
-	void SetNull()
-	{
-		nHop = 0;
-	        nValue = -1;
-	        scriptPubKey.clear();
-	}
+    void SetNull()
+    {
+        nHop = 0;
+            nValue = -1;
+            scriptPubKey.clear();
+    }
 
-	uint256 GetHash() const
-	{
-		return SerializeHash(*this);
-	}
+    uint256 GetHash() const
+    {
+        return SerializeHash(*this);
+    }
 
 friend bool operator==(const CEnigmaTxOut& a, const CEnigmaTxOut& b)
     {
@@ -432,23 +432,23 @@ friend bool operator>(const CEnigmaTxOut& a, const CEnigmaTxOut& b)
         return (a.GetHash() > b.GetHash());
     }
 
-	bool IsEmpty() const
-	{
-		return (nHop == 0 && nValue == 0 && scriptPubKey.empty());
-	}
+    bool IsEmpty() const
+    {
+        return (nHop == 0 && nValue == 0 && scriptPubKey.empty());
+    }
 
-	std::string ToString() const
-    	{
+    std::string ToString() const
+        {
             if (IsEmpty()) return "CEnigmaTxOut(empty)";
-        	//if (scriptPubKey.size() < 6)
+            //if (scriptPubKey.size() < 6)
             //    return "CEnigmaTxOut(error)";
             return strprintf("CEnigmaTxOut(nHop=%" PRI64u ", nValue=%s, scriptPubKey=%s)", nHop, FormatMoney(nValue).c_str(), scriptPubKey.ToString().c_str());
-    	}
+        }
 
-    	void print() const
-    	{
-        	printf("%s\n", ToString().c_str());
-    	}
+        void print() const
+        {
+            printf("%s\n", ToString().c_str());
+        }
 };
 
 /** An output of a transaction.  It contains the public key that the next input
@@ -632,8 +632,8 @@ public:
         READWRITE(vout);
         READWRITE(nLockTime);
     //READWRITE(enigma);
-	if(nVersion > 1)
-	    READWRITE(data);
+    if(nVersion > 1)
+        READWRITE(data);
     )
 
     void SetNull()
@@ -714,7 +714,7 @@ public:
         return (vin.size() > 0 && (!vin[0].prevout.IsNull()) && vout.size() >= 2 && vout[0].IsEmpty());
     }
 
-	bool IsCoinBaseOrStake() const
+    bool IsCoinBaseOrStake() const
     {
         return (IsCoinBase() || IsCoinStake());
     }
@@ -839,7 +839,7 @@ public:
             vin.size(),
             vout.size(),
             nLockTime
-			);
+            );
 
         for (unsigned int i = 0; i < vin.size(); i++)
             str += "    " + vin[i].ToString() + "\n";
@@ -1303,14 +1303,14 @@ public:
     CBlockIndex* pnext;
     unsigned int nFile;
     unsigned int nBlockPos;
-    CBigNum bnChainTrust; // ppcoin: trust score of block chain
+    uint256 bnChainTrust; // ppcoin: trust score of block chain
     int nHeight;
 
     int64 nMint;
     int64 nMoneySupply;
 
     unsigned int nFlags;  // ppcoin: block index flags
-    enum  
+    enum
     {
         BLOCK_PROOF_OF_STAKE = (1 << 0), // is proof-of-stake block
         BLOCK_STAKE_ENTROPY  = (1 << 1), // entropy bit for stake modifier
@@ -1414,7 +1414,7 @@ public:
         return (int64)nTime;
     }
 
-    CBigNum GetBlockTrust() const;
+    uint256 GetBlockTrust() const;
 
     bool IsInMainChain() const
     {
@@ -1508,7 +1508,7 @@ public:
             pprev, pnext, nFile, nBlockPos, nHeight,
             FormatMoney(nMint).c_str(), FormatMoney(nMoneySupply).c_str(),
             GeneratedStakeModifier() ? "MOD" : "-", GetStakeEntropyBit(), IsProofOfStake()? "PoS" : "PoW",
-            nStakeModifier, nStakeModifierChecksum, 
+            nStakeModifier, nStakeModifierChecksum,
             hashProofOfStake.ToString().c_str(),
             prevoutStake.ToString().c_str(), nStakeTime,
             hashMerkleRoot.ToString().c_str(),

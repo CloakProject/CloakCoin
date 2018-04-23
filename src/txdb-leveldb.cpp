@@ -289,7 +289,7 @@ bool CTxDB::ReadBestInvalidTrust(CBigNum& bnBestInvalidTrust)
     return Read(string("bnBestInvalidTrust"), bnBestInvalidTrust);
 }
 
-bool CTxDB::WriteBestInvalidTrust(CBigNum bnBestInvalidTrust)
+bool CTxDB::WriteBestInvalidTrust(uint256 bnBestInvalidTrust)
 {
     return Write(string("bnBestInvalidTrust"), bnBestInvalidTrust);
 }
