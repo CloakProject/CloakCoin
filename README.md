@@ -38,7 +38,7 @@ To install the dependencies, you need to use your system package manager:
 | Qt             | 5.5.1          | `qt5-default`          | `qt`            | NO       | GUI            |
 | Boost          | 1.57/1.58*     | `libboost-all-dev`     | `boost@1.57`    | NO       | C++ libraries  |
 | OpenSSL        | 1.0.2g         | `libssl-dev`           | `openssl`       | NO       | ha256 sum      |
-| Curl           | any            | `libcurl4-openssl-dev` | `curl`          | NO       | Requests       |
+| Curl           | 7.16**         | `libcurl4-openssl-dev` | `curl`          | NO       | Requests       |
 | libevent       | 2.0.21         | `libevent-dev `        | `libevent`      | NO       | Events         |
 | LevelDB        | 1.2            | `libleveldb-dev`       | `leveldb`       | NO       | Database       |
 | Berkeley DB    | 4.8*           |  install from source   | `berkeley-db@4` | NO       | Database       |
@@ -48,7 +48,9 @@ To install the dependencies, you need to use your system package manager:
 
 _\* Those specific version are known to work. Latest versions are known not to work._
 
-_\*\* This version is very specific, as 1.9 seems to have some non-compatible changes. 2.0 probably won't work (test needed)_
+_\*\* Debian and Ubuntu refer to version< <= 7.15 as libcurl3, and versions >= 7.16 as libcurl4, because of an API change. You need libcurl4._
+
+_\*\*\* This version is very specific, as 1.9 seems to have some non-compatible changes. 2.0 probably won't work (test needed)_
 
 ### Compiling
 
