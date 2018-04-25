@@ -50,7 +50,7 @@ _\* Those specific version are known to work. Latest versions are known not to w
 
 _\*\* Debian and Ubuntu refer to version< <= 7.15 as libcurl3, and versions >= 7.16 as libcurl4, because of an API change. You need libcurl4._
 
-_\*\*\* This version is very specific, as 1.9 seems to have some non-compatible changes. 2.0 probably won't work (test needed)_
+_\*\*\* This version is very specific, as 1.9 seems to have some non-compatible changes. 2.0 probably won't work (test needed). **WARNING** This is included for historic reasons, but you should not use it, as it is a known security hole. It's disabled by default._
 
 ### Compiling
 
