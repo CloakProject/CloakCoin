@@ -1,6 +1,0 @@
-<RCC>
-    <qresource prefix="/images">
-        <file>exchange.png</file>
-	<file>onemarket.png</file>
-    </qresource>
-</RCC>

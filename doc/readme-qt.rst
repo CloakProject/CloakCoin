@@ -55,26 +55,6 @@ Windows build instructions:
 .. _`610945D0`: http://pgp.mit.edu:11371/pks/lookup?op=get&search=0x610945D0
 
 
-Mac OS X
---------
-
-- Download and install the `Qt Mac OS X SDK`_. It is recommended to also install Apple's Xcode with UNIX tools.
-
-- Download and install `MacPorts`_.
-
-- Execute the following commands in a terminal to get the dependencies:
-
-::
-
-	sudo port selfupdate
-	sudo port install boost db48 miniupnpc
-
-- Open the .pro file in Qt Creator and build as normal (cmd-B)
-
-.. _`Qt Mac OS X SDK`: http://qt.nokia.com/downloads/sdk-mac-os-cpp
-.. _`MacPorts`: http://www.macports.org/install.php
-
-
 Build configuration options
 ============================
 
