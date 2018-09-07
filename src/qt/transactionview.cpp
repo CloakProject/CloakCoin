@@ -327,7 +327,7 @@ void TransactionView::copyAddress()
 
 void TransactionView::viewTxExplorer()
 {
-    QString link = "https://explorer.cloakcoin.com/tx/" + GUIUtil::getEntryData(transactionView, 0, TransactionTableModel::TxIDRole);;
+    QString link = "https://chainz.cryptoid.info/cloak/tx.dws?" + GUIUtil::getEntryData(transactionView, 0, TransactionTableModel::TxIDRole) + ".htm";
     QDesktopServices::openUrl(QUrl(link));
 }
 
