@@ -596,8 +596,11 @@ int StealthSecretSpend(ec_secret& scanSecret, ec_point& ephemPubkey, ec_secret& 
         goto End;
     };
 
-    if (BN_num_bytes(bnSpend) != (int) ec_secret_size
-        || BN_bn2bin(bnSpend, &secretOut.e[0]) != (int) ec_secret_size)
+    int nBytes;
+    memset(&secretOut.e[0], 0, ec_secret_size);
+
+    if ((nBytes = BN_num_bytes(bnSpend)) > (int)ec_secret_size
+    || BN_bn2bin(bnSpend, &secretOut.e[ec_secret_size-nBytes]) != nBytes)
     {
         printf("StealthSecretSpend(): bnSpend incorrect length.\n");
         rv = 1;
@@ -683,16 +686,15 @@ int StealthSharedToSecretSpend(ec_secret& sharedS, ec_secret& spendSecret, ec_se
         goto End;
     };
 
-    if (BN_num_bytes(bnSpend) != (int) ec_secret_size) {
-        if (BN_num_bytes(bnSpend) == 31) {  //  edge case
-            secretOut.e[0] = 0;
-            BN_bn2bin(bnSpend, &secretOut.e[1]);
-        } else if (!BN_bn2bin(bnSpend, &secretOut.e[0]) != (int) ec_secret_size){
-            printf("BN_num_bytes(bnSpend) should be 32 but = %d", BN_num_bytes(bnSpend));
-            printf("StealthSecretSpend(): bnSpend incorrect length.\n");
-            rv = 1;
-            goto End;
-        }
+    int nBytes;
+    memset(&secretOut.e[0], 0, ec_secret_size);
+
+    if ((nBytes = BN_num_bytes(bnSpend)) > (int)ec_secret_size
+    || BN_bn2bin(bnSpend, &secretOut.e[ec_secret_size-nBytes]) != nBytes)
+    {
+        printf("StealthSecretSpend(): bnSpend incorrect length.\n");
+        rv = 1;
+        goto End;
     };
 
     End:
