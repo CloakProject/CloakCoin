@@ -70,42 +70,41 @@ win32 {
 macx {
      message(*** osx build ***)
 
-     QMAKE_MAC_SDK = macosx10.9
+     QMAKE_MAC_SDK = macosx10.13
+     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12
 
      #QMAKE_RPATHDIR += /Users/joe/qt/Qt5.7.1/5.7/clang_64/lib
 
      #set RPATH (place to look for .dylib & framework by default)
-     QMAKE_RPATHDIR += /Users/joe/qt/Qt5.7.1/5.7/clang_64/lib
-     #QMAKE_RPATHDIR += @executable_path/../Frameworks
+     #QMAKE_RPATHDIR += /Users/joe/qt/Qt5.7.1/5.7/clang_64/lib
+     QMAKE_RPATHDIR += @executable_path/../Frameworks
      #QMAKE_RPATHDIR += @executable_path/lib
      #QMAKE_RPATHDIR += @executable_path
 
-     BOOST_INCLUDE_PATH += /Users/joe/Documents/cloak_deps/boost_1_57_0
-     BOOST_LIB_PATH=/Users/joe/Documents/cloak_deps/boost_1_57_0/stage/lib
+     BOOST_INCLUDE_PATH = /usr/local/opt/boost@1.57/include
+     BOOST_LIB_PATH = /usr/local/opt/boost@1.57/lib
 
-     BOOST_LIB_SUFFIX = -clang-darwin42-mt-s-1_57
+     BOOST_LIB_SUFFIX = -mt
 
      #BDB_INCLUDE_PATH = /opt/local/include/db48
      #BDB_LIB_PATH = /opt/local/lib/db48
 
-     BDB_INCLUDE_PATH = /Users/joe/Documents/cloak_deps/db-4.8.30.NC/build_unix
-     BDB_LIB_PATH = /Users/joe/Documents/cloak_deps/db-4.8.30.NC/build_unix
+     BDB_INCLUDE_PATH = /usr/local/opt/berkeley-db@4/include
+     BDB_LIB_PATH = /usr/local/opt/berkeley-db@4/lib
      BDB_LIB_SUFFIX = -4.8
 
-     OPENSSL_INCLUDE_PATH = /usr/local/ssl/include
-     OPENSSL_LIB_PATH = /usr/local/ssl/lib
+     #OPENSSL_INCLUDE_PATH = /usr/local/ssl/include
+     #OPENSSL_LIB_PATH = /usr/local/ssl/lib
 
-     QRENCODE_LIB_PATH="/opt/local/lib"
-     QRENCODE_INCLUDE_PATH="/opt/local/include"
+     QRENCODE_LIB_PATH = /usr/local/opt/qrencode/lib
+     QRENCODE_INCLUDE_PATH = /usr/local/opt/qrencode/include
 
      DEFINES += USE_LEVELDB
      INCLUDEPATH += src/leveldb/include src/leveldb/helpers src/leveldb/helpers/memenv
      SOURCES += src/txdb-leveldb.cpp
      LIBS+=$$PWD/src/leveldb/libleveldb.a $$PWD/src/leveldb/libmemenv.a
-     LIBS+=/opt/local/lib/libcurl.a
-     LIBS+=-L/usr/local/Cellar/libevent/2.0.22/lib/
-     INCLUDEPATH+=/opt/local/include/curl
-     INCLUDEPATH+=/usr/local/Cellar/libevent/2.0.22/include
+     LIBS += -L/usr/local/opt/openssl/lib -L/usr/local/opt/libevent/lib -L/usr/local/opt/curl/lib -lcurl
+     INCLUDEPATH+=/usr/local/opt/libevent/include /usr/local/opt/openssl/include
 }
 
 linux {
@@ -123,7 +122,6 @@ linux {
      LIBS+=$$PWD/src/leveldb/libleveldb.a $$PWD/src/leveldb/libmemenv.a /opt/deps/openssl-1.0.2g/libssl.a /opt/deps/openssl-1.0.2g/libcrypto.a
 }
 
-QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12
 # use: qmake "RELEASE=1"
 contains(RELEASE, 1) {
     message(*** release ***)
@@ -179,7 +177,7 @@ contains(USE_UPNP, -) {
     INCLUDEPATH += /opt/deps/miniupnpc
     DEFINES += USE_UPNP=$$USE_UPNP MINIUPNP_STATICLIB
     win32:LIBS += C:/deps/miniupnpc/libminiupnpc.a
-    macx:LIBS += /opt/local/lib/libminiupnpc.a
+    macx:LIBS += /usr/local/lib/libminiupnpc.a
     !windows:!macx{
 	LIBS += -lminiupnpc
     }
@@ -706,6 +704,7 @@ TRANSLATIONS = src/qt/locale/bitcoin_en.ts src/qt/locale/bitcoin_ru.ts src/qt/lo
 isEmpty(QMAKE_LRELEASE) {
     #win32:QMAKE_LRELEASE = $$[QT_INSTALL_BINS]\\lrelease.exe
 win32:QMAKE_LRELEASE = $$[QT_INSTALL_BINS]\\lrelease
+macx:QMAKE_LRELEASE = lrelease
     else:QMAKE_LRELEASE = /usr/local/Qt-5.5.1/bin/lrelease
 }
 isEmpty(QM_DIR):QM_DIR = $$PWD/src/qt/locale
@@ -802,6 +801,7 @@ message(LIBS = $$LIBS)
 }
 
 system($$QMAKE_LRELEASE -silent $$_PRO_FILE_)
+CODECFORTR = UTF-8
 
 DISTFILES += \
     src/notes.txt
