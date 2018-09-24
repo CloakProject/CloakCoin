@@ -102,8 +102,8 @@ macx {
      DEFINES += USE_LEVELDB
      INCLUDEPATH += src/leveldb/include src/leveldb/helpers src/leveldb/helpers/memenv
      SOURCES += src/txdb-leveldb.cpp
-     LIBS+=$$PWD/src/leveldb/libleveldb.a $$PWD/src/leveldb/libmemenv.a
-     LIBS += -L/usr/local/opt/openssl/lib -L/usr/local/opt/libevent/lib -L/usr/local/opt/curl/lib -lcurl
+     #LIBS+=$$PWD/src/leveldb/libleveldb.a $$PWD/src/leveldb/libmemenv.a
+     LIBS += -L/usr/local/opt/openssl/lib -lssl -lcrypto -L/usr/local/opt/libevent/lib -levent -L/usr/local/opt/curl/lib -lcurl -L/usr/local/opt/leveldb -lleveldb
      INCLUDEPATH+=/usr/local/opt/libevent/include /usr/local/opt/openssl/include
 }
 
@@ -775,7 +775,7 @@ macx:QMAKE_CXXFLAGS_THREAD += -pthread
 # Set libraries and includes at end, to use platform-defined defaults if not overridden
 INCLUDEPATH += $$BOOST_INCLUDE_PATH $$BDB_INCLUDE_PATH $$OPENSSL_INCLUDE_PATH $$QRENCODE_INCLUDE_PATH
 # libdb_cxx-4.8.a
-macx:LIBS += /Users/joe/Documents/cloak_deps/db-4.8.30.NC/build_unix/libdb_cxx-4.8.a
+macx:LIBS += /usr/local/Cellar/berkeley-db@4/4.8.30/lib/libdb_cxx-4.8.a
 LIBS += $$join(BOOST_LIB_PATH,,-L,) $$join(OPENSSL_LIB_PATH,,-L,) $$join(QRENCODE_LIB_PATH,,-L,)
 win32:LIBS += -lssl -lcrypto
 !macx:LIBS += $$join(BDB_LIB_PATH,,-L,) -ldb_cxx$$BDB_LIB_SUFFIX
