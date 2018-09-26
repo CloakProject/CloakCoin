@@ -617,6 +617,18 @@ DBErrors CWalletDB::LoadWallet(CWallet* pwallet)
         }else{
             printf("Failed to create default Stealth Address for Sending/Cloaking\n");
         }
+	    
+    } else if(pwallet->activeEnigmaAddresses.empty()) {
+	std::set<CStealthAddress>::iterator it
+	for (it = pwallet->stealthAddresses.begin(); it != pwallet->stealthAddresses.end(); ++it) {
+		if (!it->IsOwned())
+			continue;
+		
+		const CStealthAddress sa = *it;
+		pwallet->SetEnigmaAddressActive(sa.Encoded(), true);
+		printf("Selected default Stealth Address for Sending/Cloaking: %s\n", sa.Encoded().c_str());
+	}
+	   
     }
 
     return result;
