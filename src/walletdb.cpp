@@ -619,7 +619,7 @@ DBErrors CWalletDB::LoadWallet(CWallet* pwallet)
         }
 	    
     } else if(pwallet->activeEnigmaAddresses.empty()) {
-	std::set<CStealthAddress>::iterator it
+	std::set<CStealthAddress>::iterator it;
 	for (it = pwallet->stealthAddresses.begin(); it != pwallet->stealthAddresses.end(); ++it) {
 		if (!it->IsOwned())
 			continue;
