@@ -740,7 +740,7 @@ void CWallet::ExpireOldEnigma()
                     // if participants didn't sign in time, ban them for a short while
                     BOOST_FOREACH(CCloakingParticipant p, req->sParticipants){
                         if (req->signedByAddresses.find(p.pubKey) == req->signedByAddresses.end()){
-                            CCloakShield::GetShield()->BanPeer(p.pubKey, ENIGMA_BANSECS_NO_RESPONSE);
+                            CCloakShield::GetShield()->BanPeer(p.pubKey, ENIGMA_BANSECS_NO_RESPONSE, "BANNED: failed to provide signature in time");
                         }
                     }
                 }
@@ -773,7 +773,7 @@ void CWallet::ExpireOldEnigma()
                 if (shouldAbort){
                     // request from someone else didn't arrive for signing in time. we want to avoid
                     // repeated abuse, so just update their ban score
-                    CCloakShield::GetShield()->BanPeer(req->identifier.pubKeyHex, ENIGMA_BANSECS_NO_RESPONSE);
+                    CCloakShield::GetShield()->BanPeer(req->identifier.pubKeyHex, ENIGMA_BANSECS_NO_RESPONSE, "BANNED: failed to request signature in time");
                     // mark aborted and save, this will also cancel the inputs
                     if (req->Abort())
                     {

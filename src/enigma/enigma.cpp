@@ -271,7 +271,7 @@ bool CCloakingInputsOutputs::CheckValid(int64 minInputAmount, bool printToLog, s
                     if (pindex->nBlockPos == txindex.pos.nBlockPos && pindex->nFile == txindex.pos.nFile)
                     {
                         char msg[255];
-                        sprintf(msg, "tried to spend immature %s", txPrev.IsCoinBase() ? "coinbase" : "coinstake");
+                        sprintf(msg, "BANNED: tried to spend immature %s", txPrev.IsCoinBase() ? "coinbase" : "coinstake");
 
                         if (printToLog)
                         {
@@ -288,7 +288,7 @@ bool CCloakingInputsOutputs::CheckValid(int64 minInputAmount, bool printToLog, s
             if (txPrev.nTime > GetAdjustedTime())
             {
                 if (ownerPubKey.length())
-                    cs->BanPeer(ownerPubKey, ENIGMA_BANSECS_MISSING_INPUTS, "transaction timestamp earlier than input transaction");
+                    cs->BanPeer(ownerPubKey, ENIGMA_BANSECS_MISSING_INPUTS, "BANNED: transaction timestamp earlier than input transaction");
                 return false;
             }
 
@@ -297,14 +297,14 @@ bool CCloakingInputsOutputs::CheckValid(int64 minInputAmount, bool printToLog, s
             if (!MoneyRange(txPrev.vout[prevout.n].nValue) || !MoneyRange(nValueIn))
             {
                 if (ownerPubKey.length())
-                    cs->BanPeer(ownerPubKey, ENIGMA_BANSECS_MISSING_INPUTS, "txin values out of range");
+                    cs->BanPeer(ownerPubKey, ENIGMA_BANSECS_MISSING_INPUTS, "BANNED: txin values out of range");
                 return false;
             }
         }
 
         if (nValueIn < minInputAmount){
             if (ownerPubKey.length())
-                cs->BanPeer(ownerPubKey, ENIGMA_BANSECS_MISSING_INPUTS, "txin values too small");
+                cs->BanPeer(ownerPubKey, ENIGMA_BANSECS_MISSING_INPUTS, "BANNED: txin values too small");
         }
 
         // store the sent amount and check it's valid
@@ -615,7 +615,7 @@ bool Enigma::HandleCloakingAccept(CCloakingData cloakData)
         {
             // check sig
             if (!cloakData.Authenticate()){
-                cs->BanPeer(cloakData.senderPubKeyHex, ENIGMA_BANSECS_JUNK_DATA);
+                cs->BanPeer(cloakData.senderPubKeyHex, ENIGMA_BANSECS_JUNK_DATA, "BANNED: failed to auth 'accepted' message from cloaker");
                 return false;
             }
 
@@ -739,7 +739,7 @@ bool Enigma::HandleSignResponse(CCloakingData cloakData)
         {
             // check sig
             if (!cloakData.Authenticate()){
-                cs->BanPeer(cloakData.senderPubKeyHex, ENIGMA_BANSECS_JUNK_DATA);
+                cs->BanPeer(cloakData.senderPubKeyHex, ENIGMA_BANSECS_JUNK_DATA, "BANNED: failed to auth 'signed' message from cloaker");
                 return false;
             }
 
@@ -799,7 +799,7 @@ bool Enigma::HandleSignRequest(CCloakingData cloakData)
         {
             // check sig
             if (!cloakData.Authenticate()){
-                cs->BanPeer(cloakData.senderPubKeyHex, ENIGMA_BANSECS_JUNK_DATA);
+                cs->BanPeer(cloakData.senderPubKeyHex, ENIGMA_BANSECS_JUNK_DATA, "BANNED: failed to auth 'request signature' message");
                 return false;
             }
 

@@ -119,7 +119,7 @@ bool CCloakingRequest::ProcessRequest(CCloakingEncryptionKey* myKey)
                         }
                         // we couldn't participate due to funding issues, but lets others by relaying
                         return true;
-                    }                   
+                    }
 
                     if(GetBoolArg("-printenigma")){
                         printf("ENIGMA: accepting request.\n");
@@ -463,7 +463,7 @@ bool CCloakingRequest::GetCloakingInputsMine(CCloakingParticipant& part)
     {
         part.inOuts.requestSigned = false;
         part.inOuts.vin.clear();
-        part.inOuts.vout.clear();        
+        part.inOuts.vout.clear();
 
         LOCK2(pwalletMain->cs_CloakingRequest, pwalletMain->cs_mapCloakingInputsOutputs);
         {
@@ -730,16 +730,16 @@ bool CCloakingRequest::SignAndRespond(CCloakingEncryptionKey* myKey, bool partic
 
             if(found){
                 // check our inputs and outputs are included in the joint transaction
-                int idx = 0;                
+                int idx = 0;
                 BOOST_FOREACH(const CTxIn invMine, inoutsMine.vin){ // inputs from us
                     // check our input exists (unaltered) in the tx
                     if (find(jointTrans.vin.begin(), jointTrans.vin.end(), invMine) == jointTrans.vin.end()){
                         // ban the Enigma sender
-                        cs->BanPeer(this->identifier.pubKeyHex, ENIGMA_BANSECS_MISSING_INPUTS);
+                        cs->BanPeer(this->identifier.pubKeyHex, ENIGMA_BANSECS_MISSING_INPUTS, "BANNED: our original inputs have been altered!");
                         nCloakerCountRefused++;
 
-                        if(GetBoolArg("-printenigma"))
-                            printf("***  CCloakingRequest::SignAndRespond: signed.\n");
+                        /*if(GetBoolArg("-printenigma"))
+                            printf("***  CCloakingRequest::SignAndRespond: signed.\n");*/
 
                         Enigma::SendEnigmaMessage(myKey, ENIGMA_MSG_SIGN_INPUT_NOT_FOUND, this->identifier.pubKeyHex, this->GetIdHash().GetHex());
                         return error("*** CCloakingRequest::SignAndRespond() could not find input #%d in transaction.", idx);
@@ -757,13 +757,13 @@ bool CCloakingRequest::SignAndRespond(CCloakingEncryptionKey* myKey, bool partic
                 }
                 uint64 amountOut = pwalletMain->GetEnigmaOutputsAmounts(jointTrans, vchEphemPK);
                 if (participantSigning && amountOut < inoutsMine.nInputAmount){
-                    cs->BanPeer(this->identifier.pubKeyHex, ENIGMA_BANSECS_MISSING_INPUTS);
+                    cs->BanPeer(this->identifier.pubKeyHex, ENIGMA_BANSECS_MISSING_INPUTS, "BANNED: output amount smaller than our inputs");
                     nCloakerCountRefused++;
                     Enigma::SendEnigmaMessage(myKey, ENIGMA_MSG_SIGN_CHANGE_MISSING, this->GetIdHash().GetHex(), this->identifier.pubKeyHex);
                     return error("*** CCloakingRequest::SignAndRespond() change too small. Paying %s, getting %s.", FormatMoney(inoutsMine.nInputAmount).c_str(), FormatMoney(amountOut).c_str());
                 }
             }else if (participantSigning){
-                cs->BanPeer(this->identifier.pubKeyHex, ENIGMA_BANSECS_MISSING_INPUTS);
+                cs->BanPeer(this->identifier.pubKeyHex, ENIGMA_BANSECS_MISSING_INPUTS, "BANNED: could not our find inputs/outputs");
                 nCloakerCountRefused++;
                 Enigma::SendEnigmaMessage(myKey, ENIGMA_MSG_SIGN_INPUTS_OUTPUTS_MISSING, this->GetIdHash().GetHex(), this->identifier.pubKeyHex);
                 return error("*** CCloakingRequest::SignAndRespond() could not our find inputs/outputs.");
@@ -786,7 +786,7 @@ bool CCloakingRequest::SignAndRespond(CCloakingEncryptionKey* myKey, bool partic
                 tempTx.vin.push_back(jointTrans.vin[i]);
                 if (!tempTx.FetchInputs(txdb, unused, false, false, mapPrevTx, fInvalid)){
                     if (fInvalid){
-                        cs->BanPeer(this->identifier.pubKeyHex, ENIGMA_BANSECS_MISSING_INPUTS);
+                        cs->BanPeer(this->identifier.pubKeyHex, ENIGMA_BANSECS_MISSING_INPUTS, "BANNED: FetchInputs found invalid tx");
                         nCloakerCountRefused++;
                         return error("*** CCloakingRequest::SignAndRespond() : FetchInputs found invalid tx %s", tempTx.GetHash().ToString().substr(0,10).c_str());
                     }
@@ -799,7 +799,7 @@ bool CCloakingRequest::SignAndRespond(CCloakingEncryptionKey* myKey, bool partic
                     if (mapPrevTx.count(prevHash) && mapPrevTx[prevHash].second.vout.size()>txin.prevout.n){
                         mapPrevOut[txin.prevout] = mapPrevTx[prevHash].second.vout[txin.prevout.n].scriptPubKey;
                     }else{
-                        cs->BanPeer(this->identifier.pubKeyHex, ENIGMA_BANSECS_MISSING_INPUTS);
+                        cs->BanPeer(this->identifier.pubKeyHex, ENIGMA_BANSECS_MISSING_INPUTS, "BANNED: previous tx out is less than input to current one");
                         nCloakerCountRefused++;
                         return error("*** CCloakingRequest::SignAndRespond() : mapPrevOut failed");
                     }
@@ -1032,7 +1032,7 @@ void CCloakingRequest::SetNull()
     sParticipants.clear();
     txid = "0";  // the "address" that participants will fund for the multisig tx
     rawtx = "";
-    txCreated = false;    
+    txCreated = false;
     timeoutSecs = 60;
     signedrawtx = "";
     stealthRootKey.clear();
