@@ -228,6 +228,7 @@ src/test
 src/cloakcoind
 src/cloakcoind.exe
 *.goutputstream*
+Makefile
 Makefile.Debug
 Makefile.Release
 object_script*
