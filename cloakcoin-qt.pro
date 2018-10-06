@@ -704,7 +704,7 @@ TRANSLATIONS = src/qt/locale/bitcoin_en.ts src/qt/locale/bitcoin_ru.ts src/qt/lo
 isEmpty(QMAKE_LRELEASE) {
     win32:QMAKE_LRELEASE = $$[QT_INSTALL_BINS]/lrelease.exe
     macx:QMAKE_LRELEASE = lrelease
-    else:QMAKE_LRELEASE = /usr/local/Qt-5.5.1/bin/lrelease
+    else:QMAKE_LRELEASE = $$[QT_INSTALL_BINS]/lrelease
 }
 isEmpty(QM_DIR):QM_DIR = $$PWD/src/qt/locale
 
