@@ -233,7 +233,7 @@ Makefile.Debug
 Makefile.Release
 object_script*
 cloakcoin-windows-setup.exe
-
+src/qt/locale/bitcoin_*
 
 
 
