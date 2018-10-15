@@ -102,8 +102,8 @@ macx {
      DEFINES += USE_LEVELDB
      INCLUDEPATH += src/leveldb/include src/leveldb/helpers src/leveldb/helpers/memenv
      SOURCES += src/txdb-leveldb.cpp
-     #LIBS+=$$PWD/src/leveldb/libleveldb.a $$PWD/src/leveldb/libmemenv.a
-     LIBS += -L/usr/local/opt/openssl/lib -lssl -lcrypto -L/usr/local/opt/libevent/lib -levent -L/usr/local/opt/curl/lib -lcurl -L/usr/local/opt/leveldb -lleveldb
+     LIBS+=$$PWD/src/leveldb/libleveldb.a $$PWD/src/leveldb/libmemenv.a
+     LIBS += -L/usr/local/opt/openssl/lib -lssl -lcrypto -L/usr/local/opt/libevent/lib -levent -L/usr/local/opt/curl/lib -lcurl
      INCLUDEPATH+=/usr/local/opt/libevent/include /usr/local/opt/openssl/include
 }
 
