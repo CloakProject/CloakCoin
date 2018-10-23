@@ -2,7 +2,7 @@
 
 ---------------------------------------------------------------------------------------------------------------------------------------
 
-Cloak uses the Enigma system in order to faclilate private/secure transactionns. 
+Cloak uses the Enigma system in order to facilitate private/secure transactionns. 
 
 _How does this work?_
 
@@ -21,18 +21,18 @@ hops per route. Multiple routes are used to cope with situations where a routing
 Nodes periodically send out an Enigma Announcement (src/enigma/enigmaann.h) to peers to advertise their services for onion routing. Other nodes
 on the network store the announcements (until they expire or are replaced with an update) and use them to construct the onion routes.
 
-**NOTE:** The annoucement code could be improved to reduce traffic on the network. At present, re-announcements are sent periodically. It would
+**NOTE:** The announcement code could be improved to reduce traffic on the network. At present, re-announcements are sent periodically. It would
 be prudent to extend this and only send small signed "I'm still alive!" messages (at least as long as the underlying associated encryption key
 data remains the same).
 
-**IMPROVEMENT:** The annoucement system is a potential DoS target as there is currently very little computational cost to generating an Enigma
-Announcement. To mitigate this, a proof-of-work should be generated for the annoucement and transmitted with it. Peers can then quickly and
-cheaply verify the proof and dicard any bad data.
+**IMPROVEMENT:** The announcement system is a potential DoS target as there is currently very little computational cost to generating an Enigma
+Announcement. To mitigate this, a proof-of-work should be generated for the announcement and transmitted with it. Peers can then quickly and
+cheaply verify the proof and discard any bad data.
 
 
 _**Enigma - Transaction Process**_
 
-When a node sends funds via Enigma to an stealth address, the following happens:
+When a node sends funds via Enigma to a stealth address, the following happens:
 
 1. Sender generates inputs to cover amount sent, enigma reward (sent * (.2-1)%) and network fee (unknown at present, so ample reserved).
 2. Sender generates a CloakingRequest object (containing unique stealth nonce for this request).
@@ -56,20 +56,20 @@ for any matching payments and generated keys/addresses are saved to the local wa
 
 _**How are stealth and Enigma transactions detected/received?**_
 
-All incoming transactions are scanned. Stealth transactions are scanned for first (using the default ephemeral pubkey contained in a random OP_RETURN
-TX output). After this, Enigma transactions are then scanned for. Enigma transactions also use the standard ephemeral pubkey, but payments use an additional
+All incoming transactions are scanned. Stealth transactions are scanned first (using the default ephemeral pubkey contained in a random OP_RETURN
+TX output). After this, Enigma transactions are then scanned. Enigma transactions also use the standard ephemeral pubkey, but payments use an additional
 step involving a further derived key. Enigma outputs are generated using a hash of the ephemeral pubkey, a private stealth address hash and the output index.
 
 When scanning for Enigma transactions, the zero-index payment addresses are generated for each owned stealth address
 [HASH(ephemeral_pubkey, hash_stealth_secret, 0)]. If a match is found for the zero-index of a stealth address, additional addresses are generated for the
 remaining indexes [num_tx_outputs] and these are scanned against to detect payments. See FindEnigmaTransactions in wallet.cpp for more info.
 
-A similar scanning method is employed by Cloakers prior to signing an Enigma TX to ensure they are getting reimbursed correctly. See GetEnigmaOutputsAmounts
+A similar scanning method is employed by Cloakers prior to signing an Enigma TX to ensure they are being reimbursed correctly. See GetEnigmaOutputsAmounts
 in wallet.cpp for more info.
 
 _**New Codebase**_
 
-The Cloak3 project contains a fork of the recent Litecoin codebase. This comes with segwit, soft-forks are all the latest Bitcoin goodies. Work was started
+The Cloak3 project contains a fork of the recent Litecoin codebase. This comes with Segwit, as soft-forks are all based on the latest Bitcoin updates. Work was started
 on porting Cloak to this codebase, but stopped due to lack of resources. The wallet does indeed boot now, but header syncing needs more additional work.
 Older Cloak clients do not differentiate between PoS and PoW blocks when issuing headers, so this will need to be addressed before work can continue. A
 potential solution would be to avoid header-sync when connected to an older Cloak node as the problem will lessen as clients update over time.
