@@ -70,6 +70,8 @@ You can either use the command line or import the .pro file in Qt Creator.
 Using the command line, run:
 ```qmake && make```
 
+Alternative Linux build tutorial can be found [here](https://gist.github.com/brannondorsey/1153ec2f50d1c88c9f028a3c9ced7b8d). Thanks [Brannon](https://github.com/brannondorsey)
+
 ## License
 
 Distributed under the [MIT software license](http://www.opensource.org/licenses/mit-license.php).
