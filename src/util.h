@@ -56,7 +56,7 @@ typedef int pid_t; /* define for Windows compatibility */
 #define ENIGMA_MIN_FEE_SENDAMOUNT 1000000000 // 1,000 coins
 #define ENIGMA_TOTAL_FEE_PERCENT(x) (x > ENIGMA_MIN_FEE_SENDAMOUNT ? ENIGMA_MIN_FEE_PERCENT : ((ENIGMA_MAX_FEE_PERCENT - ENIGMA_MIN_FEE_PERCENT)*(ENIGMA_MIN_FEE_SENDAMOUNT-x)/ENIGMA_MIN_FEE_SENDAMOUNT) + ENIGMA_MIN_FEE_PERCENT ) // % of total cloaks randomly split between participants (per request) as a reward
 #define ENIGMA_MAX_CONCURRENT_TRANSACTIONS 3 // how many enigma transasctions can we have in play at any one time?
-#define ENIGMA_REQUEST_CURRENTVERSION 0011 // current version number of Enigma cloaking requests. Ignore requests with lesser or greater version #.
+#define ENIGMA_REQUEST_CURRENTVERSION 0012 // current version number of Enigma cloaking requests. Ignore requests with lesser or greater version #.
 #define ENIGMA_BANSECS_MISSING_INPUTS 600 // when enigma nodes fails to provide valid inputs for a cloaking op
 #define ENIGMA_BANSECS_NO_RESPONSE 120 // when enigma nodes fails to respond to a signing request
 #define ENIGMA_BANSECS_JUNK_DATA 120 // when enigma nodes fails to respond to a signing request
