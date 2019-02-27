@@ -47,7 +47,7 @@ typedef int pid_t; /* define for Windows compatibility */
 #define CLOAKSHIELD_MAX_HOPS 64
 
 // Enigma flags/settings
-#define ENIGMA_ENGINE_VER "1.1"
+#define ENIGMA_ENGINE_VER "1.2"
 
 #define ENIGMA_MAX_COINAGE_DAYS 7 // if coins have more than [ENIGMA_MAX_COINAGE_DAYS] of coin age, they will be excluded from Enigma sending/mixing
 #define ENIGMA_TX_LOCKTIME_SECS 0 // 5 minsGetTime()
