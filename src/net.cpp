@@ -943,7 +943,11 @@ void ThreadSocketHandler2(void* parg)
                     CDataStream& vRecv = pnode->vRecv;
                     unsigned int nPos = vRecv.size();
 
-                    if (nPos > ReceiveBufferSize()) {
+                    if (nPos >= (0.8 * ReceiveBufferSize())) {
+			Sleep((2000 * nPos)/(0.8 * ReceiveBufferSize()));
+		    }
+		    
+		    if (nPos > ReceiveBufferSize()) {
                         if (!pnode->fDisconnect)
                             printf("socket recv flood control disconnect (%" PRIszu " bytes)\n", vRecv.size());
                         pnode->CloseSocketDisconnect();
