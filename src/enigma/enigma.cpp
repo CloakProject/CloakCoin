@@ -1033,10 +1033,10 @@ bool Enigma::HandleCloakOnionData(CCloakingData cloakDataIn, CNode* node, int le
 
         if (!alreadyProcessed)
         {
+	    Sleep(10);
             cloakDataIn.hops++;
 
             if (level > 0){
-		Sleep(10);
                 cloakDataIn.Transmit(NULL, true, false); // forward to all as we've unpacked a layer
             }else{
                 cloakDataIn.Transmit(node, true, false); // forward to all but sender, sending as is
