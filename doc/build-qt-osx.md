@@ -97,6 +97,15 @@ We'll try to help you as best as we can.
 
 ## Known issues
 
+#### Mojave: dark mode
+
+The wallet client uses default OS font color, which causes problems with displaying certain information properly (white text on light or white background)
+This key needs to be added into `Info.plist` file into the `dict` block to override the Mojave dark theme.
+```
+<key>NSRequiresAquaSystemAppearance</key>
+<true/>
+```
+
 #### qmake: command not found
 
 Ensure qmake is in your $PATH. On Mac, using HomeBrew, `echo 'export PATH="/usr/local/opt/qt/bin:$PATH"' >> ~/.bash_profile` and restart your terminal.
