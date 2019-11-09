@@ -122,6 +122,28 @@ bool CWallet::AddCScript(const CScript& redeemScript)
 //         serves to disable the trivial sendmoney when OS account compromised
 bool fWalletUnlockMintOnly = false;
 
+bool CWallet::IsValidPassphrase(const SecureString& strWalletPassphrase)
+{
+    CCrypter crypter;
+    CKeyingMaterial vMasterKey;
+
+    {
+        LOCK(cs_wallet);
+        BOOST_FOREACH(const MasterKeyMap::value_type& pMasterKey, mapMasterKeys)
+        {
+            if(!crypter.SetKeyFromPassphrase(strWalletPassphrase, pMasterKey.second.vchSalt, pMasterKey.second.nDeriveIterations, pMasterKey.second.nDerivationMethod))
+                return false;
+            if (!crypter.Decrypt(pMasterKey.second.vchCryptedKey, vMasterKey))
+                return false;
+            if (!CCryptoKeyStore::IsValidKey(vMasterKey))
+                return false;
+        }
+
+        return true;
+    }
+    return false;
+}
+
 bool CWallet::Unlock(const SecureString& strWalletPassphrase)
 {
     if (!IsLocked())

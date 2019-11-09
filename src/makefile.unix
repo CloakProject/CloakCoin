@@ -5,7 +5,7 @@
 TOR_OBJS := $(shell mkdir -p $(CURDIR)/obj/tor)
 ENIGMA_OBJS := $(shell mkdir -p $(CURDIR)/obj/enigma)
 
-USE_UPNP:=0
+USE_UPNP:=1
 USE_IPV6:=1
 USE_LEVELDB:=1
 STATIC:=1
@@ -13,12 +13,12 @@ STATIC:=1
 # OPTIMIZED_SALSA:=1
 
 # Paths to locally built libraries
-BDB_INCLUDE_PATH:=/usr/local/BerkeleyDB.4.8/include
-BDB_LIB_PATH:=/usr/local/BerkeleyDB.4.8/lib
-OPENSSL_INCLUDE_PATH:=/opt/deps/openssl-1.0.2g/include
-OPENSSL_LIB_PATH:=/opt/deps/openssl-1.0.2g
-BOOST_INCLUDE_PATH:=/usr/local/include
-BOOST_LIB_PATH:=/usr/local/lib
+#BDB_INCLUDE_PATH:=/usr/include
+#BDB_LIB_PATH:=/usr/lib
+#OPENSSL_INCLUDE_PATH:=/opt/deps/openssl-1.0.2g/include
+#OPENSSL_LIB_PATH:=/opt/deps/openssl-1.0.2g
+#BOOST_INCLUDE_PATH:=/usr/include
+#BOOST_LIB_PATH:=/usr/local/lib
 
 LINK:=$(CXX)
 
@@ -26,8 +26,7 @@ DEFS=-DBOOST_SPIRIT_THREADSAFE
 #DEFS += STATIC
 
 
-DEFS += $(addprefix -I,$(CURDIR) $(CURDIR)/obj $(BOOST_INCLUDE_PATH) $(BDB_INCLUDE_PATH) $(OPENSSL_INCLUDE_PATH))
-LIBS = $(addprefix -L,$(BOOST_LIB_PATH) $(BDB_LIB_PATH) $(OPENSSL_LIB_PATH)) -L$(CURDIR)/leveldb
+DEFS += $(addprefix -I,$(CURDIR) $(CURDIR)/obj)
 
 
 TESTDEFS = -DTEST_DATA_DIR=$(abspath test/data)
@@ -54,16 +53,14 @@ LIBS += \
    -l ssl \
    -l crypto \
    -l event \
-   -l leveldb \
-   -l memenv \
    -l rt
 
 ifndef USE_UPNP
 	override USE_UPNP = -
 endif
 ifneq (${USE_UPNP}, -)
-	LIBS += /opt/deps/miniupnpc/libminiupnpc.a
-	DEFS += -DUSE_UPNP=$(USE_UPNP) $(addprefix -I,$(/opt/deps/miniupnpc))
+	LIBS += $(CURDIR)/miniupnpc/libminiupnpc.a
+	DEFS += -DUSE_UPNP=$(USE_UPNP) $(addprefix -I,$(CURDIR)/miniupnpc)
 endif
 
 ifneq (${USE_IPV6}, -)
@@ -268,13 +265,13 @@ all: cloakcoind
 # LevelDB support
 #
 ifeq (${USE_LEVELDB}, 1)
-LIBS += -L$(CURDIR)/leveldb/libleveldb.a -L$(CURDIR)/leveldb/libmemenv.a
+LIBS += $(CURDIR)/leveldb/out-static/libleveldb.a $(CURDIR)/leveldb/out-static/libmemenv.a
 DEFS += $(addprefix -I,$(CURDIR)/leveldb/include) -DUSE_LEVELDB
 DEFS += $(addprefix -I,$(CURDIR)/leveldb/helpers)
 OBJS += obj/txdb-leveldb.o
 
 leveldb/libleveldb.a:
-	@echo "Building LevelDB ..."; cd leveldb; make libleveldb.a libmemenv.a; cd ..;
+	@echo "Building LevelDB ..."; cd leveldb; make; cd ..;
 obj/txdb-leveldb.o: leveldb/libleveldb.a
 endif
 ifneq (${USE_LEVELDB}, 1)

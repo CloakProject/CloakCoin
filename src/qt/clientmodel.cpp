@@ -11,8 +11,6 @@
 #include <QDateTime>
 #include <QTimer>
 
-static const int64 nClientStartupTime = GetTime();
-
 ClientModel::ClientModel(OptionsModel *optionsModel, QObject *parent) :
     QObject(parent), optionsModel(optionsModel),
     cachedNumBlocks(0), cachedNumBlocksOfPeers(0), pollTimer(0)
