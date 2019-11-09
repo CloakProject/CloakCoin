@@ -251,6 +251,8 @@ static const CRPCCommand vRPCCommands[] =
     { "move",                   &movecmd,                false,  false },
     { "sendfrom",               &sendfrom,               false,  false },
     { "sendmany",               &sendmany,               false,  false },
+    { "sendcloakmany",          &sendcloakmany,          false,  false },
+    { "sendenigma",             &sendenigma,             false,  false },
     { "addmultisigaddress",     &addmultisigaddress,     false,  false },
     { "getrawmempool",          &getrawmempool,          true,   false },
     { "getblock",               &getblock,               false,  false },
@@ -278,12 +280,13 @@ static const CRPCCommand vRPCCommands[] =
     { "sendrawtransaction",     &sendrawtransaction,     false,  false },
     { "getbigtx",               &getbigtx,               false,  false },
     { "getcheckpoint",          &getcheckpoint,          true,   false },
-    { "reservebalance",         &reservebalance,         false,  true},
-    { "checkwallet",            &checkwallet,            false,  true},
-    { "repairwallet",           &repairwallet,           false,  true},
-    { "resendtx",               &resendtx,               false,  true},
-    { "makekeypair",            &makekeypair,            false,  true},
-    { "sendalert",              &sendalert,              false,  false},
+    { "reservebalance",         &reservebalance,         false,  true },
+    { "checkwallet",            &checkwallet,            false,  true },
+    { "repairwallet",           &repairwallet,           false,  true },
+    { "resendtx",               &resendtx,               false,  true },
+    { "makekeypair",            &makekeypair,            false,  true },
+    { "sendalert",              &sendalert,              false,  false },
+    { "enableenigma",           &enableenigma,           true,   false },
 //    { "listenigma", 		&listenigma, 		 true,   false },
 //    { "sendenigma", 		&sendenigma, 		 true,   false },
 //    { "setenigma", 		&setenigma, 		 true,   false },
@@ -298,10 +301,13 @@ static const CRPCCommand vRPCCommands[] =
     { "sendtostealthaddress",   &sendtostealthaddress,   false,  false},
     { "scanforalltxns",         &scanforalltxns,         false,  false},
     { "scanforstealthtxns",     &scanforstealthtxns,     false,  false},
-    { "listcloakinghistory",	&listcloakinghistory,      false,  false},   
-    { "listcloakingactive",	&listcloakingactive,       false,  false},
-    { "showtransaction",         &showtransaction,         false,  false },
+    { "listcloakinghistory",	&listcloakinghistory,    false,  false},   
+    { "listcloakingactive",	    &listcloakingactive,     false,  false},
+    { "listcloakingrequests",	&listcloakingrequests,   false,  false},
+    { "getcloakinginfo",	    &getcloakinginfo,        false,  false},
+    { "showtransaction",        &showtransaction,        false,  false},
 
+    { "rpccommand",             &rpccommand,             false,  false},
 };
 
 CRPCTable::CRPCTable()
@@ -933,8 +939,6 @@ void JSONRequest::parse(const Value& valRequest)
     if (valMethod.type() != str_type)
         throw JSONRPCError(RPC_INVALID_REQUEST, "Method must be a string");
     strMethod = valMethod.get_str();
-    if (strMethod != "getwork" && strMethod != "getblocktemplate")
-        printf("ThreadRPCServer method=%s\n", strMethod.c_str());
 
     // Parse params
     Value valParams = find_value(request, "params");
@@ -1129,9 +1133,10 @@ Object CallRPC(const string& strMethod, const Array& params)
     // Connect to localhost
     bool fUseSSL = GetBoolArg("-rpcssl");
 
-    // get onion route all tx and enigma auto retry settings from cmdline
+    // get onion route all/enigma tx and enigma auto retry settings from cmdline
     fOnionRouteAll = GetBoolArg("-onionrouteall");
-    fEnigmaAutoRetry = GetBoolArg("-enableenigmaretry");
+    fEnableOnionRouting = GetBoolArg("-onionroute", true);
+    fEnigmaAutoRetry = GetBoolArg("-enableenigmaretry", true);
 
     asio::io_service io_service;
     ssl::context context(io_service, ssl::context::sslv23);
@@ -1240,8 +1245,22 @@ Array RPCConvertValues(const std::string &strMethod, const std::vector<std::stri
     if (strMethod == "listsinceblock"         && n > 1) ConvertTo<boost::int64_t>(params[1]);
     if (strMethod == "sendmany"               && n > 1) ConvertTo<Object>(params[1]);
     if (strMethod == "sendmany"               && n > 2) ConvertTo<boost::int64_t>(params[2]);
-    if (strMethod == "reservebalance"          && n > 0) ConvertTo<bool>(params[0]);
-    if (strMethod == "reservebalance"          && n > 1) ConvertTo<double>(params[1]);
+    if (strMethod == "sendcloakmany"          && n > 1) ConvertTo<Object>(params[1]);
+    if (strMethod == "sendcloakmany"          && n > 2) ConvertTo<boost::int64_t>(params[2]);
+    if (strMethod == "sendenigma"             && n > 0) ConvertTo<Object>(params[0]);
+    if (strMethod == "sendenigma"             && n > 1) ConvertTo<boost::int64_t>(params[1]);
+    if (strMethod == "sendenigma"             && n > 2) ConvertTo<boost::int64_t>(params[2]);
+    if (strMethod == "sendenigma"             && n > 3) ConvertTo<boost::int64_t>(params[3]);
+    if (strMethod == "reservebalance"         && n > 0) ConvertTo<bool>(params[0]);
+    if (strMethod == "reservebalance"         && n > 1) ConvertTo<double>(params[1]);
+    if (strMethod == "enableenigma"           && n > 0) ConvertTo<bool>(params[0]);
+    if (strMethod == "enableenigma"           && n > 1) ConvertTo<int>(params[1]);
+    if (strMethod == "enableenigma"           && n > 2) ConvertTo<bool>(params[2]);
+    if (strMethod == "enableenigma"           && n > 3) ConvertTo<bool>(params[3]);
+    if (strMethod == "enableenigma"           && n > 4) ConvertTo<bool>(params[4]);
+    if (strMethod == "enableenigma"           && n > 5) ConvertTo<int>(params[5]);
+    if (strMethod == "enableenigma"           && n > 6) ConvertTo<int>(params[6]);
+    if (strMethod == "enableenigma"           && n > 7) ConvertTo<int>(params[7]);
     if (strMethod == "addmultisigaddress"     && n > 0) ConvertTo<boost::int64_t>(params[0]);
     if (strMethod == "addmultisigaddress"     && n > 1) ConvertTo<Array>(params[1]);
     if (strMethod == "listunspent"            && n > 0) ConvertTo<boost::int64_t>(params[0]);
@@ -1252,12 +1271,12 @@ Array RPCConvertValues(const std::string &strMethod, const std::vector<std::stri
     if (strMethod == "createrawtransaction"   && n > 1) ConvertTo<Object>(params[1]);
     if (strMethod == "signrawtransaction"     && n > 1) ConvertTo<Array>(params[1], true);
     if (strMethod == "signrawtransaction"     && n > 2) ConvertTo<Array>(params[2], true);
-    if (strMethod == "createann" 	      && n > 0) ConvertTo<boost::int64_t>(params[0]);
-    if (strMethod == "createann" 	      && n > 1) ConvertTo<int>(params[1]);
-    if (strMethod == "createann" 	      && n > 2) ConvertTo<Array>(params[2]);
-    if (strMethod == "createann" 	      && n > 3) ConvertTo<int>(params[3]);
-    if (strMethod == "createann" 	      && n > 4) ConvertTo<int>(params[4]);
-    if (strMethod == "createann" 	      && n > 5) ConvertTo<Array>(params[5]);
+    if (strMethod == "createann" 	          && n > 0) ConvertTo<boost::int64_t>(params[0]);
+    if (strMethod == "createann" 	          && n > 1) ConvertTo<int>(params[1]);
+    if (strMethod == "createann" 	          && n > 2) ConvertTo<Array>(params[2]);
+    if (strMethod == "createann" 	          && n > 3) ConvertTo<int>(params[3]);
+    if (strMethod == "createann" 	          && n > 4) ConvertTo<int>(params[4]);
+    if (strMethod == "createann" 	          && n > 5) ConvertTo<Array>(params[5]);
 
     if (strMethod == "sendtostealthaddress"   && n > 1) ConvertTo<double>(params[1]);
 
@@ -1367,5 +1386,89 @@ int main(int argc, char *argv[])
     return 0;
 }
 #endif
+
+/**
+ * Split shell command line into a list of arguments. Aims to emulate \c bash and friends.
+ *
+ * - Arguments are delimited with whitespace
+ * - Extra whitespace at the beginning and end and between arguments will be ignored
+ * - Text can be "double" or 'single' quoted
+ * - The backslash \c \ is used as escape character
+ *   - Outside quotes, any character can be escaped
+ *   - Within double quotes, only escape \c " and backslashes before a \c " or another backslash
+ *   - Within single quotes, no escaping is possible and no special interpretation takes place
+ *
+ * @param[out]   args        Parsed arguments will be appended to this list
+ * @param[in]    strCommand  Command line to split
+ */
+bool parseCommandLine(std::vector<std::string> &args, const std::string &strCommand)
+{
+    enum CmdParseState
+    {
+        STATE_EATING_SPACES,
+        STATE_ARGUMENT,
+        STATE_SINGLEQUOTED,
+        STATE_DOUBLEQUOTED,
+        STATE_ESCAPE_OUTER,
+        STATE_ESCAPE_DOUBLEQUOTED
+    } state = STATE_EATING_SPACES;
+    std::string curarg;
+    for (char ch : strCommand)
+    {
+        switch(state)
+        {
+        case STATE_ARGUMENT: // In or after argument
+        case STATE_EATING_SPACES: // Handle runs of whitespace
+            switch(ch)
+            {
+            case '"': state = STATE_DOUBLEQUOTED; break;
+            case '\'': state = STATE_SINGLEQUOTED; break;
+            case '\\': state = STATE_ESCAPE_OUTER; break;
+            case ' ': case '\n': case '\t':
+                if(state == STATE_ARGUMENT) // Space ends argument
+                {
+                    args.push_back(curarg);
+                    curarg.clear();
+                }
+                state = STATE_EATING_SPACES;
+                break;
+            default: curarg += ch; state = STATE_ARGUMENT;
+            }
+            break;
+        case STATE_SINGLEQUOTED: // Single-quoted string
+            switch(ch)
+            {
+            case '\'': state = STATE_ARGUMENT; break;
+            default: curarg += ch;
+            }
+            break;
+        case STATE_DOUBLEQUOTED: // Double-quoted string
+            switch(ch)
+            {
+            case '"': state = STATE_ARGUMENT; break;
+            case '\\': state = STATE_ESCAPE_DOUBLEQUOTED; break;
+            default: curarg += ch;
+            }
+            break;
+        case STATE_ESCAPE_OUTER: // '\' outside quotes
+            curarg += ch; state = STATE_ARGUMENT;
+            break;
+        case STATE_ESCAPE_DOUBLEQUOTED: // '\' in double-quoted text
+            if(ch != '"' && ch != '\\') curarg += '\\'; // keep '\' for everything but the quote and '\' itself
+            curarg += ch; state = STATE_DOUBLEQUOTED;
+            break;
+        }
+    }
+    switch(state) // final state
+    {
+    case STATE_EATING_SPACES:
+        return true;
+    case STATE_ARGUMENT:
+        args.push_back(curarg);
+        return true;
+    default: // ERROR to end in one of the other states
+        return false;
+    }
+}
 
 const CRPCTable tableRPC;

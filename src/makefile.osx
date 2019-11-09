@@ -6,76 +6,182 @@
 # Mac OS X makefile for bitcoin
 # Originally by Laszlo Hanyecz (solar@heliacal.net)
 
+TOR_OBJS := $(shell mkdir -p $(CURDIR)/obj/tor)
+ENIGMA_OBJS := $(shell mkdir -p $(CURDIR)/obj/enigma)
+
 CXX=llvm-g++
-DEPSDIR=/opt/local
+LINK=$(CXX)
+DEPSDIR=/usr/local/opt
 
 INCLUDEPATHS= \
  -I"$(CURDIR)" \
  -I"$(CURDIR)"/obj \
- -I"$(DEPSDIR)/include" \
- -I"$(DEPSDIR)/include/db48" \
- -I"$(CURDIR)/leveldb/include" \
- -I"$(CURDIR)/leveldb/helpers"
+ -I"$(DEPSDIR)/boost@1.57/include" \
+ -I"$(DEPSDIR)/berkeley-db@4/include" \
+ -I"$(DEPSDIR)/openssl/include"
 
 LIBPATHS= \
- -L"$(DEPSDIR)/lib" \
- -L"$(DEPSDIR)/lib/db48" \
- -L"$(CURDIR)/leveldb/lib/osx/x64"
+ -L"$(DEPSDIR)/boost@1.57/lib" \
+ -L"$(DEPSDIR)/berkeley-db@4/lib" \
+ -L"$(DEPSDIR)/openssl/lib"
 
+USE_QRCODE:=1
 USE_UPNP:=1
 USE_IPV6:=1
 USE_LEVELDB:=1
+RELEASE:=1
 
 LIBS= -dead_strip
 
 TESTDEFS = -DTEST_DATA_DIR=$(abspath test/data)
 
-ifdef STATIC
-# Build STATIC if you are redistributing the bitcoind binary
 TESTLIBS += \
- $(DEPSDIR)/lib/libboost_unit_test_framework-mt.a
-LIBS += \
- $(DEPSDIR)/lib/db48/libdb_cxx-4.8.a \
- $(DEPSDIR)/lib/libboost_system-mt.a \
- $(DEPSDIR)/lib/libboost_filesystem-mt.a \
- $(DEPSDIR)/lib/libboost_program_options-mt.a \
- $(DEPSDIR)/lib/libboost_thread-mt.a \
- $(DEPSDIR)/lib/libssl.a \
- $(DEPSDIR)/lib/libcrypto.a \
- -lz
-else
-TESTLIBS += \
- -lboost_unit_test_framework-mt
+ -lboost_unit_test_framework
+
 LIBS += \
  -ldb_cxx-4.8 \
  -lboost_system-mt \
  -lboost_filesystem-mt \
  -lboost_program_options-mt \
  -lboost_thread-mt \
- -lleveldb \
- -lmemenv \ 
  -lssl \
  -lcrypto \
  -lz
+
 TESTDEFS += -DBOOST_TEST_DYN_LINK
-endif
 
 DEFS=-DMAC_OSX -DMSG_NOSIGNAL=0 -DBOOST_SPIRIT_THREADSAFE
 
+ifndef USE_UPNP
+	override USE_UPNP = -
+endif
+ifndef USE_IPV6
+	override USE_IPV6 = -
+endif
+ifndef USE_LEVELDB
+	override USE_LEVELDB = -
+endif
+
+ifneq (${USE_UPNP}, -)
+	DEFS += -DUSE_UPNP=$(USE_UPNP)
+	LIBS += -lminiupnpc
+endif
+
+ifneq (${USE_IPV6}, -)
+	DEFS += -DUSE_IPV6=$(USE_IPV6)
+endif
+
+ifneq (${USE_LEVELDB}, -)
+	DEFS += -DUSE_LEVELDB=$(USE_LEVELDB)
+endif
+
+ifeq (${USE_LEVELDB}, 1)
+	LIBS += $(CURDIR)/leveldb/out-static/libleveldb.a $(CURDIR)/leveldb/out-static/libmemenv.a
+	DEFS += $(addprefix -I,$(CURDIR)/leveldb/include)
+	DEFS += $(addprefix -I,$(CURDIR)/leveldb/helpers)
+endif
+
 ifdef RELEASE
-# Compile for maximum compatibility and smallest size.
-# This requires that dependencies are compiled
-# the same way.
-CFLAGS = -mmacosx-version-min=10.5 -arch x86_64 -O3 -msse2
+	CFLAGS = -mmacosx-version-min=10.7 -arch x86_64 -O3 -msse2 -stdlib=libc++
 else
-CFLAGS = -g -msse2
+	CFLAGS = -g -msse2
 endif
 
 # ppc doesn't work because we don't support big-endian
 CFLAGS += -Wall -Wextra -Wformat -Wformat-security -Wno-unused-parameter \
     $(DEBUGFLAGS) $(DEFS) $(INCLUDEPATHS)
 
+xCXXFLAGS = $(CFLAGS)
+
 OBJS= \
+    obj/tor/address.o \
+    obj/tor/addressmap.o \
+    obj/tor/aes.o \
+    obj/tor/backtrace.o \
+    obj/tor/buffers.o \
+    obj/tor/channel.o \
+    obj/tor/channeltls.o \
+    obj/tor/circpathbias.o \
+    obj/tor/circuitbuild.o \
+    obj/tor/circuitlist.o \
+    obj/tor/circuitmux.o \
+    obj/tor/circuitmux_ewma.o \
+    obj/tor/circuitstats.o \
+    obj/tor/circuituse.o \
+    obj/tor/command.o \
+    obj/tor/compat.o \
+    obj/tor/compat_libevent.o \
+    obj/tor/config.o \
+    obj/tor/config_codedigest.o \
+    obj/tor/confparse.o \
+    obj/tor/connection.o \
+    obj/tor/connection_edge.o \
+    obj/tor/connection_or.o \
+    obj/tor/container.o \
+    obj/tor/control.o \
+    obj/tor/cpuworker.o \
+    obj/tor/crypto.o \
+    obj/tor/crypto_curve25519.o \
+    obj/tor/crypto_format.o \
+    obj/tor/curve25519-donna.o \
+    obj/tor/di_ops.o \
+    obj/tor/directory.o \
+    obj/tor/dirserv.o \
+    obj/tor/dirvote.o \
+    obj/tor/dns.o \
+    obj/tor/dnsserv.o \
+    obj/tor/entrynodes.o \
+    obj/tor/ext_orport.o \
+    obj/tor/fp_pair.o \
+    obj/tor/geoip.o \
+    obj/tor/hibernate.o \
+    obj/tor/log.o \
+    obj/tor/memarea.o \
+    obj/tor/mempool.o \
+    obj/tor/microdesc.o \
+    obj/tor/networkstatus.o \
+    obj/tor/nodelist.o \
+    obj/tor/onion.o \
+    obj/tor/onion_fast.o \
+    obj/tor/onion_main.o \
+    obj/tor/onion_ntor.o \
+    obj/tor/onion_tap.o \
+    obj/tor/policies.o \
+    obj/tor/procmon.o \
+    obj/tor/reasons.o \
+    obj/tor/relay.o \
+    obj/tor/rendclient.o \
+    obj/tor/rendcommon.o \
+    obj/tor/rendmid.o \
+    obj/tor/rendservice.o \
+    obj/tor/rephist.o \
+    obj/tor/replaycache.o \
+    obj/tor/router.o \
+    obj/tor/routerlist.o \
+    obj/tor/routerparse.o \
+    obj/tor/routerset.o \
+    obj/tor/sandbox.o \
+    obj/tor/statefile.o \
+    obj/tor/status.o \
+    obj/tor/torgzip.o \
+    obj/tor/tortls.o \
+    obj/tor/tor_util.o \
+    obj/tor/transports.o \
+    obj/tor/util_codedigest.o \
+    obj/tor/cloak.o \
+    obj/fugue.o \
+    obj/hamsi.o \
+    obj/groestl.o \
+    obj/blake.o \
+    obj/bmw.o \
+    obj/skein.o \
+    obj/keccak.o \
+    obj/shavite.o \
+    obj/jh.o \
+    obj/luffa.o \
+    obj/cubehash.o \
+    obj/echo.o \
+    obj/simd.o \
     obj/alert.o \
     obj/version.o \
     obj/checkpoints.o \
@@ -103,35 +209,28 @@ OBJS= \
     obj/wallet.o \
     obj/walletdb.o \
     obj/noui.o \
-    obj/pbkdf2.o \
     obj/kernel.o \
+    obj/pbkdf2.o \
+    obj/scrypt.o \
     obj/scrypt_mine.o \
     obj/scrypt-x86.o \
     obj/scrypt-x86_64.o \
+    obj/scrypt-arm.o \
     obj/stealth.o \
-    obj/conemarketcreatelisting.o \
-    obj/onemarket.o \
     obj/enigma/cloakingdata.o \
     obj/enigma/cloakingrequest.o \
     obj/enigma/enigmapeer.o \
     obj/enigma/cloakshield.o \
+    obj/enigma/encryption.o \
     obj/enigma/enigmaann.o \
+    obj/enigma/enigmapeer.o \
     obj/enigma/enigma.o
 
-ifndef USE_UPNP
-	override USE_UPNP = -
+ifeq (${USE_LEVELDB}, 1)
+	OBJS += obj/txdb-leveldb.o
 endif
-ifneq (${USE_UPNP}, -)
-	DEFS += -DUSE_UPNP=$(USE_UPNP)
-ifdef STATIC
-	LIBS += $(DEPSDIR)/lib/libminiupnpc.a
-else
-	LIBS += -lminiupnpc
-endif
-endif
-
-ifneq (${USE_IPV6}, -)
-	DEFS += -DUSE_IPV6=$(USE_IPV6)
+ifneq (${USE_LEVELDB}, 1)
+	OBJS += obj/txdb-bdb.o
 endif
 
 all: cloakcoind
@@ -148,44 +247,75 @@ obj/build.h: FORCE
 version.cpp: obj/build.h
 DEFS += -DHAVE_BUILD_INFO
 
-obj/%.o: %.cpp
-	$(CXX) -c $(CFLAGS) -MMD -MF $(@:%.o=%.d) -o $@ $<
-	@cp $(@:%.o=%.d) $(@:%.o=%.P); \
-	  sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
-	      -e '/^$$/ d' -e 's/$$/ :/' < $(@:%.o=%.d) >> $(@:%.o=%.P); \
-	  rm -f $(@:%.o=%.d)
-
 obj/scrypt-x86.o: scrypt-x86.S
 	$(CXX) -c $(xCXXFLAGS) -MMD -o $@ $<
 
 obj/scrypt-x86_64.o: scrypt-x86_64.S
 	$(CXX) -c $(xCXXFLAGS) -MMD -o $@ $<
 
+obj/scrypt-arm.o: scrypt-arm.S
+	$(CXX) -c $(xCXXFLAGS) -MMD -o $@ $<
+	
+obj/%.o: %.cpp
+	$(CXX) -c $(xCXXFLAGS) -MMD -MF $(@:%.o=%.d) -o $@ $<
+	@cp $(@:%.o=%.d) $(@:%.o=%.P); \
+	  sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
+	      -e '/^$$/ d' -e 's/$$/ :/' < $(@:%.o=%.d) >> $(@:%.o=%.P); \
+	  rm -f $(@:%.o=%.d)
+
+obj/tor/%.o: tor/%.c
+	$(CC) -c $(xCXXFLAGS) -MMD -MF $(@:%.o=%.d) -o $@ $<
+	@cp $(@:%.o=%.d) $(@:%.o=%.P); \
+	sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
+		-e '/^$$/ d' -e 's/$$/ :/' < $(@:%.o=%.d) >> $(@:%.o=%.P); \
+	rm -f $(@:%.o=%.d)
+
+obj/tor/%.o: tor/cloak.cpp
+	$(CXX) -c $(xCXXFLAGS) -MMD -MF $(@:%.o=%.d) -o $@ $<
+	@cp $(@:%.o=%.d) $(@:%.o=%.P); \
+	sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
+		-e '/^$$/ d' -e 's/$$/ :/' < $(@:%.o=%.d) >> $(@:%.o=%.P); \
+	rm -f $(@:%.o=%.d)
+
+obj/enigma/%.o: enigma/%.cpp
+	$(CXX) -c $(xCXXFLAGS) -MMD -MF $(@:%.o=%.dx) -o $@ $<
+	@cp $(@:%.o=%.d) $(@:%.o=%.P); \
+	sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
+		-e '/^$$/ d' -e 's/$$/ :/' < $(@:%.o=%.d) >> $(@:%.o=%.P); \
+	rm -f $(@:%.o=%.d)
+
+obj/%.o: %.c
+	$(CXX) -c $(xCXXFLAGS) -fpermissive -MMD -MF $(@:%.o=%.d) -o $@ $<
+	@cp $(@:%.o=%.d) $(@:%.o=%.P); \
+	  sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
+	      -e '/^$$/ d' -e 's/$$/ :/' < $(@:%.o=%.d) >> $(@:%.o=%.P); \
+	rm -f $(@:%.o=%.d)
+
 cloakcoind: $(OBJS:obj/%=obj/%)
-	$(CXX) $(CFLAGS) -o $@ $(LIBPATHS) $^ $(LIBS)
+	$(LINK) $(xCXXFLAGS) -o $@ $(LIBPATHS) $^ $(xLDFLAGS) $(LIBS)
 
 TESTOBJS := $(patsubst test/%.cpp,obj-test/%.o,$(wildcard test/*.cpp))
 
 obj-test/%.o: test/%.cpp
-	$(CXX) -c $(TESTDEFS) $(CFLAGS) -MMD -MF $(@:%.o=%.d) -o $@ $<
+	$(CXX) -c $(TESTDEFS) $(xCXXFLAGS) -MMD -MF $(@:%.o=%.d) -o $@ $<
 	@cp $(@:%.o=%.d) $(@:%.o=%.P); \
 	  sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
 	      -e '/^$$/ d' -e 's/$$/ :/' < $(@:%.o=%.d) >> $(@:%.o=%.P); \
 	  rm -f $(@:%.o=%.d)
 
 test_cloakcoin: $(TESTOBJS) $(filter-out obj/init.o,$(OBJS:obj/%=obj/%))
-	$(CXX) $(CFLAGS) -o $@ $(LIBPATHS) $^ $(LIBS) $(TESTLIBS)
+	$(LINK) $(xCXXFLAGS) -o $@ $(LIBPATHS) $^ $(xLDFLAGS) $(TESTLIBS)
 
 clean:
 	-rm -f cloakcoind test_cloakcoin
-    -rm -f obj/*.o
-    -rm -f obj-test/*.o
-    -rm -f obj/*.P
-    -rm -f obj-test/*.P
-    -rm -f obj/build.h
-    -rm -f obj/tor/*.o
-    -rm -f obj/tor/*.P
-    -rm -f obj/enigma/*.o
-    -rm -f obj/enigma/*.P
+	-rm -f obj/*.o
+	-rm -f obj-test/*.o
+	-rm -f obj/*.P
+	-rm -f obj-test/*.P
+	-rm -f obj/build.h
+	-rm -f obj/tor/*.o
+	-rm -f obj/tor/*.P
+	-rm -f obj/enigma/*.o
+	-rm -f obj/enigma/*.P
 
 FORCE:

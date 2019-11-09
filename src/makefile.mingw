@@ -5,7 +5,7 @@
 TOR_OBJS := $(shell mkdir -p $(CURDIR)/obj/tor)
 ENIGMA_OBJS := $(shell mkdir -p $(CURDIR)/obj/enigma)
 
-USE_UPNP:=0
+USE_UPNP:=1
 USE_IPV6:=1
 USE_LEVELDB:=1
 
@@ -19,36 +19,34 @@ DEPSPATH=/c/deps
 
 INCLUDEPATHS= \
  -I"$(DEPSPATH)/boost_1_57_0" \
- -I"$(DEPSPATH)/db-4.8.30.NC/build_unix" \
- -I"$(DEPSPATH)/openssl-1.0.2g/include" \
- -I"$(DEPSPATH)/libevent-2.0.21-stable\include" \
+ -I"$(DEPSPATH)/db-4.8.30/build_unix" \
+ -I"$(DEPSPATH)/openssl-1.0.2s/include" \
+ -I"$(DEPSPATH)/libevent-2.0.22-stable/include" \
  -I"$(CURDIR)/leveldb/include" \
  -I"$(CURDIR)/leveldb/helpers" \
  -I"$(CURDIR)"
  
 LIBPATHS= \
  -L"$(DEPSPATH)/boost_1_57_0/stage/lib" \
- -L"leveldb/lib/win/x86" \
- -L"$(DEPSPATH)/db-4.8.30.NC/build_unix" \
- -L"$(DEPSPATH)/openssl-1.0.2g" \
- -L"$(CURDIR)/leveldb/lib/win/x86"
+ -L"$(DEPSPATH)/db-4.8.30/build_unix" \
+ -L"$(DEPSPATH)/openssl-1.0.2s" \
+ -L"$(DEPSPATH)/libevent-2.0.22-stable/.libs" \
+ -L"$(CURDIR)/leveldb/out-static"
 
 LIBS= \
- -lboost_system-mgw49-mt-s-1_57 \
- -lboost_filesystem-mgw49-mt-s-1_57 \
- -lboost_program_options-mgw49-mt-s-1_57 \
- -lboost_thread-mgw49-mt-s-1_57 \
- -lboost_chrono-mgw49-mt-s-1_57 \
+ -lboost_system-mgw81-mt-s-1_57 \
+ -lboost_filesystem-mgw81-mt-s-1_57 \
+ -lboost_program_options-mgw81-mt-s-1_57 \
+ -lboost_thread-mgw81-mt-s-1_57 \
+ -lboost_chrono-mgw81-mt-s-1_57 \
  -ldb_cxx \
  -lleveldb \
  -lmemenv \
  -lssl \
  -lcrypto \
  -levent
- 
-LIBS+=-L"$(DEPSPATH)/libevent-2.0.21-stable/.libs"
- 
-DEFS=-DWIN32 -D_WINDOWS -DBOOST_THREAD_USE_LIB -DBOOST_SPIRIT_THREADSAFE -D__NO_SYSTEM_INCLUDES
+
+DEFS=-DWIN32 -D_WINDOWS -DBOOST_THREAD_USE_LIB -DBOOST_SPIRIT_THREADSAFE -D__NO_SYSTEM_INCLUDES -D_WIN32_WINNT=0x0501 -DWINVER=0x0501 -D__USE_MINGW_ANSI_STDIO=0
 DEBUGFLAGS=-g
 CFLAGS=-mthreads -O2 -msse2 -w -Wall -Wextra -Wformat -Wformat-security -Wno-unused-parameter $(DEBUGFLAGS) $(DEFS) $(INCLUDEPATHS)
 xCXXFLAGS+=$(INCLUDEPATHS)
@@ -61,10 +59,10 @@ ifndef USE_UPNP
     override USE_UPNP = 0
 endif
 ifneq (${USE_UPNP}, 0)
- INCLUDEPATHS += -I"$(DEPSPATH)"
- LIBPATHS += -L"$(DEPSPATH)/miniupnpc"
- LIBS += -l miniupnpc -l iphlpapi
- DEFS += -DSTATICLIB -DUSE_UPNP=$(USE_UPNP)
+ INCLUDEPATHS += -I"$(CURDIR)/miniupnpc"
+ LIBPATHS += -L"$(CURDIR)/miniupnpc"
+ LIBS += -lminiupnpc -l iphlpapi
+ DEFS += -DSTATICLIB -DMINIUPNP_STATICLIB -DUSE_UPNP=$(USE_UPNP)
 endif
 
 ifneq (${USE_IPV6}, -)
@@ -209,7 +207,7 @@ OBJS= \
     obj/enigma/cloakingrequest.o \
     obj/enigma/enigmapeer.o \
     obj/enigma/cloakshield.o \
-	obj/enigma/encryption.o \
+    obj/enigma/encryption.o \
     obj/enigma/enigmaann.o \
     obj/enigma/enigma.o
 

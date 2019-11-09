@@ -11,6 +11,11 @@
 
 #include "serialize.h"
 
+#ifndef MSG_NOSIGNAL
+#if (defined(__APPLE__) && defined(__MACH__))
+#define MSG_NOSIGNAL 0
+#endif
+#endif
 
 extern int nConnectTimeout;
 

@@ -67,9 +67,12 @@ enum RPCErrorCode
     RPC_WALLET_ENCRYPTION_FAILED    = -16, // Failed to encrypt the wallet
     RPC_WALLET_ALREADY_UNLOCKED     = -17, // Wallet is already unlocked
 
-    // Enigma errors
-    RPC_ENIGMA_NO_OWN_ADDRESS       = -500 // we have no available active Enigma address for sending
+    RPC_SEND_AMOUNT_TOO_SMALL       = -101, // Send amount too small
 
+    // Enigma errors
+    RPC_ENIGMA_NO_OWN_ADDRESS       = -500, // we have no available active Enigma address for sending
+    RPC_ENIGMA_EPHEM_ERROR          = -501,  // Error related with ephem
+    RPC_ENIGMA_ONION_ROUTING_UNAVAILABLE = -502,  // Onion routing unavailable
 
 };
 
@@ -143,8 +146,8 @@ extern double GetPoSKernelPS();
 
 extern std::string HexBits(unsigned int nBits);
 extern std::string HelpRequiringPassphrase();
-extern void EnsureWalletIsUnlocked();
-
+extern void EnsureWalletIsUnlocked(int64 duration = 0, bool ignoreMintOnly = false);
+extern bool parseCommandLine(std::vector<std::string> &args, const std::string &strCommand);
 
 extern void broadcastenigma();
 
@@ -181,6 +184,8 @@ extern json_spirit::Value getbalance(const json_spirit::Array& params, bool fHel
 extern json_spirit::Value movecmd(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value sendfrom(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value sendmany(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value sendcloakmany(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value sendenigma(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value addmultisigaddress(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value listreceivedbyaddress(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value listreceivedbyaccount(const json_spirit::Array& params, bool fHelp);
@@ -205,6 +210,7 @@ extern json_spirit::Value makekeypair(const json_spirit::Array& params, bool fHe
 extern json_spirit::Value validatepubkey(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value getnewpubkey(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value getnetworkhashps(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value enableenigma(const json_spirit::Array& params, bool fHelp);
 
 extern json_spirit::Value getrawtransaction(const json_spirit::Array& params, bool fHelp); // in rcprawtransaction.cpp
 extern json_spirit::Value listunspent(const json_spirit::Array& params, bool fHelp);
@@ -246,6 +252,11 @@ extern json_spirit::Value offerclean(const json_spirit::Array& params, bool fHel
 
 extern json_spirit::Value listcloakinghistory(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value listcloakingactive(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value listcloakingrequests(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getcloakinginfo(const json_spirit::Array& params, bool fHelp);
 
 extern json_spirit::Value showtransaction(const json_spirit::Array& params, bool fHelp);
+
+extern json_spirit::Value rpccommand(const json_spirit::Array& params, bool fHelp);
+
 #endif

@@ -509,6 +509,11 @@ bool AppInit2(boost::thread_group& threadGroup)
         nEnigmaReservedBalancePercent = GetArg("-enigmareserve", 50); // reserve 50% of wallet balance for Enigma cloaking
     }
 
+    // get cloak shield routes/nodes/hops count
+    nCloakShieldNumRoutes = GetArg("-cloakshieldroutes", 3);
+    nCloakShieldNumNodes = GetArg("-cloakshieldnodes", 3);
+    nCloakShieldNumHops = GetArg("-cloakshieldhops", 3);
+
     // ********************************************************* Step 4: application initialization: dir lock, daemonize, pidfile, debug log
 
     std::string strDataDir = GetDataDir().string();

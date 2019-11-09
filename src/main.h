@@ -129,6 +129,11 @@ extern std::map<uint256, CBlock*> mapOrphanBlocks;
 // Settings
 extern int64 nTransactionFee;
 extern int nEnigmaReservedBalancePercent;
+extern int nCloakShieldNumRoutes;
+extern int nCloakShieldNumNodes;
+extern int nCloakShieldNumHops;
+
+extern const int64 nClientStartupTime;
 
 // Minimum disk space required - used in CheckDiskSpace()
 static const uint64 nMinDiskSpace = 52428800;
