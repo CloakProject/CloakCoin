@@ -11,7 +11,7 @@
 const std::string CLIENT_NAME("KlausFuchs");
 
 // Client version number
-#define CLIENT_VERSION_SUFFIX   " 'rEVOLUTION' stormfix"
+#define CLIENT_VERSION_SUFFIX   " 'rEVOLUTION' 2x4"
 
 // The following part of the code determines the CLIENT_BUILD variable.
 // Several mechanisms are used for this:

@@ -9,7 +9,7 @@
 #define CLIENT_VERSION_MAJOR       2
 #define CLIENT_VERSION_MINOR       2
 #define CLIENT_VERSION_REVISION    2
-#define CLIENT_VERSION_BUILD       1
+#define CLIENT_VERSION_BUILD       2
 
 // Copyright year (2009-this)
 // Todo: update this when changing our copyright comments in the source

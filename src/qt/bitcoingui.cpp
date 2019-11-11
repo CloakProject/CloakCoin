@@ -94,7 +94,7 @@ BitcoinGUI::BitcoinGUI(bool fIsTestnet, QWidget *parent):
     rpcConsole(0)
 {
     resize(850, 550);
-    setWindowTitle(tr("CLOAK Core v2.2.2.1 rEvolution"));
+    setWindowTitle(tr("CLOAK Core v2.2.2.2 2x4"));
 #ifndef Q_OS_MAC
     qApp->setWindowIcon(QIcon(":icons/bitcoin"));
     setWindowIcon(QIcon(":icons/bitcoin"));
