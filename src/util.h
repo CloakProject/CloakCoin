@@ -36,7 +36,7 @@ typedef int pid_t; /* define for Windows compatibility */
 #define DEFAULT_CLOAKERS 5
 #define MIN_CLOAKERS 5 // min number of cloakers (for dropdown menu etc)
 #define MAX_CLOAKERS 25 // max number of cloakers (for dropdown menu etc)
-#define MAX_ONION_SKINS 10 // bail if onion contains more than this number of layers (crude DoS protection)
+#define MAX_ONION_SKINS 25 // bail if onion contains more than this number of layers (crude DoS protection)
 #define MAX_CLOAKER_SPLITS 10 // max number of Enigma tx splits (for dropdown menu etc)
 
 #define CLOAKSHIELD_NUM_NODES_TEST 3

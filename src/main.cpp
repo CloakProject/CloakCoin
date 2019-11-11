@@ -3838,12 +3838,8 @@ bool ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
 
     else
     {
-        // IMPLEMENT WHEN ENIGMA VER.11 GETS WIDELY ADOPTED : Ban nodes sending unknown messages or spamming junk after 2 instances
-        // Will help with transitioning and phasing out older wallets that run older Enigma versions
-        // Suppressed logging to avoid bloating the debug.log
-
-        // printf("unknown message=%s.\n",strCommand.c_str());
-        // pfrom->Misbehaving(50);
+        // Ban nodes sending unknown messages or spamming junk after 2 instances
+        pfrom->Misbehaving(50);
     }
 
     // Update the last seen time for this node's address
@@ -3874,9 +3870,10 @@ bool ProcessMessages(CNode* pfrom)
     while (true)
     {
         // Don't bother if send buffer is too full to respond anyway
-        if (pfrom->vSend.size() >= SendBufferSize())
+        if (pfrom->vSend.size() >= SendBufferSize()) {
+            printf(">>> Send Buffer full, ignoring message processing (%u bytes)\n", pfrom->vSend.size());
             break;
-
+        }
         // Scan for message start
         CDataStream::iterator pstart = search(vRecv.begin(), vRecv.end(), BEGIN(pchMessageStart), END(pchMessageStart));
         int nHeaderSize = vRecv.GetSerializeSize(CMessageHeader());
