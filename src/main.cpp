@@ -3652,163 +3652,184 @@ bool ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         }
     }
     // ENIGMA MESSAGE
-    else if(strCommand == ENIMGA_STR_MSG && fEnigma)
+    else if(strCommand == ENIMGA_STR_MSG)
     {
-        if(GetBoolArg("-printenigma"))
-                printf("ENIGMA: posamsg message received\n");
-        try
-        {
-            Enigma::HandleCloakOnionData(vRecv, pfrom);
-        }
-        catch(std::exception& e)
-        {
+        if (fEnigma) {
             if(GetBoolArg("-printenigma"))
-                printf("ENIGMA: ERROR processing posareq message.\n");
+                    printf("ENIGMA: posamsg message received\n");
+            try
+            {
+                Enigma::HandleCloakOnionData(vRecv, pfrom);
+            }
+            catch(std::exception& e)
+            {
+                if(GetBoolArg("-printenigma"))
+                    printf("ENIGMA: ERROR processing posareq message.\n");
+            }
         }
     }
     // ENIGMA REQUEST
-    else if(strCommand == ENIMGA_STR_REQ && fEnigma)
+    else if(strCommand == ENIMGA_STR_REQ)
     {
-        if(GetBoolArg("-printenigma"))
-                printf("ENIGMA: posareq message received\n");
-
-        try
-        {
-            Enigma::HandleCloakOnionData(vRecv, pfrom);
-        }
-        catch(std::exception& e)
-        {
+        if (fEnigma) {
             if(GetBoolArg("-printenigma"))
-                printf("ENIGMA: ERROR processing posareq message.\n");
+                    printf("ENIGMA: posareq message received\n");
+
+            try
+            {
+                Enigma::HandleCloakOnionData(vRecv, pfrom);
+            }
+            catch(std::exception& e)
+            {
+                if(GetBoolArg("-printenigma"))
+                    printf("ENIGMA: ERROR processing posareq message.\n");
+            }
         }
     }
     // ACCEPT ENIGMA REQUEST
-    else if(strCommand == ENIMGA_STR_REQ_ACCEPT && fEnigma) // enigma request accepted
+    else if(strCommand == ENIMGA_STR_REQ_ACCEPT) // enigma request accepted
     {
-        if(GetBoolArg("-printenigma"))
-            printf("ENIGMA: accept message received\n");
-
-        try
-        {
-            Enigma::HandleCloakOnionData(vRecv, pfrom);
-        }
-        catch(std::exception& e)
-        {
+        if (fEnigma) {
             if(GetBoolArg("-printenigma"))
-                printf("ENIGMA: ERROR processing accept message.\n");
+                printf("ENIGMA: accept message received\n");
+
+            try
+            {
+                Enigma::HandleCloakOnionData(vRecv, pfrom);
+            }
+            catch(std::exception& e)
+            {
+                if(GetBoolArg("-printenigma"))
+                    printf("ENIGMA: ERROR processing accept message.\n");
+            }
         }
     }
     // ENIGMA ONION ROUTED TX
-    else if(strCommand == ENIMGA_STR_ONION_TX && fEnigma) // onion routed transaction (either Enigma or standard)
+    else if(strCommand == ENIMGA_STR_ONION_TX) // onion routed transaction (either Enigma or standard)
     {
-        if(GetBoolArg("-printenigma"))
-            printf("ENIGMA: oniontx message received\n");
-
-        try
-        {
-            Enigma::HandleCloakOnionData(vRecv, pfrom);
-        }
-        catch(std::exception& e)
-        {
+        if (fEnigma) {
             if(GetBoolArg("-printenigma"))
-                printf("ENIGMA: ERROR processing oniontx message.\n");
+                printf("ENIGMA: oniontx message received\n");
+
+            try
+            {
+                Enigma::HandleCloakOnionData(vRecv, pfrom);
+            }
+            catch(std::exception& e)
+            {
+                if(GetBoolArg("-printenigma"))
+                    printf("ENIGMA: ERROR processing oniontx message.\n");
+            }
         }
     }
     // ONION ROUTED CLOAKSHIELD DATA
-    else if(strCommand == ENIMGA_STR_DATA && fEnigma)
+    else if(strCommand == ENIMGA_STR_DATA)
     {
-        // process encrypted and encoded cloakshield data. this may be request, response etc or
-        // an onion layer.
+        if (fEnigma) {
+            // process encrypted and encoded cloakshield data. this may be request, response etc or
+            // an onion layer.
 
-        if(GetBoolArg("-printenigma"))
-            printf("ENIGMA: cloakdata message received\n");
-
-        try
-        {
-            Enigma::HandleCloakOnionData(vRecv, pfrom);
-        }
-        catch(std::exception& e)
-        {
             if(GetBoolArg("-printenigma"))
-                printf("ENIGMA: ERROR processing cloakdata message.\n");
+                printf("ENIGMA: cloakdata message received\n");
+
+            try
+            {
+                Enigma::HandleCloakOnionData(vRecv, pfrom);
+            }
+            catch(std::exception& e)
+            {
+                if(GetBoolArg("-printenigma"))
+                    printf("ENIGMA: ERROR processing cloakdata message.\n");
+            }
         }
     }
 
     // ENIGMA SIGN REQUEST
-    else if(strCommand == ENIMGA_STR_REQ_SIGN && fEnigma)
+    else if(strCommand == ENIMGA_STR_REQ_SIGN)
     {
-        if(GetBoolArg("-printenigma"))
-            printf("ENIGMA: posasignreq message received\n");
-
-        try
-        {
-            Enigma::HandleCloakOnionData(vRecv, pfrom);
-        }
-        catch(std::exception& e)
-        {
+        if (fEnigma) {
             if(GetBoolArg("-printenigma"))
-                printf("ENIGMA: ERROR processing posasignreq message.\n");
+                printf("ENIGMA: posasignreq message received\n");
+
+            try
+            {
+                Enigma::HandleCloakOnionData(vRecv, pfrom);
+            }
+            catch(std::exception& e)
+            {
+                if(GetBoolArg("-printenigma"))
+                    printf("ENIGMA: ERROR processing posasignreq message.\n");
+            }
         }
     }
     // ENIGMA SIGN RESPONSE
-    else if(strCommand ==ENIMGA_STR_REQ_SIGNED && fEnigma)
+    else if(strCommand == ENIMGA_STR_REQ_SIGNED)
     {
-        if(GetBoolArg("-printenigma"))
-            printf("ENIGMA: posasignresp message received\n");
-
-        try
-        {
-            Enigma::HandleCloakOnionData(vRecv, pfrom);
-        }
-        catch(std::exception& e)
-        {
+        if (fEnigma) {
             if(GetBoolArg("-printenigma"))
-                printf("ENIGMA: ERROR processing posasignresp message.\n");
+                printf("ENIGMA: posasignresp message received\n");
+
+            try
+            {
+                Enigma::HandleCloakOnionData(vRecv, pfrom);
+            }
+            catch(std::exception& e)
+            {
+                if(GetBoolArg("-printenigma"))
+                    printf("ENIGMA: ERROR processing posasignresp message.\n");
+            }
         }
     }
     // ENIGMA MESSAGE RECIEVED ACK
-    else if(strCommand == ENIMGA_STR_ACK && fEnigma)
+    else if(strCommand == ENIMGA_STR_ACK)
     {
-        if(GetBoolArg("-printenigma"))
-            printf("ENIGMA: posaack message received\n");
-
-        try
-        {
-            // todo: not needed until we send a receipt for cloakdata packages arriving successfully
-        }
-        catch(std::exception& e)
-        {
+        if (fEnigma) {
             if(GetBoolArg("-printenigma"))
-                printf("ENIGMA: ERROR processing posaack message.\n");
+                printf("ENIGMA: posaack message received\n");
+
+            try
+            {
+                // todo: not needed until we send a receipt for cloakdata packages arriving successfully
+            }
+            catch(std::exception& e)
+            {
+                if(GetBoolArg("-printenigma"))
+                    printf("ENIGMA: ERROR processing posaack message.\n");
+            }
         }
     }
     // ENIGMA NODE CHECK-UP
-    else if(strCommand == ENIMGA_STR_CHECK  && fEnigma)
+    else if(strCommand == ENIMGA_STR_CHECK)
     {
-        CEnigmaCheckUp posacu;
-        vRecv >> posacu;
+        if (fEnigma) {
+            CEnigmaCheckUp posacu;
+            vRecv >> posacu;
 
-        if(pfrom)
-        {
-            CEnigmaCheckUpAck posack;
-            posack.nSentTime = GetTime();
-            posack.nInReplyToHash = posacu.nHashCheck;
-            posack.RelayTo(pfrom);
+            if(pfrom)
+            {
+                CEnigmaCheckUpAck posack;
+                posack.nSentTime = GetTime();
+                posack.nInReplyToHash = posacu.nHashCheck;
+                posack.RelayTo(pfrom);
+            }
         }
     }
     // ENIGMA NODE CHECK-UP ACK
-    else if(strCommand == ENIMGA_STR_CHECK_ACK && fEnigma)
+    else if(strCommand == ENIMGA_STR_CHECK_ACK)
     {
-        CEnigmaCheckUpAck posack;
-        vRecv >> posack;
-        LOCK(cs_EnigmaAcks);
-        sEnigmaCheckUpAcks.insert(posack.nInReplyToHash);
+        if (fEnigma) {
+            CEnigmaCheckUpAck posack;
+            vRecv >> posack;
+            LOCK(cs_EnigmaAcks);
+            sEnigmaCheckUpAcks.insert(posack.nInReplyToHash);
+        }
     }
     // ENIGMA NODE ANNOUCEMENT
-    else if (strCommand == ENIMGA_STR_ANNOUNCE && fEnigma)
+    else if (strCommand == ENIMGA_STR_ANNOUNCE)
     {
-        if(GetBoolArg("-printenigma"))
-            printf("ENIGMA: announcement message received\n");
+        if (fEnigma) {
+            if(GetBoolArg("-printenigma"))
+                printf("ENIGMA: announcement message received\n");
 
             CEnigmaAnnouncement ann;
             vRecv >> ann;
@@ -3834,11 +3855,13 @@ bool ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
                     }
                 }
             }
+        }
     }
 
     else
     {
         // Ban nodes sending unknown messages or spamming junk after 2 instances
+        printf(">>> Unrecognized message received: %s ; updating ban score", strCommand.c_str());
         pfrom->Misbehaving(50);
     }
 
