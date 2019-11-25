@@ -60,6 +60,7 @@ TESTDEFS = -DTEST_DATA_DIR=$(abspath test/data)
 ifndef USE_UPNP
     override USE_UPNP = 0
 endif
+
 ifneq (${USE_UPNP}, 0)
  INCLUDEPATHS += -I"$(DEPSPATH)"
  LIBPATHS += -L"$(DEPSPATH)/miniupnpc"
@@ -69,10 +70,6 @@ endif
 
 ifneq (${USE_IPV6}, -)
 	DEFS += -DUSE_IPV6=$(USE_IPV6)
-endif
-
-ifneq (${USE_LEVELDB}, -)
-    DEFS += -DUSE_LEVELDB=$(USE_LEVELDB)
 endif
 
 LIBS += -l kernel32 -l user32 -l gdi32 -l comdlg32 -l winspool -l winmm -l shell32 -l comctl32 -l ole32 -l oleaut32 -l uuid -l rpcrt4 -l advapi32 -l ws2_32 -l mswsock -l shlwapi -lz
@@ -214,6 +211,24 @@ OBJS= \
     obj/enigma/enigma.o
 
 all: cloakcoind.exe
+
+#
+# LevelDB support
+#
+ifeq (${USE_LEVELDB}, 1)
+    LIBS += -L$(CURDIR)/leveldb/libleveldb.a -L$(CURDIR)/leveldb/libmemenv.a
+    DEFS += $(addprefix -I,$(CURDIR)/leveldb/include) -DUSE_LEVELDB
+    DEFS += $(addprefix -I,$(CURDIR)/leveldb/helpers)
+    OBJS += obj/txdb-leveldb.o
+
+    leveldb/libleveldb.a:
+	    @echo "Building LevelDB ..."; cd leveldb; make libleveldb.a libmemenv.a; cd ..;
+    obj/txdb-leveldb.o: leveldb/libleveldb.a
+endif
+
+ifneq (${USE_LEVELDB}, 1)
+    OBJS += obj/txdb-bdb.o
+endif
 
 test check: test_cloakcoin.exe FORCE
 	test_cloakcoin.exe
