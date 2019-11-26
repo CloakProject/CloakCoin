@@ -122,6 +122,9 @@ linux {
      LIBS+=$$PWD/src/leveldb/libleveldb.a $$PWD/src/leveldb/libmemenv.a /opt/deps/openssl-1.0.2g/libssl.a /opt/deps/openssl-1.0.2g/libcrypto.a
 }
 
+QMAKE_CXXFLAGS *= -std=c++11
+QMAKE_LFLAGS *= -std=c++11
+
 # use: qmake "RELEASE=1"
 contains(RELEASE, 1) {
     message(*** release ***)
