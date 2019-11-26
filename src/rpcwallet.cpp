@@ -28,6 +28,13 @@ extern CCriticalSection cs_mapCloakingRequests;
 
 extern void TxToJSON(const CTransaction& tx, const uint256 hashBlock, json_spirit::Object& entry);
 
+extern int nCloakerCountAccepted;
+extern int nCloakerCountSigned;
+extern int nCloakerCountExpired;
+extern int nCloakerCountRefused;
+extern int nCloakerCountCompleted;
+extern int64 nCloakFeesEarnt;
+
 std::string HelpRequiringPassphrase()
 {
     return pwalletMain->IsCrypted()
@@ -35,11 +42,66 @@ std::string HelpRequiringPassphrase()
         : "";
 }
 
-void EnsureWalletIsUnlocked()
+
+void ThreadTopUpKeyPool(void* parg)
+{
+    // Make this thread recognisable as the key-topping-up thread
+    RenameThread("cloakcoin-key-top");
+
+    pwalletMain->TopUpKeyPool();
+}
+
+void ThreadCleanWalletPassphrase(void* parg)
+{
+    // Make this thread recognisable as the wallet relocking thread
+    RenameThread("cloakcoin-lock-wa");
+
+    int64 nMyWakeTime = GetTimeMillis() + *((int64*)parg) * 1000;
+
+    ENTER_CRITICAL_SECTION(cs_nWalletUnlockTime);
+
+    if (nWalletUnlockTime == 0)
+    {
+        nWalletUnlockTime = nMyWakeTime;
+
+        do
+        {
+            if (nWalletUnlockTime==0)
+                break;
+            int64 nToSleep = nWalletUnlockTime - GetTimeMillis();
+            if (nToSleep <= 0)
+                break;
+
+            LEAVE_CRITICAL_SECTION(cs_nWalletUnlockTime);
+            Sleep(nToSleep);
+            ENTER_CRITICAL_SECTION(cs_nWalletUnlockTime);
+
+        } while(1);
+
+        if (nWalletUnlockTime)
+        {
+            nWalletUnlockTime = 0;
+            pwalletMain->Lock();
+        }
+    }
+    else
+    {
+        if (nWalletUnlockTime < nMyWakeTime)
+            nWalletUnlockTime = nMyWakeTime;
+    }
+
+    LEAVE_CRITICAL_SECTION(cs_nWalletUnlockTime);
+
+    delete (int64*)parg;
+}
+
+void EnsureWalletIsUnlocked(int64 duration, bool ignoreMintOnly)
 {
     if (pwalletMain->IsLocked())
         throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
-    if (fWalletUnlockMintOnly)
+    if (duration > 0 && pwalletMain->IsCrypted() && (nWalletUnlockTime / 1000) <= (GetAdjustedTime() + duration))
+        throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, string("Error: Please unlock wallet first for more than ") + to_string(duration) + string(" secounds."));
+    if (!ignoreMintOnly && fWalletUnlockMintOnly)
         throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Wallet unlocked for block minting only.");
 }
 
@@ -77,6 +139,10 @@ Value getinfo(const Array& params, bool fHelp)
             "getinfo\n"
             "Returns an object containing various state info.");
 
+    int nHighestBlock = GetNumBlocksOfPeers();
+    if (nHighestBlock < nBestHeight)
+        nHighestBlock = nBestHeight;
+
     int64 nEnigmaCount = 0;
     for (map<uint160, CEnigmaAnnouncement>::iterator mi = mapEnigmaAnns.begin(); mi != mapEnigmaAnns.end(); mi++)
     {
@@ -85,6 +151,12 @@ Value getinfo(const Array& params, bool fHelp)
             nEnigmaCount++;
     }
 
+    uint64 nMinMax = 0;
+    uint64 nWeight = 0;
+    uint64 nNetworkWeight = 0;
+    if (pwalletMain)
+        pwalletMain->GetStakeWeight(*pwalletMain, nMinMax, nMinMax, nWeight);
+    nNetworkWeight = GetPoSKernelPS();
 
     proxyType proxy;
     GetProxy(NET_IPV4, proxy);
@@ -93,10 +165,19 @@ Value getinfo(const Array& params, bool fHelp)
     obj.push_back(Pair("version",       FormatFullVersion()));
     obj.push_back(Pair("protocolversion",(int)PROTOCOL_VERSION));
     obj.push_back(Pair("walletversion", pwalletMain->GetVersion()));
+    obj.push_back(Pair("opensslversion", SSLeay_version(SSLEAY_VERSION)));
+    obj.push_back(Pair("clientname",    CLIENT_NAME));
+    obj.push_back(Pair("clientbuiltdate",CLIENT_DATE));
+    obj.push_back(Pair("clientstartuptime",(boost::int64_t)nClientStartupTime));
     obj.push_back(Pair("balance",       ValueFromAmount(pwalletMain->GetBalance())));
+    obj.push_back(Pair("unconfirmed",   ValueFromAmount(pwalletMain->GetUnconfirmedBalance())));
+    obj.push_back(Pair("immature",      ValueFromAmount(pwalletMain->GetImmatureBalance())));
+    obj.push_back(Pair("cloakingearnings",   ValueFromAmount(pwalletMain->enigmaFeesEarnt)));
     obj.push_back(Pair("newmint",       ValueFromAmount(pwalletMain->GetNewMint())));
     obj.push_back(Pair("stake",         ValueFromAmount(pwalletMain->GetStake())));
     obj.push_back(Pair("blocks",        (int)nBestHeight));
+    obj.push_back(Pair("highestblock",  (int)nHighestBlock));
+    obj.push_back(Pair("lastblocktime", (boost::int64_t)pindexBest->GetBlockTime()));
     obj.push_back(Pair("moneysupply",   ValueFromAmount(pindexBest->nMoneySupply)));
     obj.push_back(Pair("connections",   (int)vNodes.size()));
     obj.push_back(Pair("proxy",         (proxy.first.IsValid() ? proxy.first.ToStringIPPort() : string())));
@@ -107,10 +188,16 @@ Value getinfo(const Array& params, bool fHelp)
     obj.push_back(Pair("keypoolsize",   pwalletMain->GetKeyPoolSize()));
     obj.push_back(Pair("paytxfee",      ValueFromAmount(nTransactionFee)));
     if (pwalletMain->IsCrypted())
+    {
         obj.push_back(Pair("unlocked_until", (boost::int64_t)nWalletUnlockTime / 1000));
+        obj.push_back(Pair("unlocked_mint_only", fWalletUnlockMintOnly ? 1 : 0));
+    }
     obj.push_back(Pair("errors",        GetWarnings("statusbar")));
-    obj.push_back(Pair("anons",		(boost::int64_t)nEnigmaCount));
-    obj.push_back(Pair("cloakings",	(boost::int64_t)pwalletMain->EnigmaCount()));
+    obj.push_back(Pair("enigma",		fEnigma ? 1 : 0));
+    obj.push_back(Pair("anons",		    (boost::int64_t)nEnigmaCount));
+    obj.push_back(Pair("cloakings",	    (boost::int64_t)pwalletMain->EnigmaCount()));
+    obj.push_back(Pair("weight",	    (boost::uint64_t)nWeight));
+    obj.push_back(Pair("networkweight",	(boost::uint64_t)nNetworkWeight));
 
     return obj;
 }
@@ -1011,6 +1098,350 @@ Value sendmany(const Array& params, bool fHelp)
     return wtx.GetHash().GetHex();
 }
 
+Value sendcloakmany(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() < 2 || params.size() > 5)
+        throw runtime_error(
+		"sendcloakmany <fromaccount> {address:amount,...} [minconf=1] [passphrase] [comment]\n"
+            "amounts are double-precision floating point numbers"
+            + HelpRequiringPassphrase());
+
+    string strAccount = params[0].get_str();
+
+    Object sendTo = params[1].get_obj();
+    int nMinDepth = 1;
+    if (params.size() > 2)
+        nMinDepth = params[2].get_int();
+    if (nMinDepth != 1)
+        throw JSONRPCError(RPC_INVALID_PARAMETER, string("Invalid minconf, should always be 1"));
+
+    SecureString strWalletPass;
+    strWalletPass.reserve(100);
+    if (params.size() > 3 && params[3].type() != null_type && !params[3].get_str().empty())
+        strWalletPass = params[3].get_str().c_str();
+    
+    if (strWalletPass.length() > 0)
+    {
+        LOCK(cs_nWalletUnlockTime);
+        if (!pwalletMain->IsCrypted())
+            throw JSONRPCError(RPC_WALLET_WRONG_ENC_STATE, "Error: running with an unencrypted wallet, but sendcloakmany(passphrase) was called.");
+
+        if (!pwalletMain->IsLocked() && !pwalletMain->IsValidPassphrase(strWalletPass))
+            throw JSONRPCError(RPC_WALLET_PASSPHRASE_INCORRECT, "Error: The wallet passphrase entered was incorrect.");
+
+        int64 nWakeTime = GetTimeMillis() + 3 * 1000;
+        if (pwalletMain->IsLocked())
+        {
+            if (!pwalletMain->Unlock(strWalletPass))
+                throw JSONRPCError(RPC_WALLET_PASSPHRASE_INCORRECT, "Error: The wallet passphrase entered was incorrect.");
+
+            NewThread(ThreadTopUpKeyPool, NULL);
+            int64* pnSleepTime = new int64(3);
+            NewThread(ThreadCleanWalletPassphrase, pnSleepTime);
+
+            fWalletUnlockMintOnly = false;
+        }
+        else
+        {
+            if (nWalletUnlockTime < nWakeTime)
+                nWalletUnlockTime = nWakeTime;
+        }
+    }
+
+    CWalletTx wtx;
+	
+    wtx.strFromAccount = strAccount == "*" ? "" : strAccount;
+    if (params.size() > 4 && params[4].type() != null_type && !params[4].get_str().empty())
+        wtx.mapValue["comment"] = params[4].get_str();
+
+    set<string> setAddress;
+    vector<pair<CScript, int64> > vecSend;
+
+    int64 totalAmount = 0;
+    BOOST_FOREACH(const Pair& s, sendTo)
+    {
+        bool isStealthTx = false;
+        const string &strAddr = s.name_;
+        CScript scriptPubKey, scriptStealthFee;
+        CBitcoinAddress addrTo;
+        if (IsStealthAddress(strAddr))
+        {
+            CStealthAddress sAddr;
+            if (!sAddr.SetEncoded(strAddr))
+                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid CloakCoin stealth address: ")+strAddr);
+                
+            ec_secret ephem_secret;
+            ec_secret secretShared;
+            ec_point pkSendTo;
+            ec_point ephem_pubkey;
+
+            if (GenerateRandomSecret(ephem_secret) != 0)
+                throw JSONRPCError(RPC_ENIGMA_EPHEM_ERROR, string("GenerateRandomSecret failed"));
+            if (StealthSecret(ephem_secret, sAddr.scan_pubkey, sAddr.spend_pubkey, secretShared, pkSendTo) != 0)
+                throw JSONRPCError(RPC_ENIGMA_EPHEM_ERROR, string("Could not generate receiving public key"));
+
+            CPubKey cpkTo(pkSendTo);
+            if (!cpkTo.IsValid())
+                throw JSONRPCError(RPC_ENIGMA_EPHEM_ERROR, string("Invalid public key generated"));
+
+            addrTo.Set(cpkTo.GetID());
+
+            if (SecretToPublicKey(ephem_secret, ephem_pubkey) != 0)
+                throw JSONRPCError(RPC_ENIGMA_EPHEM_ERROR, string("Could not generate ephem public key"));
+
+            scriptStealthFee = CScript() << OP_RETURN << ephem_pubkey;
+            isStealthTx = true;
+        }
+        else
+        {
+            addrTo.SetString(strAddr);
+            if (!addrTo.IsValid())
+                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid CloakCoin address: ")+strAddr);
+        }
+        
+        scriptPubKey.SetDestination(addrTo.Get());
+        if (setAddress.count(strAddr))
+            throw JSONRPCError(RPC_INVALID_PARAMETER, string("Invalid parameter, duplicated address: ")+strAddr);
+        setAddress.insert(strAddr);
+
+        int64 nAmount = AmountFromValue(s.value_);
+
+        if (nAmount < MIN_TXOUT_AMOUNT)
+            throw JSONRPCError(RPC_SEND_AMOUNT_TOO_SMALL, "Send amount too small");
+
+        totalAmount += nAmount;
+
+        vecSend.push_back(make_pair(scriptPubKey, nAmount));
+
+        if (isStealthTx)
+        {
+            totalAmount += MIN_TXOUT_AMOUNT;
+            vecSend.push_back(make_pair(scriptStealthFee, MIN_TXOUT_AMOUNT));
+        }
+    }
+
+    EnsureWalletIsUnlocked(0, strWalletPass.length() > 0);
+
+    // Check funds
+    int64 nBalance = strAccount == "*" ? pwalletMain->GetBalance() : GetAccountBalance(strAccount, nMinDepth);
+    if (totalAmount > nBalance)
+        throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, "Account has insufficient funds");
+
+    // Send
+    CReserveKey keyChange(pwalletMain);
+    int64 nFeeRequired = 0;
+    string strFailReason;
+    int nChangePos;
+    bool fCreated = pwalletMain->CreateTransaction(vecSend, wtx, keyChange, nFeeRequired, nChangePos, strFailReason, false);
+    if (!fCreated)
+    {
+        if (totalAmount + nFeeRequired > pwalletMain->GetBalance())
+            throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, strFailReason);
+        throw JSONRPCError(RPC_WALLET_ERROR, strFailReason);
+    }
+    if (!pwalletMain->CommitTransaction(wtx, keyChange))
+        throw JSONRPCError(RPC_WALLET_ERROR, "Transaction commit failed");
+
+    return wtx.GetHash().GetHex();
+}
+
+Value sendenigma(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() < 1 || params.size() > 5)
+        throw runtime_error(
+		"sendenigma {stealthaddress:amount,...} [participants=5] [splits=1] [timeout=60] [passphrase]\n"
+            "amounts are double-precision floating point numbers\n"
+            "participants is number of enigma participant nodes, available between 5 to 25\n"
+            "splits should always be 1\n"
+            "timeout is enigma request timeout value in seconds, available between 60 to 300\n"
+            + HelpRequiringPassphrase());
+
+    Object sendTo = params[0].get_obj();
+    int nParticipants = 5;
+    if (params.size() > 1)
+    {
+        nParticipants = params[1].get_int();
+        if (nParticipants < 5 || nParticipants > 25)
+            throw JSONRPCError(RPC_INVALID_PARAMETER, string("Invalid participant count"));
+    }
+    int nSplits = 1;
+    if (params.size() > 2)
+    {
+        nSplits = params[2].get_int();
+        if (nSplits != 1)
+            throw JSONRPCError(RPC_INVALID_PARAMETER, string("Invalid split count"));
+    }
+    int64 nTimeout = 60;
+    if (params.size() > 3)
+    {
+        nTimeout = params[3].get_int64();
+        if (nTimeout < 60 || nTimeout > 300)
+            throw JSONRPCError(RPC_INVALID_PARAMETER, string("Invalid timeout"));
+    }
+
+    SecureString strWalletPass;
+    strWalletPass.reserve(100);
+    if (params.size() > 4 && params[4].type() != null_type && !params[4].get_str().empty())
+        strWalletPass = params[4].get_str().c_str();
+    
+    if (strWalletPass.length() > 0)
+    {
+        bool fNewLock = false;
+        {
+            LOCK(cs_nWalletUnlockTime);
+            if (!pwalletMain->IsCrypted())
+                throw JSONRPCError(RPC_WALLET_WRONG_ENC_STATE, "Error: running with an unencrypted wallet, but sendenigma(passphrase) was called.");
+
+            if (!pwalletMain->IsLocked() && !pwalletMain->IsValidPassphrase(strWalletPass))
+                throw JSONRPCError(RPC_WALLET_PASSPHRASE_INCORRECT, "Error: The wallet passphrase entered was incorrect.");
+
+            int64 nWakeTime = GetTimeMillis() + nTimeout + 10 * 1000;
+            if (pwalletMain->IsLocked())
+            {
+                if (!pwalletMain->Unlock(strWalletPass))
+                    throw JSONRPCError(RPC_WALLET_PASSPHRASE_INCORRECT, "Error: The wallet passphrase entered was incorrect.");
+
+                NewThread(ThreadTopUpKeyPool, NULL);
+                int64* pnSleepTime = new int64(nTimeout + 10);
+                NewThread(ThreadCleanWalletPassphrase, pnSleepTime);
+
+                fWalletUnlockMintOnly = false;
+
+                fNewLock = true;
+            }
+            else
+            {
+                if (nWalletUnlockTime < nWakeTime)
+                    nWalletUnlockTime = nWakeTime;
+            }
+        }
+        for (unsigned int i = 0; i < 50 && fNewLock && nWalletUnlockTime == 0; i++) // wait ThreadCleanWalletPassphrase working for 5 seconds
+        {
+            Sleep(100);
+        }
+    }
+
+    set<string> setAddress;
+
+    int64 totalAmount = 0;
+    BOOST_FOREACH(const Pair& s, sendTo)
+    {
+        const string &strAddr = s.name_;
+        CScript scriptPubKey;
+        if (!IsStealthAddress(strAddr))
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid CloakCoin stealth address: ")+strAddr);
+        
+        if (setAddress.count(strAddr))
+            throw JSONRPCError(RPC_INVALID_PARAMETER, string("Invalid parameter, duplicated address: ")+strAddr);
+        setAddress.insert(strAddr);
+
+        int64 nAmount = AmountFromValue(s.value_);
+
+        if (nAmount < MIN_TXOUT_AMOUNT)
+            throw JSONRPCError(RPC_SEND_AMOUNT_TOO_SMALL, "Send amount too small");
+
+        totalAmount += nAmount;
+    }
+
+    // check we can onion route and abort if not
+    if ((ONION_ROUTING_ENABLED && fEnableOnionRouting) && !CCloakShield::GetShield()->OnionRoutingAvailable(true))
+        throw JSONRPCError(RPC_ENIGMA_ONION_ROUTING_UNAVAILABLE, "Onion routing unavailable");
+
+    EnsureWalletIsUnlocked(0, strWalletPass.length() > 0);
+
+    // (.2-1)% Enigma fee
+    // we initially reserve 10 * [numParticipants] * min fee, so that we have enough to cover the fees
+    // if participants supply a large number of inputs, which bumps the tx size and boosts the fee.
+    // any usused fee is redirected to one of our change addresses at tx creation time.
+    //quint64 feeAndReward = total /* numSplits*/ * (POSA_3_TOTAL_FEE_PERCENT * 0.01) + (MIN_TX_FEE*20);
+
+    int64 reward = (int64)(totalAmount * (ENIGMA_TOTAL_FEE_PERCENT(totalAmount) * 0.01));
+    int64 reserveForFees = (MIN_TX_FEE * 10 * nParticipants);
+
+    int64 nBalance = 0;
+    vector<COutput> vCoins;
+    pwalletMain->AvailableCoins(vCoins, true, NULL, ENIGMA_MAX_COINAGE_DAYS);
+
+    BOOST_FOREACH(const COutput& out, vCoins)
+        nBalance += out.tx->vout[out.i].nValue;
+
+    if((totalAmount + reward + reserveForFees) > nBalance)
+        throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, "Account has insufficient funds");
+
+    // Sendmany
+    CCloakingInputsOutputs inOuts;
+    CCloakingRequest* req = CCloakingRequest::CreateForBroadcast(nParticipants-1, nSplits, nTimeout, CCloakShield::GetShield()->GetRoutingKey(), totalAmount);
+    BOOST_FOREACH(const Pair& s, sendTo)
+    {
+        const string &strAddr = s.name_;
+        // add outputs / fill vouts
+        CStealthAddress sAddr;
+        sAddr.SetEncoded(strAddr);
+
+        req->recipientAddress = strAddr;
+
+        vector<CScript> scripts;
+        uint256 standardNonce = uint256(HexStr(req->stealthRootKey)); // recipients always use the root stealth nonce
+
+        vector<ec_secret> secrets;
+        pwalletMain->GetEnigmaChangeAddresses(sAddr, req->stealthRootKey, standardNonce, GetRandRange(2, 3), scripts, secrets);
+        int64 nAmount = AmountFromValue(s.value_);
+        vector<int64> amounts = SplitAmount(nAmount, MIN_TXOUT_AMOUNT, static_cast<int>(scripts.size()));
+        for (unsigned int i = 0; i<(unsigned int)amounts.size(); i++)
+        {
+            inOuts.vout.push_back(CTxOut(amounts.at(i), scripts.at(i)));
+        }
+    }
+
+    // Choose coins to use
+    set<pair<const CWalletTx*,unsigned int> > setCoins;
+    int64 nValueIn = 0;
+
+    if (!pwalletMain->SelectCoins(totalAmount + reward + reserveForFees, GetTime(), setCoins, nValueIn, NULL))
+    {
+        delete req;
+        throw JSONRPCError(-105, "Failed to select coins");
+    }
+
+    inOuts.nSendAmount = totalAmount;
+    inOuts.nInputAmount = nValueIn;
+
+    // add inputs / fill vins and mark the coins as reserved for posa
+    BOOST_FOREACH(const PAIRTYPE(const CWalletTx*, unsigned int)& coin, setCoins)
+    {
+        CWalletTx& wtxIn = pwalletMain->mapWallet[coin.first->GetHash()];
+        wtxIn.MarkEnigmaReserved(coin.second); // mark as reserved for posa
+        inOuts.vin.push_back(CTxIn(coin.first->GetHash(), coin.second));
+    }
+
+    //int64 nChange = nValueIn - nTotalValue;// - nValue - nFeeRet;
+    int64 nChange = nValueIn - totalAmount - reward;
+
+    OutputDebugStringF(" nChange %" PRI64d " nValueIn %" PRI64d " nValue %" PRI64d " reward %" PRI64d " fee %" PRI64d "", nChange, nValueIn , totalAmount, reward, reserveForFees );
+
+    // store enigma address against request so we can assign our change later
+    if (!pwalletMain->GetEnigmaAddress(req->senderAddress))
+    {
+        delete req;
+        throw JSONRPCError(RPC_ENIGMA_NO_OWN_ADDRESS, "Failed to find own Enigma address.");
+    }
+
+
+    // handle change
+    //pwalletMain->GetCloakingOutputs(inOuts, nValue, nChange, req->GetIdHash());
+
+    // handle the inputOutput object
+    if (!Enigma::SendEnigma(inOuts, req))
+    {
+        delete req;
+        throw runtime_error("Unknown error");
+    }
+
+    delete req;
+
+    return Value::null;
+}
+
 Value addmultisigaddress(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 2 || params.size() > 3)
@@ -1702,59 +2133,6 @@ Value keypoolrefill(const Array& params, bool fHelp)
     return Value::null;
 }
 
-
-void ThreadTopUpKeyPool(void* parg)
-{
-    // Make this thread recognisable as the key-topping-up thread
-    RenameThread("cloakcoin-key-top");
-
-    pwalletMain->TopUpKeyPool();
-}
-
-void ThreadCleanWalletPassphrase(void* parg)
-{
-    // Make this thread recognisable as the wallet relocking thread
-    RenameThread("cloakcoin-lock-wa");
-
-    int64 nMyWakeTime = GetTimeMillis() + *((int64*)parg) * 1000;
-
-    ENTER_CRITICAL_SECTION(cs_nWalletUnlockTime);
-
-    if (nWalletUnlockTime == 0)
-    {
-        nWalletUnlockTime = nMyWakeTime;
-
-        do
-        {
-            if (nWalletUnlockTime==0)
-                break;
-            int64 nToSleep = nWalletUnlockTime - GetTimeMillis();
-            if (nToSleep <= 0)
-                break;
-
-            LEAVE_CRITICAL_SECTION(cs_nWalletUnlockTime);
-            Sleep(nToSleep);
-            ENTER_CRITICAL_SECTION(cs_nWalletUnlockTime);
-
-        } while(1);
-
-        if (nWalletUnlockTime)
-        {
-            nWalletUnlockTime = 0;
-            pwalletMain->Lock();
-        }
-    }
-    else
-    {
-        if (nWalletUnlockTime < nMyWakeTime)
-            nWalletUnlockTime = nMyWakeTime;
-    }
-
-    LEAVE_CRITICAL_SECTION(cs_nWalletUnlockTime);
-
-    delete (int64*)parg;
-}
-
 Value walletpassphrase(const Array& params, bool fHelp)
 {
     if (pwalletMain->IsCrypted() && (fHelp || params.size() < 2 || params.size() > 3))
@@ -2166,12 +2544,12 @@ Value liststealthaddresses(const Array& params, bool fHelp)
     
     if (fShowSecrets)
     {
-	EnsureWalletIsUnlocked();
+	    EnsureWalletIsUnlocked();
         //if (pwalletMain->IsLocked())
         //    throw runtime_error("Failed: Wallet must be unlocked.");
-    };
-    
-    Object result;
+    }
+
+    Array ret;
     
     std::set<CStealthAddress>::iterator it;
     for (it = pwalletMain->stealthAddresses.begin(); it != pwalletMain->stealthAddresses.end(); ++it)
@@ -2182,18 +2560,18 @@ Value liststealthaddresses(const Array& params, bool fHelp)
         if (fShowSecrets)
         {
             Object objA;
-            objA.push_back(Pair("Label        ", it->label));
-            objA.push_back(Pair("Address      ", it->Encoded()));
-            objA.push_back(Pair("Scan Secret  ", HexStr(it->scan_secret.begin(), it->scan_secret.end())));
-            objA.push_back(Pair("Spend Secret ", HexStr(it->spend_secret.begin(), it->spend_secret.end())));
-            result.push_back(Pair("Stealth Address", objA));
+            objA.push_back(Pair("label", it->label));
+            objA.push_back(Pair("address", it->Encoded()));
+            objA.push_back(Pair("scan secret", HexStr(it->scan_secret.begin(), it->scan_secret.end())));
+            objA.push_back(Pair("spend secret", HexStr(it->spend_secret.begin(), it->spend_secret.end())));
+            ret.push_back(objA);
         } else
         {
-            result.push_back(Pair("Stealth Address", it->Encoded() + " - " + it->label));
+            ret.push_back(it->Encoded() + " - " + it->label);
         };
     };
     
-    return result;
+    return ret;
 }
 
 Value importstealthaddress(const Array& params, bool fHelp)
@@ -2499,7 +2877,7 @@ Value initiatecloak(const Array& params, bool fHelp)
 
 Value listcloakinghistory(const Array& params, bool fHelp)
 {
-    if (fHelp || params.size() > 1)
+    if (fHelp || params.size() > 0)
         throw runtime_error(
 		"listcloakinghistory\n"
             "Displays historical cloaking operations that have been completed.\n"
@@ -2531,7 +2909,7 @@ Value listcloakinghistory(const Array& params, bool fHelp)
 
 Value listcloakingactive(const Array& params, bool fHelp)
 {
-    if (fHelp || params.size() > 1)
+    if (fHelp || params.size() > 0)
         throw runtime_error(
 		"listcloakingactive\n"
             "Lists Enigma cloaking operations currently in progress.\n"
@@ -2559,3 +2937,185 @@ Value listcloakingactive(const Array& params, bool fHelp)
     return result;
 }
 
+bool cloakingRequestToJson(CCloakingRequest &req, Object &json)
+{
+    try
+    {
+        json.clear();
+
+        Array signedByAddresses;
+        BOOST_FOREACH(string strSb, req.signedByAddresses)
+        {
+            signedByAddresses.push_back(strSb);
+        }
+
+        Array participants;
+        BOOST_FOREACH(CCloakingParticipant p, req.sParticipants)
+        {
+            participants.push_back(p.pubKey);
+        }
+
+        json.push_back(Pair("version", req.nVersion));
+        json.push_back(Pair("initiator", req.identifier.pubKeyHex));
+        json.push_back(Pair("timeinitiated", (boost::int64_t)req.identifier.nInitiatedTime));
+        json.push_back(Pair("amount", ValueFromAmount(req.nSendAmount)));
+        json.push_back(Pair("participantsrequired", req.nParticipantsRequired));
+        json.push_back(Pair("txid", req.txid));
+        json.push_back(Pair("mine", req.isMine));
+        json.push_back(Pair("timebroadcasted", (boost::int64_t)req.nBroadcastedTime));
+        json.push_back(Pair("expiresinms", req.TimeLeftMs()));
+        json.push_back(Pair("aborted", req.aborted));
+        json.push_back(Pair("autoretry", req.autoRetry));
+        json.push_back(Pair("retrycount", req.retryCount));
+        json.push_back(Pair("participants", participants));
+        json.push_back(Pair("signers", signedByAddresses));
+        
+        return true;
+    }
+    catch (std::exception& e)
+    {
+        error("cloakingRequestToJson : %s", e.what());
+    }
+    return false;
+}
+
+Value listcloakingrequests(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() > 0)
+        throw runtime_error(
+		"listcloakingrequests\n"
+            "Lists all Enigma cloaking requests.\n"
+            );
+
+    typedef std::map<uint256, CCloakingRequest> CloakingMapType;
+
+    LOCK(pwalletMain->cs_mapCloakingRequests);
+
+    Array result;
+    BOOST_FOREACH(CloakingMapType::value_type p, pwalletMain->mapOurCloakingRequests)
+    {
+        Object obj;
+        if (cloakingRequestToJson(p.second, obj))
+        {
+            result.push_back(obj);
+        }
+    }
+
+    BOOST_FOREACH(CloakingMapType::value_type p, pwalletMain->mapCloakingRequests)
+    {
+        Object obj;
+        if (cloakingRequestToJson(p.second, obj))
+        {
+            result.push_back(obj);
+        }
+    }
+
+    return result;
+}
+
+Value getcloakinginfo(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() > 0)
+        throw runtime_error(
+		"getcloakinginfo\n"
+            "Gets Enigma cloaking info.\n"
+            );
+
+    typedef std::map<uint256, CCloakingRequest> CloakingMapType;
+
+    LOCK(pwalletMain->cs_mapCloakingRequests);
+
+    Object result;
+    result.push_back(Pair("accepted", nCloakerCountAccepted));
+    result.push_back(Pair("signed", nCloakerCountSigned));
+    result.push_back(Pair("refused", nCloakerCountRefused));
+    result.push_back(Pair("expired", nCloakerCountExpired));
+    result.push_back(Pair("completed", nCloakerCountCompleted));
+    result.push_back(Pair("earning", ValueFromAmount(nCloakFeesEarnt)));
+
+    return result;
+}
+
+Value enableenigma(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() < 1 || params.size() > 8)
+        throw runtime_error(
+		"enableenigma <enable> [enigmareserve] [enableenigmaretry] [onionroute] [onionrouteall] [cloakshieldroutes] [cloakshieldnodes] [cloakshieldhops]\n"
+            "Enable or disable enigma options.\n"
+            + HelpRequiringPassphrase());
+
+    bool fEnigmaTmp = params[0].get_bool();
+    int nEnigmaReservedBalancePercentTmp = nEnigmaReservedBalancePercent;
+    bool fEnigmaAutoRetryTmp = fEnigmaAutoRetry;
+    bool fEnableOnionRoutingTmp = fEnableOnionRouting;
+    bool fOnionRouteAllTmp = fOnionRouteAll;
+    int nCloakShieldNumRoutesTmp = nCloakShieldNumRoutes;
+    int nCloakShieldNumNodesTmp = nCloakShieldNumNodes;
+    int nCloakShieldNumHopsTmp = nCloakShieldNumHops;
+
+    if (params.size() > 1)
+        nEnigmaReservedBalancePercentTmp = params[1].get_int();
+    if (params.size() > 2)
+        fEnigmaAutoRetryTmp = params[2].get_bool();
+    if (params.size() > 3)
+        fEnableOnionRoutingTmp = params[3].get_bool();
+    if (params.size() > 4)
+        fOnionRouteAllTmp = params[4].get_bool();
+    if (params.size() > 5)
+        nCloakShieldNumRoutesTmp = params[5].get_int();
+    if (params.size() > 6)
+        nCloakShieldNumNodesTmp = params[6].get_int();
+    if (params.size() > 7)
+        nCloakShieldNumHopsTmp = params[7].get_int();
+
+    if (nEnigmaReservedBalancePercentTmp != 0 &&
+        nEnigmaReservedBalancePercentTmp != 25 &&
+        nEnigmaReservedBalancePercentTmp != 50 &&
+        nEnigmaReservedBalancePercentTmp != 75 &&
+        nEnigmaReservedBalancePercentTmp != 100)
+        throw runtime_error("invalid enigmareserve, please set one of 0, 25, 50, 75 or 100\n");
+    if (nCloakShieldNumRoutesTmp < 1 || nCloakShieldNumRoutesTmp > 5)
+        throw runtime_error("invalid cloakshieldroutes, please set between 1 and 5\n");
+    if (nCloakShieldNumNodesTmp < 1 || nCloakShieldNumNodesTmp > 5)
+        throw runtime_error("invalid cloakshieldnodes, please set between 1 and 5\n");
+    if (nCloakShieldNumHopsTmp < 1 || nCloakShieldNumHopsTmp > 5)
+        throw runtime_error("invalid cloakshieldhops, please set between 1 and 5\n");
+
+    fEnigma = fEnigmaTmp;
+    nEnigmaReservedBalancePercent = nEnigmaReservedBalancePercentTmp;
+    fEnigmaAutoRetry = fEnigmaAutoRetryTmp;
+    fEnableOnionRouting = fEnableOnionRoutingTmp;
+    fOnionRouteAll = fOnionRouteAllTmp;
+    nCloakShieldNumRoutes = nCloakShieldNumRoutesTmp;
+    nCloakShieldNumNodes = nCloakShieldNumNodesTmp;
+    nCloakShieldNumHops = nCloakShieldNumHopsTmp;
+
+    return Value::null;
+}
+
+Value rpccommand(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() != 1)
+        throw runtime_error(
+		"rpccommand <command>"
+            "Run rpc command.\n"
+            + HelpRequiringPassphrase());
+
+    string command = params[0].get_str();
+
+    std::vector<std::string> args;
+    
+    if (!parseCommandLine(args, command))
+        throw runtime_error("parse command error\n");
+
+    if (args.empty())
+        throw runtime_error("no command specified\n");
+
+    if (args[0] == "rpccommand")
+        throw runtime_error("could not run rpccommand itself\n");
+
+    std::string strPrint;
+    return tableRPC.execute(
+        args[0],
+        RPCConvertValues(args[0], std::vector<std::string>(args.begin() + 1, args.end())));
+}

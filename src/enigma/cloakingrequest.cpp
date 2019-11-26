@@ -38,6 +38,7 @@
 extern string nMyEnigmaAddress;
 extern int nCloakerCountRefused;
 extern int nCloakerCountSigned;
+extern int nCloakerCountCompleted;
 extern int64 nEnigmaProcessed;
 extern map<string, int> peerDosCounts; // key = public key
 
@@ -927,6 +928,7 @@ bool CCloakingRequest::SignAndRespond(CCloakingEncryptionKey* myKey, bool partic
 
                         // mark complete (only really important for participants [counts] atm, but we do it for good measure)
                         this->completed = true;
+                        nCloakerCountCompleted++;
 
                         // See if the transaction is already in a block
                         // or in the memory pool:
