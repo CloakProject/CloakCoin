@@ -6,6 +6,7 @@
 #ifndef TXDB_H
 #define TXDB_H
 #define USE_LEVELDB 1
+
 // Allow switching between LevelDB and BerkelyDB here in case we need to temporarily
 // go back to BDB for any reason. Once we're confident enough with LevelDB to stick
 // with it, this can be deleted.

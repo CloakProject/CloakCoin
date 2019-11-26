@@ -62,7 +62,7 @@ bool CCloakingData::Authenticate()
         return error("CCloakingData::Authenticate() : verify signature failed");
 
     // check the data isn't too old
-    if (GetAdjustedTime() >= (timestamp + CLOAKSHIELD_DATA_TIMEOUT_SECS))
+     if (GetAdjustedTime() >= (timestamp + CLOAKSHIELD_DATA_TIMEOUT_SECS))
         printf("Current time (%" PRI64d ") should be less than 60s after data was sent (%" PRI64d "),", GetAdjustedTime(), timestamp + CLOAKSHIELD_DATA_TIMEOUT_SECS);
     return true;
 }
