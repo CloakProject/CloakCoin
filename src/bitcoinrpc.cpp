@@ -1414,9 +1414,13 @@ bool parseCommandLine(std::vector<std::string> &args, const std::string &strComm
         STATE_ESCAPE_OUTER,
         STATE_ESCAPE_DOUBLEQUOTED
     } state = STATE_EATING_SPACES;
+    
     std::string curarg;
-    for (char ch : strCommand)
+    
+    char ch;
+    for (int i=0; i<strCommand.length(); i++)
     {
+    	ch = strCommand[i];
         switch(state)
         {
         case STATE_ARGUMENT: // In or after argument
