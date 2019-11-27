@@ -1337,6 +1337,7 @@ void AddTimeData(const CNetAddr& ip, int64_t nTime)
     nMaxObservedTimeOffset = vTimeOffsets.maxAbs();
 
     printf("Added time data, samples %d, offset %+" PRI64d " (%+" PRI64d " minutes)\n", vTimeOffsets.size(), nOffsetSample, nOffsetSample/60);
+    printf("Current max absolute time offset: %+" PRI64d "\n", nMaxObservedTimeOffset);
 
     // There is a known issue here (see issue #4521):
     //
