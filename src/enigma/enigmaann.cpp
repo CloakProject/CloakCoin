@@ -9,6 +9,7 @@
 #include <boost/foreach.hpp>
 #include <map>
 
+#include "util.h"
 #include "enigmaann.h"
 #include "key.h"
 #include "net.h"
@@ -178,7 +179,7 @@ bool CEnigmaAnnouncement::IsInEffect() const
 {
     // consider annoucement to still be valid until [CLOAKSHIELD_ANNOUNCE_TIMEOUT_SECS/2] seconds have passed since expiration
     // this takes into account the time taken for the annoucement to travel over the network...
-    return (GetAdjustedTime() < timestamp + CLOAKSHIELD_ANNOUNCE_TIMEOUT_SECS);
+    return (GetAdjustedTime() < (timestamp + CLOAKSHIELD_ANNOUNCE_TIMEOUT_SECS + nMaxObservedTimeOffset));
 }
 
 bool CEnigmaAnnouncement::IsMine() const

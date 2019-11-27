@@ -3,6 +3,8 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+#include <atomic>
+
 #include "util.h"
 #include "sync.h"
 #include "strlcpy.h"
@@ -1275,13 +1277,16 @@ void ShrinkDebugFile()
     }
 }
 
-static int64_t nMockTime = 0;  // For unit testing
+static std::atomic<int64_t> nMockTime(0); //!< For unit testing
 
 int64_t GetTime()
 {
-    if (nMockTime) return nMockTime;
+    int64_t mocktime = nMockTime.load(std::memory_order_relaxed);
+    if (mocktime) return mocktime;
 
-    return time(NULL);
+    time_t now = time(nullptr);
+    assert(now > 0);
+    return now;
 }
 
 void SetMockTime(int64_t nMockTimeIn)
@@ -1327,6 +1332,10 @@ void AddTimeData(const CNetAddr& ip, int64_t nTime)
     // Add data
     static CMedianFilter<int64_t> vTimeOffsets(CLOAKCOIN_TIMEDATA_MAX_SAMPLES, 0);
     vTimeOffsets.input(nOffsetSample);
+
+    //  set max absolute offset observed
+    nMaxObservedTimeOffset = vTimeOffsets.maxAbs();
+
     printf("Added time data, samples %d, offset %+" PRI64d " (%+" PRI64d " minutes)\n", vTimeOffsets.size(), nOffsetSample, nOffsetSample/60);
 
     // There is a known issue here (see issue #4521):
