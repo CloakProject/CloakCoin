@@ -85,7 +85,6 @@ int instanceNumber;
 bool fDisableOnionRouting;
 bool fNoListen = false;
 bool fLogTimestamps = false;
-CMedianFilter<int64> vTimeOffsets(200,0);
 bool fReopenDebugLog = false;
 
 // Init OpenSSL library multithreading support
@@ -1276,52 +1275,84 @@ void ShrinkDebugFile()
     }
 }
 
-//
-// "Never go to sea with two chronometers; take one or three."
-// Our three time sources are:
-//  - System clock
-//  - Median of other nodes clocks
-//  - The user (asking the user to fix the system clock if the first two disagree)
-//
-static int64 nMockTime = 0;  // For unit testing
+static int64_t nMockTime = 0;  // For unit testing
 
-int64 GetTime()
+int64_t GetTime()
 {
     if (nMockTime) return nMockTime;
 
     return time(NULL);
 }
 
-void SetMockTime(int64 nMockTimeIn)
+void SetMockTime(int64_t nMockTimeIn)
 {
     nMockTime = nMockTimeIn;
 }
 
-static int64 nTimeOffset = 0;
+static CCriticalSection cs_nTimeOffset;
+static int64_t nTimeOffset = 0;
 
-int64 GetAdjustedTime()
+/**
+ * "Never go to sea with two chronometers; take one or three."
+ * Our three time sources are:
+ *  - System clock
+ *  - Median of other nodes clocks
+ *  - The user (asking the user to fix the system clock if the first two disagree)
+ */
+int64_t GetTimeOffset()
 {
-    return GetTime() + nTimeOffset;
+    LOCK(cs_nTimeOffset);
+    return nTimeOffset;
 }
 
-void AddTimeData(const CNetAddr& ip, int64 nTime)
+int64_t GetAdjustedTime()
 {
-    int64 nOffsetSample = nTime - GetTime();
+    return GetTime() + GetTimeOffset();
+}
 
+#define CLOAKCOIN_TIMEDATA_MAX_SAMPLES 200
+
+void AddTimeData(const CNetAddr& ip, int64_t nTime)
+{
+    int64_t nOffsetSample = nTime - GetTime();
+
+    LOCK(cs_nTimeOffset);
     // Ignore duplicates
     static set<CNetAddr> setKnown;
+    if (setKnown.size() == CLOAKCOIN_TIMEDATA_MAX_SAMPLES)
+        return;
     if (!setKnown.insert(ip).second)
         return;
 
     // Add data
+    static CMedianFilter<int64_t> vTimeOffsets(CLOAKCOIN_TIMEDATA_MAX_SAMPLES, 0);
     vTimeOffsets.input(nOffsetSample);
     printf("Added time data, samples %d, offset %+" PRI64d " (%+" PRI64d " minutes)\n", vTimeOffsets.size(), nOffsetSample, nOffsetSample/60);
+
+    // There is a known issue here (see issue #4521):
+    //
+    // - The structure vTimeOffsets contains up to 200 elements, after which
+    // any new element added to it will not increase its size, replacing the
+    // oldest element.
+    //
+    // - The condition to update nTimeOffset includes checking whether the
+    // number of elements in vTimeOffsets is odd, which will never happen after
+    // there are 200 elements.
+    //
+    // But in this case the 'bug' is protective against some attacks, and may
+    // actually explain why we've never seen attacks which manipulate the
+    // clock offset.
+    //
+    // So we should hold off on fixing this and clean it up as part of
+    // a timing cleanup that strengthens it in a number of other ways.
+    //
+
     if (vTimeOffsets.size() >= 5 && vTimeOffsets.size() % 2 == 1)
     {
-        int64 nMedian = vTimeOffsets.median();
-        std::vector<int64> vSorted = vTimeOffsets.sorted();
+        int64_t nMedian = vTimeOffsets.median();
+        std::vector<int64_t> vSorted = vTimeOffsets.sorted();
         // Only let other nodes change our time by so much
-        if (abs64(nMedian) < 70 * 60)
+        if (abs64(nMedian) < std::max<int64_t>(0, DEFAULT_MAX_TIME_ADJUSTMENT))
         {
             nTimeOffset = nMedian;
         }
@@ -1334,7 +1365,7 @@ void AddTimeData(const CNetAddr& ip, int64 nTime)
             {
                 // If nobody has a time different than ours but within 5 minutes of ours, give a warning
                 bool fMatch = false;
-                BOOST_FOREACH(int64 nOffset, vSorted)
+                BOOST_FOREACH(int64_t nOffset, vSorted)
                     if (nOffset != 0 && abs64(nOffset) < 5 * 60)
                         fMatch = true;
 
@@ -1349,7 +1380,7 @@ void AddTimeData(const CNetAddr& ip, int64 nTime)
             }
         }
         if (fDebug) {
-            BOOST_FOREACH(int64 n, vSorted)
+            BOOST_FOREACH(int64_t n, vSorted)
                 printf("%+" PRI64d "  ", n);
             printf("|  ");
         }
