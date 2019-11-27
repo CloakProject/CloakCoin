@@ -103,6 +103,10 @@ static const int64 CENT = 10000;
 
 static const int64_t DEFAULT_MAX_TIME_ADJUSTMENT = 70 * 60;
 
+//  absolute value of the maximum observed time offset we get from peers
+//  used to determine Enigma timeout add-on
+static int64_t nMaxObservedTimeOffset = 0;
+
 //#define loop                for (;;)
 #define BEGIN(a)            ((char*)&(a))
 #define END(a)              ((char*)&((&(a))[1]))
@@ -701,6 +705,18 @@ public:
         else // Even number of elements
         {
             return (vSorted[size/2-1] + vSorted[size/2]) / 2;
+        }
+    }
+
+    T maxAbs() const
+    {
+        int size = vSorted.size();
+        assert(size>0);
+        if (size == 1) {
+            return abs64(vSorted[0]);
+        }
+        if (size >=2) {
+            return std::max(abs64(vSorted[0]), abs64(vSorted[size-1]));
         }
     }
 
