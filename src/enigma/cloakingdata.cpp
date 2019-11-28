@@ -63,8 +63,8 @@ bool CCloakingData::Authenticate()
 
     // check the data isn't too old
      if (GetAdjustedTime() >= (timestamp + CLOAKSHIELD_DATA_TIMEOUT_SECS + nMaxObservedTimeOffset)) {
-        printf("Current data time (%" PRI64d ") should be within 60s after data was sent (%" PRI64d "),\n", GetAdjustedTime(), timestamp + CLOAKSHIELD_DATA_TIMEOUT_SECS);
-        return false;
+        printf("Current adjusted data time (%" PRI64d ") should be within 60s after data was sent (%" PRI64d "), offset: %" PRI64d ", timestamp: %" PRI64d "\n", GetAdjustedTime(), timestamp + CLOAKSHIELD_DATA_TIMEOUT_SECS + nMaxObservedTimeOffset, nMaxObservedTimeOffset, timestamp);
+        //return false;
       }
     return true;
 }
