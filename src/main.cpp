@@ -2066,7 +2066,7 @@ bool CBlock::AddToBlockIndex(unsigned int nFile, unsigned int nBlockPos)
 }
 
 
-bool CBlock::CheckBlock(bool fCheckPOW, bool fCheckMerkleRoot, bool fCheckSig) const
+bool CBlock::CheckBlock(bool fCheckPOW, bool fCheckMerkleRoot, bool fCheckNewOnly) const
 {
     // These are checks that are independent of context
     // that can be verified before saving an orphan block.
@@ -2098,6 +2098,11 @@ bool CBlock::CheckBlock(bool fCheckPOW, bool fCheckMerkleRoot, bool fCheckSig) c
     // ppcoin: coinbase output should be empty if proof-of-stake block
     if (IsProofOfStake() && (vtx[0].vout.size() != 1 || !vtx[0].vout[0].IsEmpty()))
         return error("CheckBlock() : coinbase output not empty for proof-of-stake block");
+
+    // cloak: coinstake should be a proper split or merge stake
+    if (fCheckNewOnly && !((vtx[1].vin.size() == 1 && vtx[1].vout.size() == 3) ||    //  it's a split stake (one input, empty + 2 split outputs) OR
+         (vtx[1].vin.size() > 1 && vtx[1].vout.size() == 2)))                        //  it's a merge stake (multiple inputs, empty + 1 merge output)
+	    return DoS(100, error("CheckBlock() : coistake should be a split or a merge"));
 
     // Check coinbase timestamp
     //if (GetBlockTime() > (int64)vtx[0].nTime + GetMaxClockDrift())
@@ -2294,7 +2299,7 @@ bool ProcessBlock(CNode* pfrom, CBlock* pblock)
         return error("ProcessBlock() : duplicate proof-of-stake (%s, %d) for block %s", pblock->GetProofOfStake().first.ToString().c_str(), pblock->GetProofOfStake().second, hash.ToString().c_str());
 
     // Preliminary checks
-    if (!pblock->CheckBlock())
+    if (!pblock->CheckBlock(false, false, true))
         return error("ProcessBlock() : CheckBlock FAILED");
 
     // ppcoin: verify hash target and signature of coinstake tx
