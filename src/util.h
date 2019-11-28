@@ -101,7 +101,10 @@ typedef unsigned long long  uint64;
 static const int64 COIN = 1000000;
 static const int64 CENT = 10000;
 
-static const int64_t DEFAULT_MAX_TIME_ADJUSTMENT = 70 * 60;
+static const int64_t DEFAULT_MAX_TIME_ADJUSTMENT = 14 * 60;
+//  BTC: 70 * 60 (70 minutes max time adjustment), 10min block time
+//  LTC: 35 * 60 (35 minutes max time adjustment, 1/2 adj), 2.5min block time (4x)
+//  CLOAK: 14 * 60 (14 minutes max time adjustment, 1/5 adj), 1 min block time (10x)
 
 //  absolute value of the maximum observed time offset we get from peers
 //  used to determine Enigma timeout add-on

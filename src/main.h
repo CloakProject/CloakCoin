@@ -715,8 +715,11 @@ public:
 
     bool IsCoinStake() const
     {
-        // ppcoin: the coin stake transaction is marked with the first output empty
-        return (vin.size() > 0 && (!vin[0].prevout.IsNull()) && vout.size() >= 2 && vout[0].IsEmpty());
+        // coin stake transaction is marked with the first output empty
+        return (vin.size() > 0 && (!vin[0].prevout.IsNull()) && vout[0].IsEmpty() && (  //  there is inputs AND input/prevout is not null AND first output is empty AND
+               (vin.size() == 1 && vout.size() == 3) ||      //  it's a split stake (one input, empty + 2 split outputs) OR
+               (vin.size() > 1 && vout.size() == 2)         //  it's a merge stake (multiple inputs, empty + 1 merge output)
+        ));
     }
 
     bool IsCoinBaseOrStake() const

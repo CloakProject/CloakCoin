@@ -62,8 +62,10 @@ bool CCloakingData::Authenticate()
         return error("CCloakingData::Authenticate() : verify signature failed");
 
     // check the data isn't too old
-     if (GetAdjustedTime() >= (timestamp + CLOAKSHIELD_DATA_TIMEOUT_SECS + nMaxObservedTimeOffset))
+     if (GetAdjustedTime() >= (timestamp + CLOAKSHIELD_DATA_TIMEOUT_SECS + nMaxObservedTimeOffset)) {
         printf("Current data time (%" PRI64d ") should be within 60s after data was sent (%" PRI64d "),\n", GetAdjustedTime(), timestamp + CLOAKSHIELD_DATA_TIMEOUT_SECS);
+        return false;
+      }
     return true;
 }
 
@@ -99,10 +101,10 @@ bool CCloakingData::Transmit(CNode* sender, bool shuffle, bool onionRoute)
     try
     {
         if (!Authenticate()){
-            printf("auth failed");
+            printf("auth failed (possible very inaccurate node clock, adding DoS penalty...\n");
             if (sender){
-                // small dos penalty for (directly connected) sending node
-                sender->Misbehaving(5);
+                // DoS penalty for (directly connected) sending node
+                sender->Misbehaving(10);
             }
         }
 #ifdef QT_DEBUG
