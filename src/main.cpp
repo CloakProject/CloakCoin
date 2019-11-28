@@ -2099,11 +2099,6 @@ bool CBlock::CheckBlock(bool fCheckPOW, bool fCheckMerkleRoot, bool fCheckNewOnl
     if (IsProofOfStake() && (vtx[0].vout.size() != 1 || !vtx[0].vout[0].IsEmpty()))
         return error("CheckBlock() : coinbase output not empty for proof-of-stake block");
 
-    // cloak: coinstake should be a proper split or merge stake
-    if (fCheckNewOnly && !((vtx[1].vin.size() == 1 && vtx[1].vout.size() == 3) ||    //  it's a split stake (one input, empty + 2 split outputs) OR
-         (vtx[1].vin.size() > 1 && vtx[1].vout.size() == 2)))                        //  it's a merge stake (multiple inputs, empty + 1 merge output)
-	    return DoS(100, error("CheckBlock() : coistake should be a split or a merge"));
-
     // Check coinbase timestamp
     //if (GetBlockTime() > (int64)vtx[0].nTime + GetMaxClockDrift())
     //    return DoS(50, error("CheckBlock() : coinbase timestamp is too early"));
@@ -2216,6 +2211,35 @@ bool CBlock::AcceptBlock()
     CScript expect = CScript() << nHeight;
     if (!std::equal(expect.begin(), expect.end(), vtx[0].vin[0].scriptSig.begin()))
         return DoS(100, error("AcceptBlock() : block height mismatch in coinbase"));
+
+    // Enforce rule that staking must be either split or merge
+    if (nVersion > 4)
+    {
+        // if 15,120 of the last 20,160 blocks (75%) are version 5 or greater (51/100 if testnet):
+        if ((!fTestNet && CBlockIndex::IsSuperMajority(5, pindexPrev, 15120, 20160)) ||
+             (fTestNet && CBlockIndex::IsSuperMajority(5, pindexPrev, 51, 100))) {
+            printf(">>>>>>>>> ISM75 activation of version 5 achieved <<<<<<<<<\n");
+
+            // cloak: coinstake should be a proper split or merge stake
+            if (!((vtx[1].vin.size() == 1 && vtx[1].vout.size() == 3) ||    //  it's a split stake (one input, empty + 2 split outputs) OR
+                 (vtx[1].vin.size() > 1 && vtx[1].vout.size() == 2)))       //  it's a merge stake (multiple inputs, empty + 1 merge output)
+                    return DoS(100, error("AcceptBlock() : rejected, coistake should be a split or a merge"));
+        }
+    }
+
+    // Reject block.nVersion=4 blocks when 85% (75% on testnet) of the network has upgraded:
+    if (nVersion < 5)
+    {
+        if ((!fTestNet && CBlockIndex::IsSuperMajority(5, pindexPrev, 17136, 20160)) ||
+             (fTestNet && CBlockIndex::IsSuperMajority(5, pindexPrev, 75, 100)))
+        {
+            return error("AcceptBlock() : rejected nVersion=4 block");
+        }
+
+        if (!((vtx[1].vin.size() == 1 && vtx[1].vout.size() == 3) ||    //  it's a split stake (one input, empty + 2 split outputs) OR
+              (vtx[1].vin.size() > 1 && vtx[1].vout.size() == 2)))       //  it's a merge stake (multiple inputs, empty + 1 merge output)
+                  printf(">>>>>>> Engineered block received :( \n");
+    }
 
     // Write block to history file
     if (!CheckDiskSpace(::GetSerializeSize(*this, SER_DISK, CLIENT_VERSION)))
