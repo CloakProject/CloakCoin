@@ -3,8 +3,6 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include <atomic>
-
 #include "util.h"
 #include "sync.h"
 #include "strlcpy.h"
@@ -1277,14 +1275,14 @@ void ShrinkDebugFile()
     }
 }
 
-static std::atomic<int64_t> nMockTime(0); //!< For unit testing
+static int64_t nMockTime = 0; //!< For unit testing
 
 int64_t GetTime()
 {
-    int64_t mocktime = nMockTime.load(std::memory_order_relaxed);
+    int64_t mocktime = nMockTime;
     if (mocktime) return mocktime;
 
-    time_t now = time(nullptr);
+    time_t now = time(NULL);
     assert(now > 0);
     return now;
 }
