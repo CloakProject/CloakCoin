@@ -3892,8 +3892,7 @@ bool ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
 
     else
     {
-        // Ban nodes sending unknown messages or spamming junk after 2 instances
-        printf(">>> Unrecognized message received: %s ; updating ban score", strCommand.c_str());
+        printf(">>> Unrecognized message received: %s", strCommand.c_str());
         pfrom->Misbehaving(50);
     }
 
