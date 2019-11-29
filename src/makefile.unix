@@ -59,9 +59,9 @@ LIBS += \
    -l rt
 
 ifndef USE_UPNP
-	override USE_UPNP = -
+	override USE_UPNP = 0
 endif
-ifneq (${USE_UPNP}, -)
+ifneq (${USE_UPNP}, 0)
 	LIBS += /opt/deps/miniupnpc/libminiupnpc.a
 	DEFS += -DUSE_UPNP=$(USE_UPNP) $(addprefix -I,$(/opt/deps/miniupnpc))
 endif
