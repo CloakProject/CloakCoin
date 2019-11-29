@@ -4,6 +4,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #define USE_LEVELDB 1
 
+#include "util.h"
 #include "alert.h"
 #include "enigma/enigmaann.h"
 #include "enigma/enigma.h"
@@ -3041,7 +3042,7 @@ bool ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
             return false;
         }
 
-        int64 nTime;
+        int64_t nTime;
         CAddress addrMe;
         CAddress addrFrom;
         uint64 nNonce = 1;

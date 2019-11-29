@@ -1275,11 +1275,11 @@ void ShrinkDebugFile()
     }
 }
 
-static int64_t nMockTime = 0; //!< For unit testing
+static int64 nMockTime = 0; //!< For unit testing
 
-int64_t GetTime()
+int64 GetTime()
 {
-    int64_t mocktime = nMockTime;
+    int64 mocktime = nMockTime;
     if (mocktime) return mocktime;
 
     time_t now = time(NULL);
@@ -1287,13 +1287,13 @@ int64_t GetTime()
     return now;
 }
 
-void SetMockTime(int64_t nMockTimeIn)
+void SetMockTime(int64 nMockTimeIn)
 {
     nMockTime = nMockTimeIn;
 }
 
 static CCriticalSection cs_nTimeOffset;
-static int64_t nTimeOffset = 0;
+static int64 nTimeOffset = 0;
 
 /**
  * "Never go to sea with two chronometers; take one or three."
@@ -1302,13 +1302,13 @@ static int64_t nTimeOffset = 0;
  *  - Median of other nodes clocks
  *  - The user (asking the user to fix the system clock if the first two disagree)
  */
-int64_t GetTimeOffset()
+int64 GetTimeOffset()
 {
     LOCK(cs_nTimeOffset);
     return nTimeOffset;
 }
 
-int64_t GetAdjustedTime()
+int64 GetAdjustedTime()
 {
     return GetTime() + GetTimeOffset();
 }

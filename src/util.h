@@ -328,7 +328,7 @@ int64 GetAdjustedTime();
 long hex2long(const char* hexString);
 std::string FormatFullVersion();
 std::string FormatSubVersion(const std::string& name, int nClientVersion, const std::vector<std::string>& comments, bool noSlashes = false);
-void AddTimeData(const CNetAddr& ip, int64 nTime);
+void AddTimeData(const CNetAddr& ip, int64_t nTime);
 void runCommand(std::string strCommand);
 void SetupEnvironment();
 
