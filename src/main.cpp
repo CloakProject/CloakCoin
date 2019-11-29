@@ -3893,7 +3893,6 @@ bool ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
     else
     {
         printf(">>> Unrecognized message received: %s", strCommand.c_str());
-        pfrom->Misbehaving(50);
     }
 
     // Update the last seen time for this node's address
