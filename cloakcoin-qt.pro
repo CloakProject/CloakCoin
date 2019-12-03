@@ -2,7 +2,7 @@ QT += core gui network
 QT += widgets
 TEMPLATE = app
 TARGET = cloakcoin-qt
-VERSION = 2.2.1.1
+VERSION = 2.2.2.2
 INCLUDEPATH += src src/json src/qt src/tor
 DEFINES += QT_GUI BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE BOOST_THREAD_PROVIDES_GENERIC_SHARED_MUTEX_ON_WIN __NO_SYSTEM_INCLUDES
 #DEFINES += CURL_STATICLIB
@@ -70,7 +70,7 @@ win32 {
 macx {
      message(*** osx build ***)
 
-     QMAKE_MAC_SDK = macosx10.14
+     QMAKE_MAC_SDK = macosx10.15
      QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12
 
      #QMAKE_RPATHDIR += /Users/joe/qt/Qt5.7.1/5.7/clang_64/lib
