@@ -1033,7 +1033,7 @@ bool Enigma::HandleCloakOnionData(CCloakingData cloakDataIn, CNode* node, int le
 
         if (!alreadyProcessed)
         {
-	    Sleep(10);
+	    Sleep(100);
             cloakDataIn.hops++;
 
             if (level > 0){
