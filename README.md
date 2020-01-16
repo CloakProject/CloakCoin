@@ -21,7 +21,9 @@ To contact us, or talk about CloakCoin, use your preferred social media:
 | Site				|     Link		|
 | ------------- | ------------ |
 | Twitter			| [CloakCoin](https://www.twitter.com/CloakCoin) |
-| Facebook			| [CloakCoinOfficial](https://www.facebook.com/CloakCoinOfficial/) |
+| Reddit      | [CloakReddit] (https://old.reddit.com/r/Cloak_Coin) |
+| Facebook			| [CloakCoinOfficial](https://www.facebook.com/CloakCoinOfficial) |
+| Steemit			| [CloakCoinSteemit](https://steemit.com/@cloak.blog) |
 | Telegram			|	[cloakproject](https://t.me/cloakproject) |
 | Rocket Chat			| [Official Chat](https://chat.cloakcoin.com) |
 
