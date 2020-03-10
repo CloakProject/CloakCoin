@@ -21,9 +21,12 @@ To contact us, or talk about CloakCoin, use your preferred social media:
 | Site				|     Link		|
 | ------------- | ------------ |
 | Twitter			| [CloakCoin](https://www.twitter.com/CloakCoin) |
+| Reddit			| [CloakCoin](https://old.reddit.com/r/Cloak_Coin/) |
 | Facebook			| [CloakCoinOfficial](https://www.facebook.com/CloakCoinOfficial/) |
-| Telegram			|	[cloakproject](https://t.me/cloakproject) |
+| Telegram			|	[CloakProject](https://t.me/cloakproject) |
 | Rocket Chat			| [Official Chat](https://chat.cloakcoin.com) |
+| Bitcointalk     | [CloakCoin](https://bitcointalk.org/index.php?topic=823143.0) |
+| Steemit     | [CloakCoin](https://steemit.com/@cloak.blog) |
 
 ## Installation
 All the installation instructions are for Windows / Linux / MacOS / RaspberryPi an android on the Cloak Wiki : [Install Cloakcoin Wallet](https://www.cloakwiki.org/index.php/Install_the_Cloakcoin_Client)
