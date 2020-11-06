@@ -10,9 +10,9 @@ This is the official CloakCoin Repository. If you want more info about Cloakcoin
 | Specification |     Value     |
 | ------------- | ------------- |
 | Consensus Algorithm | Proof-of-Stake |
-|    Rewards    |    6% P.A.    |
+|    Rewards    |    6% p.a.    |
 |  Block Time   |    60 sec     |
-| Circulating Supply |   5.2M   |
+| Circulating Supply |   5.5m   |
 
 ## Social Networks & channels
 
