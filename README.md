@@ -10,9 +10,9 @@ This is the official CloakCoin Repository. If you want more info about Cloakcoin
 | Specification |     Value     |
 | ------------- | ------------- |
 | Consensus Algorithm | Proof-of-Stake |
-|    Rewards    |    6% P.A.    |
+|    Rewards    |    6% p.a.    |
 |  Block Time   |    60 sec     |
-| Circulating Supply |   5.5M   |
+| Circulating Supply |   5.5m   |
 
 ## Social Networks & channels
 
@@ -26,7 +26,7 @@ To contact us, or talk about CloakCoin, use your preferred social media:
 | Rocket Chat			| [Official Chat](https://chat.cloakcoin.com) |
 
 ## Installation
-All the installation instructions are for Windows / Linux / MacOS / RaspberryPi an android on the Cloak Wiki : [Install Cloakcoin Wallet](https://www.cloakwiki.org/index.php/Install_the_Cloakcoin_Client)
+All the installation instructions are for Windows / Linux / MacOS / RaspberryPi an android on the Cloak Wiki : [Install Cloakcoin Wallet](https://wiki.cloakcoin.com/index.php/Install_the_Cloakcoin_Client)
 
 ## Compiling GUI CloakCoin wallet from source
 
