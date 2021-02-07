@@ -2,7 +2,7 @@ QT += core gui network
 QT += widgets
 TEMPLATE = app
 TARGET = cloakcoin-qt
-VERSION = 2.2.2.2
+VERSION = 2.2.2.3
 INCLUDEPATH += src src/json src/qt src/tor
 DEFINES += QT_GUI BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE BOOST_THREAD_PROVIDES_GENERIC_SHARED_MUTEX_ON_WIN __NO_SYSTEM_INCLUDES
 #DEFINES += CURL_STATICLIB
@@ -223,8 +223,26 @@ contains(BITCOIN_NEED_QT_PLUGINS, 1) {
 #    DEFINES += HAVE_BUILD_INFO
 #}
 
-QMAKE_CXXFLAGS += -msse2
-QMAKE_CFLAGS += -msse2
+# If we have an ARM device, we can't use SSE2 instructions, so don't try to use them
+# Because of scrypt_mine.cpp, we also have to add a compile
+#     flag that states we *really* don't have SSE
+QMAKE_XCPUARCH = $$QMAKE_HOST.arch
+equals(QMAKE_XCPUARCH, armv7l) {
+    message(Building without SSE2 support)
+    QMAKE_CXXFLAGS += -DNOSSE
+    QMAKE_CFLAGS += -DNOSSE
+}
+else:equals(QMAKE_XCPUARCH, armv6l) {
+    message(Building without SSE2 support)
+    QMAKE_CXXFLAGS += -DNOSSE
+    QMAKE_CFLAGS += -DNOSSE
+}
+else {
+    message(Building with SSE2 support)
+    QMAKE_CXXFLAGS += -msse2
+    QMAKE_CFLAGS += -msse2
+}
+
 QMAKE_CXXFLAGS_WARN_ON = -fdiagnostics-show-option -Wall -Wextra -Wformat -Wformat-security -Wno-unused-parameter -Wstack-protector
 
 # Input
