@@ -2151,6 +2151,7 @@ bool CBlock::CheckBlock(bool fCheckPOW, bool fCheckMerkleRoot, bool fCheckNewOnl
 
 bool CBlock::AcceptBlock()
 {
+    static unsigned int nStakeSplitAge = (60 * 60 * 24 * 30);
     // Check for duplicate
     uint256 hash = GetHash();
     if (mapBlockIndex.count(hash))
@@ -2213,18 +2214,19 @@ bool CBlock::AcceptBlock()
     if (!std::equal(expect.begin(), expect.end(), vtx[0].vin[0].scriptSig.begin()))
         return DoS(100, error("AcceptBlock() : block height mismatch in coinbase"));
 
-    // Enforce rule that staking must be either split or merge
-    if (nVersion > 4)
+    // Enforce proper staking: split, merge or noop (noop only for UTXOs older than nStakeSplitAge)
+    if (nVersion > 5)
     {
-        // if 15,120 of the last 20,160 blocks (75%) are version 5 or greater (51/100 if testnet):
-        if ((!fTestNet && CBlockIndex::IsSuperMajority(5, pindexPrev, 15120, 20160)) ||
-             (fTestNet && CBlockIndex::IsSuperMajority(5, pindexPrev, 51, 100))) {
-            printf(">>>>>>>>> ISM75 activation of version 5 achieved <<<<<<<<<\n");
+        // if 15,120 of the last 20,160 blocks (75%) are version 6 or greater (51/100 if testnet):
+        if ((!fTestNet && CBlockIndex::IsSuperMajority(6, pindexPrev, 15120, 20160)) ||
+             (fTestNet && CBlockIndex::IsSuperMajority(6, pindexPrev, 51, 100))) {
+            printf(">>>>>>>>> stake-fix: ISM75 activation of version 6 achieved <<<<<<<<<\n");
 
-            // cloak: coinstake should be a proper split or merge stake
+            // cloak: coinstake should be a proper stake
             if (!((vtx[1].vin.size() == 1 && vtx[1].vout.size() == 3) ||    //  it's a split stake (one input, empty + 2 split outputs) OR
-                 (vtx[1].vin.size() > 1 && vtx[1].vout.size() == 2)))       //  it's a merge stake (multiple inputs, empty + 1 merge output)
-                    return DoS(100, error("AcceptBlock() : rejected, coistake should be a split or a merge"));
+                 (vtx[1].vin.size() > 1 && vtx[1].vout.size() == 2) ||      //  it's a merge stake (multiple inputs, empty + 1 merge output)
+                 ((GetBlockTime() + nStakeSplitAge <= (int64)vtx[0].nTime) && vtx[1].vin.size() == 1 && vtx[1].vout.size() == 2)))      //  it's an old UTXO, noop stake (single input, empty + 1 output)
+                    return DoS(100, error("AcceptBlock() : rejected, improper coinstake inputs or outputs"));
         }
     }
 
@@ -2236,10 +2238,6 @@ bool CBlock::AcceptBlock()
         {
             return error("AcceptBlock() : rejected nVersion=4 block");
         }
-
-        if (!((vtx[1].vin.size() == 1 && vtx[1].vout.size() == 3) ||    //  it's a split stake (one input, empty + 2 split outputs) OR
-              (vtx[1].vin.size() > 1 && vtx[1].vout.size() == 2)))       //  it's a merge stake (multiple inputs, empty + 1 merge output)
-                  printf(">>>>>>> Engineered block received :( \n");
     }
 
     // Write block to history file
