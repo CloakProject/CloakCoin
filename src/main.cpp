@@ -2224,8 +2224,9 @@ bool CBlock::AcceptBlock()
 
             // cloak: coinstake should be a proper stake
             if (!((vtx[1].vin.size() == 1 && vtx[1].vout.size() == 3) ||    //  it's a split stake (one input, empty + 2 split outputs) OR
-                 (vtx[1].vin.size() > 1 && vtx[1].vout.size() == 2) ||      //  it's a merge stake (multiple inputs, empty + 1 merge output)
-                 ((GetBlockTime() + nStakeSplitAge <= (int64)vtx[0].nTime) && vtx[1].vin.size() == 1 && vtx[1].vout.size() == 2)))      //  it's an old UTXO, noop stake (single input, empty + 1 output)
+                  (vtx[1].vin.size() > 1 && vtx[1].vout.size() == 2) ||      //  it's a merge stake (multiple inputs, empty + 1 merge output)
+                  (vtx[1].vin.size() == 1 && vtx[1].vout.size() == 2 && (GetBlockTime() + nStakeSplitAge <= (int64)vtx[0].nTime))
+                ))  //  it's an old UTXO, noop stake (single input, empty + 1 output)    
                     return DoS(100, error("AcceptBlock() : rejected, improper coinstake inputs or outputs"));
         }
     }
