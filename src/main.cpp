@@ -2217,16 +2217,31 @@ bool CBlock::AcceptBlock()
     // Enforce proper staking: split, merge or noop (noop only for UTXOs older than nStakeSplitAge)
     if (nVersion > 5)
     {
-        // if 15,120 of the last 20,160 blocks (75%) are version 6 or greater (51/100 if testnet):
-        if ((!fTestNet && CBlockIndex::IsSuperMajority(6, pindexPrev, 15120, 20160)) ||
+        CTxDB txdb("r");
+        CTransaction txPrev;
+        CTxIndex txindex;
+
+        //---  DEBUGGING helper section
+        if (vtx[1].vin.size() == 1 && vtx[1].vout.size() == 2) { //  it's an old UTXO, noop stake (single input, empty + 1 output)
+            //  get previous tx by following prevout of the stake input, vtx[0] is coinbase
+            if (!txPrev.ReadFromDisk(txdb, vtx[1].vin[0].prevout, txindex))
+                return error("AcceptBlock() : ReadFromDisk failed to read previous transaction!");
+            printf("##### noop stake ::: previousTx nTime=%u, nStakeSplitAge=%u, staking tx current nTime=%u \n", txPrev.nTime, nStakeSplitAge, vtx[1].nTime);
+            if (txPrev.nTime + nStakeSplitAge <= vtx[1].nTime)
+                printf(">>>>>>>>> stake-fix: valid old UTXO noop stake found <<<<<<<<<\n");
+        }
+        //---  END DEBUGGING helper section
+
+        // if 5,400 of the last 7,200 blocks (75%) are version 6 or greater (51/100 if testnet):
+        if ((!fTestNet && CBlockIndex::IsSuperMajority(6, pindexPrev, 5400, 7200)) ||
              (fTestNet && CBlockIndex::IsSuperMajority(6, pindexPrev, 51, 100))) {
             printf(">>>>>>>>> stake-fix: ISM75 activation of version 6 achieved <<<<<<<<<\n");
 
             // cloak: coinstake should be a proper stake
             if (!((vtx[1].vin.size() == 1 && vtx[1].vout.size() == 3) ||    //  it's a split stake (one input, empty + 2 split outputs) OR
                   (vtx[1].vin.size() > 1 && vtx[1].vout.size() == 2) ||      //  it's a merge stake (multiple inputs, empty + 1 merge output)
-                  (vtx[1].vin.size() == 1 && vtx[1].vout.size() == 2 && (GetBlockTime() + nStakeSplitAge <= (int64)vtx[0].nTime))
-                ))  //  it's an old UTXO, noop stake (single input, empty + 1 output)    
+                  (vtx[1].vin.size() == 1 && vtx[1].vout.size() == 2 && (txPrev.nTime + nStakeSplitAge <= vtx[1].nTime))
+                ))  //  it's an old UTXO, noop stake (single input, empty + 1 output)
                     return DoS(100, error("AcceptBlock() : rejected, improper coinstake inputs or outputs"));
         }
     }
