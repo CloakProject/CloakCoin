@@ -113,13 +113,16 @@ linux {
      QRENCODE_LIB_PATH="/opt/deps/qrencode-3.4.4/.libs"
      QRENCODE_INCLUDE_PATH="/opt/deps/qrencode-3.4.4"
 
-     OPENSSL_INCLUDE_PATH="/opt/deps/openssl-1.0.2g/include"
-     OPENSSL_LIB_PATH="/opt/deps/openssl-1.0.2g"
+     OPENSSL_INCLUDE_PATH="/opt/deps/openssl-1.0.2u/include"
+     OPENSSL_LIB_PATH="/opt/deps/openssl-1.0.2u"
+     
+     BDB_INCLUDE_PATH = /opt/CloakCoin/db4/include
+     BDB_LIB_PATH = /opt/CloakCoin/db4/lib
 
      DEFINES += USE_LEVELDB
      INCLUDEPATH += src/leveldb/include src/leveldb/helpers src/leveldb/helpers/memenv
      SOURCES += src/txdb-leveldb.cpp
-     LIBS+=$$PWD/src/leveldb/libleveldb.a $$PWD/src/leveldb/libmemenv.a /opt/deps/openssl-1.0.2g/libssl.a /opt/deps/openssl-1.0.2g/libcrypto.a
+     LIBS+=$$PWD/src/leveldb/libleveldb.a $$PWD/src/leveldb/libmemenv.a /opt/deps/openssl-1.0.2u/libssl.a /opt/deps/openssl-1.0.2u/libcrypto.a
 }
 
 QMAKE_CXXFLAGS *= -std=c++11
