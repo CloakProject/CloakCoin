@@ -13,10 +13,10 @@ STATIC:=1
 # OPTIMIZED_SALSA:=1
 
 # Paths to locally built libraries
-BDB_INCLUDE_PATH:=/usr/local/BerkeleyDB.4.8/include
-BDB_LIB_PATH:=/usr/local/BerkeleyDB.4.8/lib
-OPENSSL_INCLUDE_PATH:=/opt/deps/openssl-1.0.2g/include
-OPENSSL_LIB_PATH:=/opt/deps/openssl-1.0.2g
+BDB_INCLUDE_PATH:=/opt/CloakCoin/db4/include
+BDB_LIB_PATH:=/opt/CloakCoin/db4/lib
+OPENSSL_INCLUDE_PATH:=/opt/deps/openssl-1.0.2u/include
+OPENSSL_LIB_PATH:=/opt/deps/openssl-1.0.2u
 BOOST_INCLUDE_PATH:=/usr/local/include
 BOOST_LIB_PATH:=/usr/local/lib
 
@@ -115,7 +115,7 @@ DEBUGFLAGS=-g
 # CXXFLAGS can be specified on the make command line, so we use xCXXFLAGS that only
 # adds some defaults in front. Unfortunately, CXXFLAGS=... $(CXXFLAGS) does not work.
 #  xCXXFLAGS=-O2 -msse2 -pthread -Wall -Wextra -Wformat -Wformat-security -Wno-unused-parameter
-xCXXFLAGS=-static-libstdc++ -std=c++11 -O2 $(EXT_OPTIONS) -pthread -Wformat -Wformat-security -Wno-unused-parameter -DNOSSE \
+xCXXFLAGS=-static-libstdc++ -std=c++11 -O2 -fcommon $(EXT_OPTIONS) -pthread -Wformat -Wformat-security -Wno-unused-parameter -DNOSSE \
     $(DEBUGFLAGS) $(DEFS) $(HARDENING) $(CXXFLAGS)
 
 ifneq "$(or $(__arm__),$(__aarch64__))" ""
@@ -301,7 +301,7 @@ obj/scrypt-x86_64.o: scrypt-x86_64.S
 
 obj/scrypt-arm.o: scrypt-arm.S
 	$(CXX) -c $(xCXXFLAGS) -MMD -o $@ $<
-	
+
 obj/%.o: %.cpp
 	$(CXX) -c $(xCXXFLAGS) -MMD -MF $(@:%.o=%.d) -o $@ $<
 	@cp $(@:%.o=%.d) $(@:%.o=%.P); \

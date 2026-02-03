@@ -227,7 +227,7 @@ contains(BITCOIN_NEED_QT_PLUGINS, 1) {
 #}
 
 QMAKE_CXXFLAGS += -msse2
-QMAKE_CFLAGS += -msse2
+QMAKE_CFLAGS += -msse2 -fcommon
 QMAKE_CXXFLAGS_WARN_ON = -fdiagnostics-show-option -Wall -Wextra -Wformat -Wformat-security -Wno-unused-parameter -Wstack-protector
 
 # Input
@@ -272,7 +272,6 @@ HEADERS += src/qt/mainwindow.h \
     src/scrypt_mine.h \
     src/pbkdf2.h \
     src/serialize.h \
-    src/strlcpy.h \
     src/main.h \
     src/net.h \
     src/key.h \
