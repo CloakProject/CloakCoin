@@ -2,7 +2,7 @@ QT += core gui network
 QT += widgets
 TEMPLATE = app
 TARGET = cloakcoin-qt
-VERSION = 2.3.0.0
+VERSION = 2.3.1.0
 INCLUDEPATH += src src/json src/qt src/tor
 DEFINES += QT_GUI BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE BOOST_THREAD_PROVIDES_GENERIC_SHARED_MUTEX_ON_WIN __NO_SYSTEM_INCLUDES
 #DEFINES += CURL_STATICLIB
@@ -171,24 +171,27 @@ INCLUDEPATH += ex_lib
 #  or: qmake "USE_UPNP=0" (disabled by default)
 #  or: qmake "USE_UPNP=-" (not supported)
 # miniupnpc (http://miniupnp.free.fr/files/) must be installed for support
-contains(USE_UPNP, -) {
-    message(Building without UPNP support)
-} else {
-    message(Building with UPNP support)
-    count(USE_UPNP, 0) {
-	USE_UPNP=1
-    }
-    INCLUDEPATH += $$PWD/src
-    win32:INCLUDEPATH += C:/deps/miniupnpc
-    INCLUDEPATH += /opt/deps/miniupnpc
-    DEFINES += USE_UPNP=$$USE_UPNP MINIUPNP_STATICLIB
-    win32:LIBS += C:/deps/miniupnpc/libminiupnpc.a
-    macx:LIBS += /usr/local/lib/libminiupnpc.a
-    !windows:!macx{
-	LIBS += -lminiupnpc
-    }
-    win32:LIBS += -liphlpapi
-}
+
+USE_UPNP=0
+message(Building without UPNP support)
+#contains(USE_UPNP, -) {
+#    message(Building without UPNP support)
+#} else {
+#    message(Building with UPNP support)
+#    count(USE_UPNP, 0) {
+#	USE_UPNP=1
+#    }
+#    INCLUDEPATH += $$PWD/src
+#    win32:INCLUDEPATH += C:/deps/miniupnpc
+#    INCLUDEPATH += /opt/deps/miniupnpc
+#    DEFINES += USE_UPNP=$$USE_UPNP MINIUPNP_STATICLIB
+#    win32:LIBS += C:/deps/miniupnpc/libminiupnpc.a
+#    macx:LIBS += /usr/local/lib/libminiupnpc.a
+#    !windows:!macx{
+#	LIBS += -lminiupnpc
+#    }
+#    win32:LIBS += -liphlpapi
+#}
 
 
 # use: qmake "USE_DBUS=1"
