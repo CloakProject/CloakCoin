@@ -14,10 +14,10 @@ EQ            = =
 
 CC            = gcc
 CXX           = g++
-DEFINES       = -DQT_GUI -DBOOST_THREAD_USE_LIB -DBOOST_SPIRIT_THREADSAFE -DBOOST_THREAD_PROVIDES_GENERIC_SHARED_MUTEX_ON_WIN -D__NO_SYSTEM_INCLUDES -DQT_DISABLE_DEPRECATED_BEFORE=0 -DUSE_LEVELDB -DUSE_IPV6=1 -DLINUX -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB
+DEFINES       = -DQT_GUI -DBOOST_THREAD_USE_LIB -DBOOST_SPIRIT_THREADSAFE -DBOOST_THREAD_PROVIDES_GENERIC_SHARED_MUTEX_ON_WIN -D__NO_SYSTEM_INCLUDES -DQT_DISABLE_DEPRECATED_BEFORE=0 -DUSE_LEVELDB -DUSE_UPNP=1 -DMINIUPNP_STATICLIB -DUSE_IPV6=1 -DLINUX -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -msse2 -fcommon -O2 -D_REENTRANT -Wall -Wextra -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -std=c++11 -fstack-protector-all --param ssp-buffer-size=1 -msse2 -O2 -D_REENTRANT -fdiagnostics-show-option -Wall -Wextra -Wformat -Wformat-security -Wno-unused-parameter -Wstack-protector -fPIC $(DEFINES)
-INCPATH       = -Isrc -Isrc/json -Isrc/qt -Isrc/tor -Isrc/leveldb/include -Isrc/leveldb/helpers -Isrc/leveldb/helpers/memenv -Iex_lib -Idb4/include -I../deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -Ibuild -Ibuild -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++
+INCPATH       = -Isrc -Isrc/json -Isrc/qt -Isrc/tor -Isrc/leveldb/include -Isrc/leveldb/helpers -Isrc/leveldb/helpers/memenv -Iex_lib -Isrc -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I../deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -Ibuild -Ibuild -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++
 QMAKE         = /usr/lib/qt5/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -40,7 +40,7 @@ DISTNAME      = cloakcoin-qt2.3.1.0
 DISTDIR = /opt/CloakCoin/build/cloakcoin-qt2.3.1.0
 LINK          = g++
 LFLAGS        = -std=c++11 -fstack-protector-all --param ssp-buffer-size=1 -fno-pie -no-pie -Wl,-O1
-LIBS          = $(SUBLIBS) /opt/CloakCoin/src/leveldb/libleveldb.a /opt/CloakCoin/src/leveldb/libmemenv.a /opt/deps/openssl-1.0.2u/libssl.a /opt/deps/openssl-1.0.2u/libcrypto.a -lrt -L/opt/deps/openssl-1.0.2u -L/opt/deps/qrencode-3.4.4/.libs -L/opt/CloakCoin/db4/lib -ldb_cxx -levent -lz -L/usr/local/lib/ -lboost_system -lboost_filesystem -lboost_program_options -lboost_thread -ldl -lcurl -lpthread /usr/lib/x86_64-linux-gnu/libQt5Widgets.so /usr/lib/x86_64-linux-gnu/libQt5Gui.so /usr/lib/x86_64-linux-gnu/libQt5Network.so /usr/lib/x86_64-linux-gnu/libQt5Core.so -lGL   
+LIBS          = $(SUBLIBS) /opt/CloakCoin/src/leveldb/libleveldb.a /opt/CloakCoin/src/leveldb/libmemenv.a /opt/deps/openssl-1.0.2u/libssl.a /opt/deps/openssl-1.0.2u/libcrypto.a -lminiupnpc -lrt -L/opt/deps/openssl-1.0.2u -L/opt/deps/qrencode-3.4.4/.libs -L/opt/deps/db4/lib -ldb_cxx -levent -lz -L/usr/local/lib/ -lboost_system -lboost_filesystem -lboost_program_options -lboost_thread -ldl -lcurl -lpthread /usr/lib/x86_64-linux-gnu/libQt5Widgets.so /usr/lib/x86_64-linux-gnu/libQt5Gui.so /usr/lib/x86_64-linux-gnu/libQt5Network.so /usr/lib/x86_64-linux-gnu/libQt5Core.so -lGL   
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -1371,18 +1371,18 @@ build/moc_mainwindow.cpp: src/qt/mainwindow.h \
 		src/qt/jsonsaverloader.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/mainwindow.h -o build/moc_mainwindow.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/src -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/mainwindow.h -o build/moc_mainwindow.cpp
 
 build/moc_httpsocket.cpp: src/qt/httpsocket.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/httpsocket.h -o build/moc_httpsocket.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/src -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/httpsocket.h -o build/moc_httpsocket.cpp
 
 build/moc_cloaksend.cpp: src/qt/cloaksend.h \
 		src/qt/httpsocket.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/cloaksend.h -o build/moc_cloaksend.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/src -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/cloaksend.h -o build/moc_cloaksend.cpp
 
 build/moc_exchange.cpp: src/qt/exchange.h \
 		../deps/openssl-1.0.2u/include/openssl/sha.h \
@@ -1412,12 +1412,12 @@ build/moc_exchange.cpp: src/qt/exchange.h \
 		src/qt/QJsonParseError.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/exchange.h -o build/moc_exchange.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/src -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/exchange.h -o build/moc_exchange.cpp
 
 build/moc_tickertimer.cpp: src/qt/tickertimer.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/tickertimer.h -o build/moc_tickertimer.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/src -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/tickertimer.h -o build/moc_tickertimer.cpp
 
 build/moc_jsonsaverloader.cpp: src/qt/jsonsaverloader.h \
 		src/qt/QJsonValue.h \
@@ -1429,7 +1429,7 @@ build/moc_jsonsaverloader.cpp: src/qt/jsonsaverloader.h \
 		src/qt/QJsonParseError.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/jsonsaverloader.h -o build/moc_jsonsaverloader.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/src -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/jsonsaverloader.h -o build/moc_jsonsaverloader.cpp
 
 build/moc_bitcoingui.cpp: src/qt/bitcoingui.h \
 		src/util.h \
@@ -1446,158 +1446,158 @@ build/moc_bitcoingui.cpp: src/qt/bitcoingui.h \
 		src/clientversion.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/bitcoingui.h -o build/moc_bitcoingui.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/src -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/bitcoingui.h -o build/moc_bitcoingui.cpp
 
 build/moc_transactiontablemodel.cpp: src/qt/transactiontablemodel.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/transactiontablemodel.h -o build/moc_transactiontablemodel.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/src -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/transactiontablemodel.h -o build/moc_transactiontablemodel.cpp
 
 build/moc_addresstablemodel.cpp: src/qt/addresstablemodel.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/addresstablemodel.h -o build/moc_addresstablemodel.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/src -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/addresstablemodel.h -o build/moc_addresstablemodel.cpp
 
 build/moc_optionsdialog.cpp: src/qt/optionsdialog.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/optionsdialog.h -o build/moc_optionsdialog.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/src -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/optionsdialog.h -o build/moc_optionsdialog.cpp
 
 build/moc_coincontroldialog.cpp: src/qt/coincontroldialog.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/coincontroldialog.h -o build/moc_coincontroldialog.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/src -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/coincontroldialog.h -o build/moc_coincontroldialog.cpp
 
 build/moc_coincontroltreewidget.cpp: src/qt/coincontroltreewidget.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/coincontroltreewidget.h -o build/moc_coincontroltreewidget.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/src -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/coincontroltreewidget.h -o build/moc_coincontroltreewidget.cpp
 
 build/moc_sendcoinsdialog.cpp: src/qt/sendcoinsdialog.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/sendcoinsdialog.h -o build/moc_sendcoinsdialog.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/src -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/sendcoinsdialog.h -o build/moc_sendcoinsdialog.cpp
 
 build/moc_addressbookpage.cpp: src/qt/addressbookpage.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/addressbookpage.h -o build/moc_addressbookpage.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/src -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/addressbookpage.h -o build/moc_addressbookpage.cpp
 
 build/moc_signverifymessagedialog.cpp: src/qt/signverifymessagedialog.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/signverifymessagedialog.h -o build/moc_signverifymessagedialog.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/src -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/signverifymessagedialog.h -o build/moc_signverifymessagedialog.cpp
 
 build/moc_aboutdialog.cpp: src/qt/aboutdialog.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/aboutdialog.h -o build/moc_aboutdialog.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/src -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/aboutdialog.h -o build/moc_aboutdialog.cpp
 
 build/moc_editaddressdialog.cpp: src/qt/editaddressdialog.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/editaddressdialog.h -o build/moc_editaddressdialog.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/src -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/editaddressdialog.h -o build/moc_editaddressdialog.cpp
 
 build/moc_bitcoinaddressvalidator.cpp: src/qt/bitcoinaddressvalidator.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/bitcoinaddressvalidator.h -o build/moc_bitcoinaddressvalidator.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/src -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/bitcoinaddressvalidator.h -o build/moc_bitcoinaddressvalidator.cpp
 
 build/moc_clientmodel.cpp: src/qt/clientmodel.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/clientmodel.h -o build/moc_clientmodel.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/src -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/clientmodel.h -o build/moc_clientmodel.cpp
 
 build/moc_guiutil.cpp: src/qt/guiutil.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/guiutil.h -o build/moc_guiutil.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/src -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/guiutil.h -o build/moc_guiutil.cpp
 
 build/moc_optionsmodel.cpp: src/qt/optionsmodel.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/optionsmodel.h -o build/moc_optionsmodel.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/src -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/optionsmodel.h -o build/moc_optionsmodel.cpp
 
 build/moc_monitoreddatamapper.cpp: src/qt/monitoreddatamapper.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/monitoreddatamapper.h -o build/moc_monitoreddatamapper.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/src -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/monitoreddatamapper.h -o build/moc_monitoreddatamapper.cpp
 
 build/moc_transactiondesc.cpp: src/qt/transactiondesc.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/transactiondesc.h -o build/moc_transactiondesc.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/src -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/transactiondesc.h -o build/moc_transactiondesc.cpp
 
 build/moc_transactiondescdialog.cpp: src/qt/transactiondescdialog.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/transactiondescdialog.h -o build/moc_transactiondescdialog.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/src -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/transactiondescdialog.h -o build/moc_transactiondescdialog.cpp
 
 build/moc_bitcoinamountfield.cpp: src/qt/bitcoinamountfield.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/bitcoinamountfield.h -o build/moc_bitcoinamountfield.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/src -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/bitcoinamountfield.h -o build/moc_bitcoinamountfield.cpp
 
 build/moc_transactionfilterproxy.cpp: src/qt/transactionfilterproxy.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/transactionfilterproxy.h -o build/moc_transactionfilterproxy.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/src -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/transactionfilterproxy.h -o build/moc_transactionfilterproxy.cpp
 
 build/moc_transactionview.cpp: src/qt/transactionview.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/transactionview.h -o build/moc_transactionview.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/src -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/transactionview.h -o build/moc_transactionview.cpp
 
 build/moc_walletmodel.cpp: src/qt/walletmodel.h \
 		src/allocators.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/walletmodel.h -o build/moc_walletmodel.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/src -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/walletmodel.h -o build/moc_walletmodel.cpp
 
 build/moc_overviewpage.cpp: src/qt/overviewpage.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/overviewpage.h -o build/moc_overviewpage.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/src -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/overviewpage.h -o build/moc_overviewpage.cpp
 
 build/moc_csvmodelwriter.cpp: src/qt/csvmodelwriter.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/csvmodelwriter.h -o build/moc_csvmodelwriter.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/src -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/csvmodelwriter.h -o build/moc_csvmodelwriter.cpp
 
 build/moc_sendcoinsentry.cpp: src/qt/sendcoinsentry.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/sendcoinsentry.h -o build/moc_sendcoinsentry.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/src -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/sendcoinsentry.h -o build/moc_sendcoinsentry.cpp
 
 build/moc_qvalidatedlineedit.cpp: src/qt/qvalidatedlineedit.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/qvalidatedlineedit.h -o build/moc_qvalidatedlineedit.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/src -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/qvalidatedlineedit.h -o build/moc_qvalidatedlineedit.cpp
 
 build/moc_qvaluecombobox.cpp: src/qt/qvaluecombobox.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/qvaluecombobox.h -o build/moc_qvaluecombobox.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/src -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/qvaluecombobox.h -o build/moc_qvaluecombobox.cpp
 
 build/moc_askpassphrasedialog.cpp: src/qt/askpassphrasedialog.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/askpassphrasedialog.h -o build/moc_askpassphrasedialog.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/src -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/askpassphrasedialog.h -o build/moc_askpassphrasedialog.cpp
 
 build/moc_notificator.cpp: src/qt/notificator.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/notificator.h -o build/moc_notificator.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/src -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/notificator.h -o build/moc_notificator.cpp
 
 build/moc_rpcconsole.cpp: src/qt/rpcconsole.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/rpcconsole.h -o build/moc_rpcconsole.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/src -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/rpcconsole.h -o build/moc_rpcconsole.cpp
 
 build/moc_enigmastatuspage.cpp: src/qt/enigmastatuspage.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/enigmastatuspage.h -o build/moc_enigmastatuspage.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/src -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/enigmastatuspage.h -o build/moc_enigmastatuspage.cpp
 
 build/moc_enigmatablemodel.cpp: src/qt/enigmatablemodel.h \
 		src/init.h \
@@ -1671,19 +1671,17 @@ build/moc_enigmatablemodel.cpp: src/qt/enigmatablemodel.h \
 		src/ui_interface.h \
 		src/walletdb.h \
 		src/db.h \
-		db4/include/db_cxx.h \
-		db4/include/db.h \
 		src/enigma/enigma.h \
 		src/enigma/cloakingrequest.h \
 		src/hdkey.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/enigmatablemodel.h -o build/moc_enigmatablemodel.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/src -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/enigmatablemodel.h -o build/moc_enigmatablemodel.cpp
 
 build/moc_splashscreen.cpp: src/qt/splashscreen.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/splashscreen.h -o build/moc_splashscreen.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/src -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/splashscreen.h -o build/moc_splashscreen.cpp
 
 build/moc_bitcoin.cpp: src/bitcoin.h \
 		src/qt/bitcoingui.h \
@@ -1763,8 +1761,6 @@ build/moc_bitcoin.cpp: src/bitcoin.h \
 		src/ui_interface.h \
 		src/walletdb.h \
 		src/db.h \
-		db4/include/db_cxx.h \
-		db4/include/db.h \
 		src/enigma/enigma.h \
 		src/enigma/cloakingrequest.h \
 		src/hdkey.h \
@@ -1772,17 +1768,17 @@ build/moc_bitcoin.cpp: src/bitcoin.h \
 		src/qt/splashscreen.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/bitcoin.h -o build/moc_bitcoin.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/src -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/bitcoin.h -o build/moc_bitcoin.cpp
 
 build/moc_utilitydialog.cpp: src/qt/utilitydialog.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/utilitydialog.h -o build/moc_utilitydialog.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/src -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/utilitydialog.h -o build/moc_utilitydialog.cpp
 
 build/moc_filedownloader.cpp: src/filedownloader.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/filedownloader.h -o build/moc_filedownloader.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/src -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/filedownloader.h -o build/moc_filedownloader.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -1803,7 +1799,7 @@ build/overviewpage.moc: src/qt/overviewpage.cpp \
 		src/qt/askpassphrasedialog.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/overviewpage.cpp -o build/overviewpage.moc
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/src -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/overviewpage.cpp -o build/overviewpage.moc
 
 build/rpcconsole.moc: src/qt/rpcconsole.cpp \
 		src/qt/rpcconsole.h \
@@ -1856,7 +1852,7 @@ build/rpcconsole.moc: src/qt/rpcconsole.cpp \
 		src/qt/guiutil.h \
 		build/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/rpcconsole.cpp -o build/rpcconsole.moc
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /opt/CloakCoin/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/opt/CloakCoin -I/opt/CloakCoin/src -I/opt/CloakCoin/src/json -I/opt/CloakCoin/src/qt -I/opt/CloakCoin/src/tor -I/opt/CloakCoin/src/leveldb/include -I/opt/CloakCoin/src/leveldb/helpers -I/opt/CloakCoin/src/leveldb/helpers/memenv -I/opt/CloakCoin/ex_lib -I/opt/CloakCoin/src -I/opt/deps/miniupnpc -I/opt/deps/db4/include -I/opt/deps/openssl-1.0.2u/include -I/opt/deps/qrencode-3.4.4 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/14 -I/usr/include/x86_64-linux-gnu/c++/14 -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-linux-gnu/14/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/qt/rpcconsole.cpp -o build/rpcconsole.moc
 
 compiler_uic_make_all: build/ui_mainwindow.h build/ui_coincontroldialog.h build/ui_sendcoinsdialog.h build/ui_addressbookpage.h build/ui_signverifymessagedialog.h build/ui_aboutdialog.h build/ui_editaddressdialog.h build/ui_transactiondescdialog.h build/ui_overviewpage.h build/ui_sendcoinsentry.h build/ui_askpassphrasedialog.h build/ui_rpcconsole.h build/ui_optionsdialog.h build/ui_enigmastatuspage.h build/ui_helpmessagedialog.h
 compiler_uic_clean:
@@ -2017,8 +2013,6 @@ build/txdb-leveldb.o: src/txdb-leveldb.cpp src/leveldb/include/leveldb/env.h \
 		src/leveldb/include/leveldb/options.h \
 		src/leveldb/include/leveldb/write_batch.h \
 		src/db.h \
-		db4/include/db_cxx.h \
-		db4/include/db.h \
 		src/txdb-bdb.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/txdb-leveldb.o src/txdb-leveldb.cpp
 
@@ -4705,8 +4699,6 @@ build/main.o: src/main.cpp src/util.h \
 		src/checkpoints.h \
 		src/enigma/cloakingrequest.h \
 		src/db.h \
-		db4/include/db_cxx.h \
-		db4/include/db.h \
 		src/txdb.h \
 		src/txdb-leveldb.h \
 		src/leveldb/include/leveldb/db.h \
@@ -4799,8 +4791,6 @@ build/init.o: src/init.cpp src/txdb.h \
 		src/leveldb/include/leveldb/options.h \
 		src/leveldb/include/leveldb/write_batch.h \
 		src/db.h \
-		db4/include/db_cxx.h \
-		db4/include/db.h \
 		src/txdb-bdb.h \
 		src/walletdb.h \
 		src/enigma/enigma.h \
@@ -4879,8 +4869,6 @@ build/net.o: src/net.cpp src/irc.h \
 		src/json/json_spirit_utils.h \
 		src/base58.h \
 		src/checkpoints.h \
-		db4/include/db_cxx.h \
-		db4/include/db.h \
 		src/init.h \
 		src/wallet.h \
 		src/ui_interface.h \
@@ -5015,8 +5003,6 @@ build/checkpoints.o: src/checkpoints.cpp src/checkpoints.h \
 		src/leveldb/include/leveldb/options.h \
 		src/leveldb/include/leveldb/write_batch.h \
 		src/db.h \
-		db4/include/db_cxx.h \
-		db4/include/db.h \
 		src/txdb-bdb.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/checkpoints.o src/checkpoints.cpp
 
@@ -5106,8 +5092,6 @@ build/db.o: src/db.cpp src/db.h \
 		src/json/json_spirit_utils.h \
 		src/base58.h \
 		src/checkpoints.h \
-		db4/include/db_cxx.h \
-		db4/include/db.h \
 		src/kernel.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/db.o src/db.cpp
 
@@ -5179,8 +5163,6 @@ build/walletdb.o: src/walletdb.cpp src/walletdb.h \
 		src/json/json_spirit_utils.h \
 		src/base58.h \
 		src/checkpoints.h \
-		db4/include/db_cxx.h \
-		db4/include/db.h \
 		src/enigma/enigma.h \
 		src/enigma/cloakingrequest.h \
 		src/wallet.h \
@@ -5357,8 +5339,6 @@ build/bitcoin.o: src/qt/bitcoin.cpp src/qt/bitcoingui.h \
 		src/ui_interface.h \
 		src/walletdb.h \
 		src/db.h \
-		db4/include/db_cxx.h \
-		db4/include/db.h \
 		src/enigma/enigma.h \
 		src/enigma/cloakingrequest.h \
 		src/hdkey.h \
@@ -5463,8 +5443,6 @@ build/bitcoingui.o: src/qt/bitcoingui.cpp src/qt/bitcoingui.h \
 		src/ui_interface.h \
 		src/walletdb.h \
 		src/db.h \
-		db4/include/db_cxx.h \
-		db4/include/db.h \
 		src/enigma/enigma.h \
 		src/enigma/cloakingrequest.h \
 		src/hdkey.h \
@@ -5565,8 +5543,6 @@ build/transactiontablemodel.o: src/qt/transactiontablemodel.cpp src/qt/transacti
 		src/ui_interface.h \
 		src/walletdb.h \
 		src/db.h \
-		db4/include/db_cxx.h \
-		db4/include/db.h \
 		src/enigma/enigma.h \
 		src/enigma/cloakingrequest.h \
 		src/hdkey.h
@@ -5645,8 +5621,6 @@ build/addresstablemodel.o: src/qt/addresstablemodel.cpp src/qt/addresstablemodel
 		src/ui_interface.h \
 		src/walletdb.h \
 		src/db.h \
-		db4/include/db_cxx.h \
-		db4/include/db.h \
 		src/enigma/enigma.h \
 		src/enigma/cloakingrequest.h \
 		src/hdkey.h
@@ -5740,8 +5714,6 @@ build/sendcoinsdialog.o: src/qt/sendcoinsdialog.cpp src/qt/sendcoinsdialog.h \
 		src/ui_interface.h \
 		src/walletdb.h \
 		src/db.h \
-		db4/include/db_cxx.h \
-		db4/include/db.h \
 		src/enigma/enigma.h \
 		src/enigma/cloakingrequest.h \
 		src/hdkey.h \
@@ -5833,8 +5805,6 @@ build/coincontroldialog.o: src/qt/coincontroldialog.cpp src/qt/coincontroldialog
 		src/ui_interface.h \
 		src/walletdb.h \
 		src/db.h \
-		db4/include/db_cxx.h \
-		db4/include/db.h \
 		src/enigma/enigma.h \
 		src/enigma/cloakingrequest.h \
 		src/hdkey.h \
@@ -5950,8 +5920,6 @@ build/signverifymessagedialog.o: src/qt/signverifymessagedialog.cpp src/qt/signv
 		src/ui_interface.h \
 		src/walletdb.h \
 		src/db.h \
-		db4/include/db_cxx.h \
-		db4/include/db.h \
 		src/enigma/enigma.h \
 		src/enigma/cloakingrequest.h \
 		src/hdkey.h \
@@ -6126,8 +6094,6 @@ build/guiutil.o: src/qt/guiutil.cpp src/qt/guiutil.h \
 		src/ui_interface.h \
 		src/walletdb.h \
 		src/db.h \
-		db4/include/db_cxx.h \
-		db4/include/db.h \
 		src/enigma/enigma.h \
 		src/enigma/cloakingrequest.h \
 		src/hdkey.h
@@ -6204,8 +6170,6 @@ build/transactionrecord.o: src/qt/transactionrecord.cpp src/qt/transactionrecord
 		src/ui_interface.h \
 		src/walletdb.h \
 		src/db.h \
-		db4/include/db_cxx.h \
-		db4/include/db.h \
 		src/enigma/enigma.h \
 		src/enigma/cloakingrequest.h \
 		src/hdkey.h
@@ -6284,8 +6248,6 @@ build/optionsmodel.o: src/qt/optionsmodel.cpp src/qt/optionsmodel.h \
 		src/ui_interface.h \
 		src/walletdb.h \
 		src/db.h \
-		db4/include/db_cxx.h \
-		db4/include/db.h \
 		src/enigma/enigma.h \
 		src/enigma/cloakingrequest.h \
 		src/hdkey.h \
@@ -6368,8 +6330,6 @@ build/transactiondesc.o: src/qt/transactiondesc.cpp src/qt/transactiondesc.h \
 		src/ui_interface.h \
 		src/walletdb.h \
 		src/db.h \
-		db4/include/db_cxx.h \
-		db4/include/db.h \
 		src/enigma/enigma.h \
 		src/enigma/cloakingrequest.h \
 		src/hdkey.h \
@@ -6473,8 +6433,6 @@ build/wallet.o: src/wallet.cpp src/txdb.h \
 		src/leveldb/include/leveldb/options.h \
 		src/leveldb/include/leveldb/write_batch.h \
 		src/db.h \
-		db4/include/db_cxx.h \
-		db4/include/db.h \
 		src/txdb-bdb.h \
 		src/init.h \
 		src/wallet.h \
@@ -6621,8 +6579,6 @@ build/transactionview.o: src/qt/transactionview.cpp src/qt/transactionview.h \
 		src/checkpoints.h \
 		src/walletdb.h \
 		src/db.h \
-		db4/include/db_cxx.h \
-		db4/include/db.h \
 		src/enigma/enigma.h \
 		src/enigma/cloakingrequest.h \
 		src/hdkey.h
@@ -6701,8 +6657,6 @@ build/walletmodel.o: src/qt/walletmodel.cpp src/qt/walletmodel.h \
 		src/ui_interface.h \
 		src/walletdb.h \
 		src/db.h \
-		db4/include/db_cxx.h \
-		db4/include/db.h \
 		src/enigma/enigma.h \
 		src/enigma/cloakingrequest.h \
 		src/hdkey.h \
@@ -6784,8 +6738,6 @@ build/bitcoinrpc.o: src/bitcoinrpc.cpp src/init.h \
 		src/ui_interface.h \
 		src/walletdb.h \
 		src/db.h \
-		db4/include/db_cxx.h \
-		db4/include/db.h \
 		src/enigma/enigma.h \
 		src/enigma/cloakingrequest.h \
 		src/hdkey.h
@@ -6862,8 +6814,6 @@ build/rpcdump.o: src/rpcdump.cpp src/init.h \
 		src/ui_interface.h \
 		src/walletdb.h \
 		src/db.h \
-		db4/include/db_cxx.h \
-		db4/include/db.h \
 		src/enigma/enigma.h \
 		src/enigma/cloakingrequest.h \
 		src/hdkey.h
@@ -6940,8 +6890,6 @@ build/rpcnet.o: src/rpcnet.cpp src/compat.h \
 		src/ui_interface.h \
 		src/walletdb.h \
 		src/db.h \
-		db4/include/db_cxx.h \
-		db4/include/db.h \
 		src/enigma/enigma.h \
 		src/enigma/cloakingrequest.h \
 		src/hdkey.h
@@ -7022,8 +6970,6 @@ build/rpcmining.o: src/rpcmining.cpp src/main.h \
 		src/leveldb/include/leveldb/options.h \
 		src/leveldb/include/leveldb/write_batch.h \
 		src/db.h \
-		db4/include/db_cxx.h \
-		db4/include/db.h \
 		src/txdb-bdb.h \
 		src/init.h \
 		src/wallet.h \
@@ -7109,8 +7055,6 @@ build/rpcwallet.o: src/rpcwallet.cpp src/txdb.h \
 		src/leveldb/include/leveldb/options.h \
 		src/leveldb/include/leveldb/write_batch.h \
 		src/db.h \
-		db4/include/db_cxx.h \
-		db4/include/db.h \
 		src/txdb-bdb.h \
 		src/wallet.h \
 		src/ui_interface.h \
@@ -7192,8 +7136,6 @@ build/rpcblockchain.o: src/rpcblockchain.cpp src/main.h \
 		src/ui_interface.h \
 		src/walletdb.h \
 		src/db.h \
-		db4/include/db_cxx.h \
-		db4/include/db.h \
 		src/enigma/enigma.h \
 		src/enigma/cloakingrequest.h \
 		src/hdkey.h \
@@ -7275,8 +7217,6 @@ build/rpcrawtransaction.o: src/rpcrawtransaction.cpp src/base58.h \
 		src/leveldb/include/leveldb/options.h \
 		src/leveldb/include/leveldb/write_batch.h \
 		src/db.h \
-		db4/include/db_cxx.h \
-		db4/include/db.h \
 		src/txdb-bdb.h \
 		src/init.h \
 		src/wallet.h \
@@ -7501,8 +7441,6 @@ build/askpassphrasedialog.o: src/qt/askpassphrasedialog.cpp src/qt/askpassphrase
 		src/ui_interface.h \
 		src/walletdb.h \
 		src/db.h \
-		db4/include/db_cxx.h \
-		db4/include/db.h \
 		src/enigma/enigma.h \
 		src/enigma/cloakingrequest.h \
 		src/hdkey.h
@@ -7665,8 +7603,6 @@ build/noui.o: src/noui.cpp src/ui_interface.h \
 		src/checkpoints.h \
 		src/walletdb.h \
 		src/db.h \
-		db4/include/db_cxx.h \
-		db4/include/db.h \
 		src/enigma/enigma.h \
 		src/enigma/cloakingrequest.h \
 		src/hdkey.h
@@ -7748,8 +7684,6 @@ build/kernel.o: src/kernel.cpp src/kernel.h \
 		src/leveldb/include/leveldb/options.h \
 		src/leveldb/include/leveldb/write_batch.h \
 		src/db.h \
-		db4/include/db_cxx.h \
-		db4/include/db.h \
 		src/txdb-bdb.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/kernel.o src/kernel.cpp
 
@@ -7988,8 +7922,6 @@ build/enigmastatuspage.o: src/qt/enigmastatuspage.cpp src/qt/enigmastatuspage.h 
 		src/ui_interface.h \
 		src/walletdb.h \
 		src/db.h \
-		db4/include/db_cxx.h \
-		db4/include/db.h \
 		src/enigma/enigma.h \
 		src/enigma/cloakingrequest.h \
 		src/hdkey.h \
@@ -8071,8 +8003,6 @@ build/enigmatablemodel.o: src/qt/enigmatablemodel.cpp src/qt/enigmatablemodel.h 
 		src/ui_interface.h \
 		src/walletdb.h \
 		src/db.h \
-		db4/include/db_cxx.h \
-		db4/include/db.h \
 		src/enigma/enigma.h \
 		src/enigma/cloakingrequest.h \
 		src/hdkey.h \
@@ -8242,8 +8172,6 @@ build/cloakshield.o: src/enigma/cloakshield.cpp src/enigma/enigma.h \
 		src/ui_interface.h \
 		src/walletdb.h \
 		src/db.h \
-		db4/include/db_cxx.h \
-		db4/include/db.h \
 		src/hdkey.h \
 		../deps/openssl-1.0.2u/include/openssl/ecdsa.h \
 		../deps/openssl-1.0.2u/include/openssl/obj_mac.h \
@@ -8398,8 +8326,6 @@ build/enigma.o: src/enigma/enigma.cpp src/txdb.h \
 		src/leveldb/include/leveldb/options.h \
 		src/leveldb/include/leveldb/write_batch.h \
 		src/db.h \
-		db4/include/db_cxx.h \
-		db4/include/db.h \
 		src/txdb-bdb.h \
 		src/enigma/enigma.h \
 		src/enigma/cloakingrequest.h \
@@ -8522,8 +8448,6 @@ build/splashscreen.o: src/qt/splashscreen.cpp src/qt/splashscreen.h \
 		src/ui_interface.h \
 		src/walletdb.h \
 		src/db.h \
-		db4/include/db_cxx.h \
-		db4/include/db.h \
 		src/enigma/enigma.h \
 		src/enigma/cloakingrequest.h \
 		src/hdkey.h
@@ -8606,8 +8530,6 @@ build/utilitydialog.o: src/qt/utilitydialog.cpp src/qt/utilitydialog.h \
 		src/ui_interface.h \
 		src/walletdb.h \
 		src/db.h \
-		db4/include/db_cxx.h \
-		db4/include/db.h \
 		src/enigma/enigma.h \
 		src/enigma/cloakingrequest.h \
 		src/hdkey.h
@@ -8685,8 +8607,6 @@ build/winshutdownmonitor.o: src/qt/winshutdownmonitor.cpp src/qt/winshutdownmoni
 		src/ui_interface.h \
 		src/walletdb.h \
 		src/db.h \
-		db4/include/db_cxx.h \
-		db4/include/db.h \
 		src/enigma/enigma.h \
 		src/enigma/cloakingrequest.h \
 		src/hdkey.h
@@ -8778,8 +8698,6 @@ build/cloakingdata.o: src/enigma/cloakingdata.cpp ../deps/openssl-1.0.2u/include
 		src/ui_interface.h \
 		src/walletdb.h \
 		src/db.h \
-		db4/include/db_cxx.h \
-		db4/include/db.h \
 		src/hdkey.h \
 		src/enigma/pow.h \
 		src/qt/bitcoingui.h
@@ -8860,8 +8778,6 @@ build/cloakingrequest.o: src/enigma/cloakingrequest.cpp src/txdb.h \
 		src/leveldb/include/leveldb/options.h \
 		src/leveldb/include/leveldb/write_batch.h \
 		src/db.h \
-		db4/include/db_cxx.h \
-		db4/include/db.h \
 		src/txdb-bdb.h \
 		src/enigma/enigma.h \
 		src/enigma/cloakingrequest.h \
@@ -9106,8 +9022,6 @@ build/encryption.o: src/enigma/encryption.cpp src/enigma/enigma.h \
 		src/ui_interface.h \
 		src/walletdb.h \
 		src/db.h \
-		db4/include/db_cxx.h \
-		db4/include/db.h \
 		src/hdkey.h \
 		../deps/openssl-1.0.2u/include/openssl/ecdsa.h \
 		../deps/openssl-1.0.2u/include/openssl/obj_mac.h \

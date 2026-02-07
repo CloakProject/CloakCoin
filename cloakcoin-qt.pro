@@ -116,8 +116,8 @@ linux {
      OPENSSL_INCLUDE_PATH="/opt/deps/openssl-1.0.2u/include"
      OPENSSL_LIB_PATH="/opt/deps/openssl-1.0.2u"
      
-     BDB_INCLUDE_PATH = /opt/CloakCoin/db4/include
-     BDB_LIB_PATH = /opt/CloakCoin/db4/lib
+     BDB_INCLUDE_PATH = /opt/deps/db4/include
+     BDB_LIB_PATH = /opt/deps/db4/lib
 
      DEFINES += USE_LEVELDB
      INCLUDEPATH += src/leveldb/include src/leveldb/helpers src/leveldb/helpers/memenv
@@ -172,26 +172,27 @@ INCLUDEPATH += ex_lib
 #  or: qmake "USE_UPNP=-" (not supported)
 # miniupnpc (http://miniupnp.free.fr/files/) must be installed for support
 
-USE_UPNP=0
-message(Building without UPNP support)
-#contains(USE_UPNP, -) {
-#    message(Building without UPNP support)
-#} else {
-#    message(Building with UPNP support)
-#    count(USE_UPNP, 0) {
-#	USE_UPNP=1
-#    }
-#    INCLUDEPATH += $$PWD/src
-#    win32:INCLUDEPATH += C:/deps/miniupnpc
-#    INCLUDEPATH += /opt/deps/miniupnpc
-#    DEFINES += USE_UPNP=$$USE_UPNP MINIUPNP_STATICLIB
-#    win32:LIBS += C:/deps/miniupnpc/libminiupnpc.a
-#    macx:LIBS += /usr/local/lib/libminiupnpc.a
-#    !windows:!macx{
-#	LIBS += -lminiupnpc
-#    }
-#    win32:LIBS += -liphlpapi
-#}
+#USE_UPNP=0
+#message(Building without UPNP support)
+
+contains(USE_UPNP, -) {
+    message(Building without UPNP support)
+} else {
+    message(Building with UPNP support)
+    count(USE_UPNP, 0) {
+	USE_UPNP=1
+    }
+    INCLUDEPATH += $$PWD/src
+    win32:INCLUDEPATH += C:/deps/miniupnpc
+    INCLUDEPATH += /opt/deps/miniupnpc
+    DEFINES += USE_UPNP=$$USE_UPNP MINIUPNP_STATICLIB
+    win32:LIBS += C:/deps/miniupnpc/libminiupnpc.a
+    macx:LIBS += /usr/local/lib/libminiupnpc.a
+    !windows:!macx{
+	LIBS += -lminiupnpc
+    }
+    win32:LIBS += -liphlpapi
+}
 
 
 # use: qmake "USE_DBUS=1"
