@@ -2,7 +2,7 @@ QT += core gui network
 QT += widgets
 TEMPLATE = app
 TARGET = cloakcoin-qt
-VERSION = 2.3.0.0
+VERSION = 2.3.1.0
 INCLUDEPATH += src src/json src/qt src/tor
 DEFINES += QT_GUI BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE BOOST_THREAD_PROVIDES_GENERIC_SHARED_MUTEX_ON_WIN __NO_SYSTEM_INCLUDES
 #DEFINES += CURL_STATICLIB
@@ -113,13 +113,16 @@ linux {
      QRENCODE_LIB_PATH="/opt/deps/qrencode-3.4.4/.libs"
      QRENCODE_INCLUDE_PATH="/opt/deps/qrencode-3.4.4"
 
-     OPENSSL_INCLUDE_PATH="/opt/deps/openssl-1.0.2g/include"
-     OPENSSL_LIB_PATH="/opt/deps/openssl-1.0.2g"
+     OPENSSL_INCLUDE_PATH="/opt/deps/openssl-1.0.2u/include"
+     OPENSSL_LIB_PATH="/opt/deps/openssl-1.0.2u"
+
+     BDB_INCLUDE_PATH = /opt/deps/db4/include
+     BDB_LIB_PATH = /opt/deps/db4/lib
 
      DEFINES += USE_LEVELDB
      INCLUDEPATH += src/leveldb/include src/leveldb/helpers src/leveldb/helpers/memenv
      SOURCES += src/txdb-leveldb.cpp
-     LIBS+=$$PWD/src/leveldb/libleveldb.a $$PWD/src/leveldb/libmemenv.a /opt/deps/openssl-1.0.2g/libssl.a /opt/deps/openssl-1.0.2g/libcrypto.a
+     LIBS+=$$PWD/src/leveldb/libleveldb.a $$PWD/src/leveldb/libmemenv.a /opt/deps/openssl-1.0.2u/libssl.a /opt/deps/openssl-1.0.2u/libcrypto.a
 }
 
 QMAKE_CXXFLAGS *= -std=c++11
@@ -224,7 +227,7 @@ contains(BITCOIN_NEED_QT_PLUGINS, 1) {
 #}
 
 QMAKE_CXXFLAGS += -msse2
-QMAKE_CFLAGS += -msse2
+QMAKE_CFLAGS += -msse2 -fcommon
 QMAKE_CXXFLAGS_WARN_ON = -fdiagnostics-show-option -Wall -Wextra -Wformat -Wformat-security -Wno-unused-parameter -Wstack-protector
 
 # Input
