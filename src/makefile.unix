@@ -13,8 +13,8 @@ STATIC:=1
 # OPTIMIZED_SALSA:=1
 
 # Paths to locally built libraries
-BDB_INCLUDE_PATH:=/opt/CloakCoin/db4/include
-BDB_LIB_PATH:=/opt/CloakCoin/db4/lib
+BDB_INCLUDE_PATH:=/opt/deps/db4/include
+BDB_LIB_PATH:=/opt/deps/db4/lib
 OPENSSL_INCLUDE_PATH:=/opt/deps/openssl-1.0.2u/include
 OPENSSL_LIB_PATH:=/opt/deps/openssl-1.0.2u
 BOOST_INCLUDE_PATH:=/usr/local/include
