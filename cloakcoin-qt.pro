@@ -55,8 +55,10 @@ win32 {
     BDB_INCLUDE_PATH=C:\deps\db-4.8.30.NC\build_unix
     BDB_LIB_PATH=C:\deps\db-4.8.30.NC\build_unix
 
-    OPENSSL_INCLUDE_PATH = C:\deps\openssl-1.0.2g\include
-    OPENSSL_LIB_PATH=C:\deps\openssl-1.0.2g
+#    OPENSSL_INCLUDE_PATH = C:\deps\openssl-1.0.2g\include
+#    OPENSSL_LIB_PATH=C:\deps\openssl-1.0.2g
+    OPENSSL_INCLUDE_PATH = C:\deps\libressl-2.5.5-windows\include
+    OPENSSL_LIB_PATH=C:\deps\libressl-2.5.5-windows\x86
 
     QRENCODE_LIB_PATH="C:\deps\qrencode-3.4.4\.libs"
     QRENCODE_INCLUDE_PATH="C:\deps\qrencode-3.4.4"
@@ -64,7 +66,7 @@ win32 {
     BOOST_LIB_SUFFIX = -mgw49-mt-s-1_57
 
     LIBS+=-LC:\deps\libevent-2.0.21-stable\.libs -LC:\deps\libpng-1.6.16\.libs
-    LIBS+=-lcrypto -lws2_32 -lgdi32 -lcrypt32
+    LIBS+=-lcrypto-41 -lws2_32 -lgdi32 -lcrypt32
 }
 
 macx {
@@ -782,7 +784,7 @@ INCLUDEPATH += $$BOOST_INCLUDE_PATH $$BDB_INCLUDE_PATH $$OPENSSL_INCLUDE_PATH $$
 # libdb_cxx-4.8.a
 macx:LIBS += /usr/local/Cellar/berkeley-db@4/4.8.30/lib/libdb_cxx-4.8.a
 LIBS += $$join(BOOST_LIB_PATH,,-L,) $$join(OPENSSL_LIB_PATH,,-L,) $$join(QRENCODE_LIB_PATH,,-L,)
-win32:LIBS += -lssl -lcrypto
+win32:LIBS += -lssl-43 -lcrypto-41 -ltls-15
 !macx:LIBS += $$join(BDB_LIB_PATH,,-L,) -ldb_cxx$$BDB_LIB_SUFFIX
 !win32:LIBS += -levent -lz
 #LIBS += -lz

@@ -1299,8 +1299,8 @@ tor_tls_context_new(crypto_pk_t *identity, unsigned int key_lifetime,
   }
   /* Don't actually allow compression; it uses ram and time, but the data
    * we transmit is all encrypted anyway. */
-  if (result->ctx->comp_methods)
-    result->ctx->comp_methods = NULL;
+//  if (result->ctx->comp_methods)
+//    result->ctx->comp_methods = NULL;
 #ifdef SSL_MODE_RELEASE_BUFFERS
   SSL_CTX_set_mode(result->ctx, SSL_MODE_RELEASE_BUFFERS);
 #endif
@@ -1587,8 +1587,8 @@ tor_tls_server_info_callback(const SSL *ssl, int type, int val)
 
   if (type != SSL_CB_ACCEPT_LOOP)
     return;
-  if ((ssl->state != SSL3_ST_SW_SRVR_HELLO_A) &&
-      (ssl->state != SSL3_ST_SW_SRVR_HELLO_B))
+  if ((SSL_state(ssl) != SSL3_ST_SW_SRVR_HELLO_A) &&
+      (SSL_state(ssl) != SSL3_ST_SW_SRVR_HELLO_B))
     return;
 
   tls = tor_tls_get_by_ssl(ssl);
@@ -2080,7 +2080,7 @@ tor_tls_handshake(tor_tls_t *tls)
   tor_assert(tls->ssl);
   tor_assert(tls->state == TOR_TLS_ST_HANDSHAKE);
   check_no_tls_errors();
-  oldstate = tls->ssl->state;
+  oldstate = SSL_get_state(tls->ssl);
   if (tls->isServer) {
     log_debug(LD_HANDSHAKE, "About to call SSL_accept on %p (%s)", tls,
               SSL_state_string_long(tls->ssl));
@@ -2090,7 +2090,7 @@ tor_tls_handshake(tor_tls_t *tls)
               SSL_state_string_long(tls->ssl));
     r = SSL_connect(tls->ssl);
   }
-  if (oldstate != tls->ssl->state)
+  if (oldstate != SSL_get_state(tls->ssl))
     log_debug(LD_HANDSHAKE, "After call, %p was in state %s",
               tls, SSL_state_string_long(tls->ssl));
   /* We need to call this here and not earlier, since OpenSSL has a penchant
@@ -2125,7 +2125,8 @@ tor_tls_finish_handshake(tor_tls_t *tls)
     SSL_set_info_callback(tls->ssl, NULL);
     SSL_set_verify(tls->ssl, SSL_VERIFY_PEER, always_accept_verify_cb);
     /* There doesn't seem to be a clear OpenSSL API to clear mode flags. */
-    tls->ssl->mode &= ~SSL_MODE_NO_AUTO_CHAIN;
+    long sslMode = SSL_get_mode(tls->ssl);
+    SSL_set_mode(tls->ssl, sslMode & ~SSL_MODE_NO_AUTO_CHAIN);
 #ifdef V2_HANDSHAKE_SERVER
     if (tor_tls_client_is_using_v2_ciphers(tls->ssl)) {
       /* This check is redundant, but back when we did it in the callback,

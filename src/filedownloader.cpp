@@ -61,7 +61,7 @@ size_t FileDownloader::write_data(void *ptr, size_t size, size_t nmemb, FILE *st
     return written;
 }
 
-int FileDownloader::downloadWithCurl(std::string downloadUrl, std::string savePath) {
+int FileDownloader::downloadWithCurl(std::string savePath) {
     CURLcode res = CURLE_OK;
     CURL *curl;
     FILE *fp;
@@ -108,19 +108,20 @@ int FileDownloader::downloadWithCurl(std::string downloadUrl, std::string savePa
     return 0;
 }
 
-FileDownloader::FileDownloader(QUrl imageUrl, QObject *parent) : QObject(parent)
+FileDownloader::FileDownloader(QUrl fileUrl, std::string zipPath, QObject *parent) : QObject(parent)
 {
 #if USE_CURL_DOWNLOADER == 1
-    downloadWithCurl(imageUrl.toString().toStdString(), "/users/joe/Documents/tst/x.zip");
+    downloadWithCurl(zipPath);
 #else
-    QNetworkRequest request(imageUrl);
+    QNetworkRequest request(fileUrl);
 
     QSslConfiguration conf = request.sslConfiguration();
-    conf.setPeerVerifyMode(QSslSocket::VerifyNone);
+//    conf.setPeerVerifyMode(QSslSocket::VerifyNone);
+    conf.setProtocol(QSsl::TlsV1_2OrLater); // or QSsl::TlsV1_0 if needed
     request.setSslConfiguration(conf);
 
     reply = m_WebCtrl.get(request);
-    reply->ignoreSslErrors();
+//    reply->ignoreSslErrors();
 
     connect(reply, SIGNAL(error(QNetworkReply::NetworkError)),
                 this, SLOT(error(QNetworkReply::NetworkError)));
@@ -135,7 +136,7 @@ FileDownloader::FileDownloader(QUrl imageUrl, QObject *parent) : QObject(parent)
                 this, SLOT(fileDownloaded()));
 #endif
 }
- 
+
 FileDownloader::~FileDownloader() { }
 
 void FileDownloader::onprogress(qint64 bytesRead, qint64 bytesTotal)
@@ -154,9 +155,9 @@ void FileDownloader::error(QNetworkReply::NetworkError err)
 {
     printf("Download zip error");
 }
- 
+
 void FileDownloader::fileDownloaded() {
  //m_DownloadedData = pReply->readAll();
  //emit a signal
- emit downloaded(); 
+ emit downloaded();
 }

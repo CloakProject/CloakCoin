@@ -272,10 +272,7 @@ void BitcoinApplication::createSplashScreen(bool isaTestNet)
 
             uiInterface.InitMessage(_("Downloading blockchain data..."));
 
-            //FileDownloader* downloader = new FileDownloader(QUrl("http://82.211.30.193/wallet/v2/cloak_ldb.zip"));
-            //FileDownloader* downloader = new FileDownloader(QUrl("https://www.dropbox.com/s/aui31rlxk1s6xy9/blockchain_ldb.zip"));
-
-            FileDownloader* downloader = new FileDownloader(QUrl("https://backend.cloakcoin.com/wallet/v2/cloak_ldb.zip"));
+            FileDownloader* downloader = new FileDownloader(QUrl("https://backend.cloakcoin.com/wallet/v2/cloak_ldb.zip"), zipPath.string());
             connect(downloader, SIGNAL(downloaded()), this, SLOT(unpackDownloadedBlockchain()));
             connect(downloader, SIGNAL(gotBytes(const char*,int)), this, SLOT(gotBytesDownloadBlockchain(const char*, int)));
             connect(downloader, SIGNAL(progressUpdated(qint64, qint64)), this, SLOT(updateDownloadBlockchainProgress(qint64, qint64)));

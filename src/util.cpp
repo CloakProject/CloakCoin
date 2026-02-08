@@ -112,10 +112,10 @@ public:
             ppmutexOpenSSL[i] = new CCriticalSection();
         CRYPTO_set_locking_callback(locking_callback);
 
-#ifdef WIN32
-        // Seed random number generator with screen scrape and other hardware sources
-        RAND_screen();
-#endif
+//#ifdef WIN32
+//        // Seed random number generator with screen scrape and other hardware sources
+//        RAND_screen();
+//#endif
 
         // Seed random number generator with performance counter
         RandAddSeed();
